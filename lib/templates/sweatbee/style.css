@@ -1,0 +1,479 @@
+
+/*
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+*/
+
+/* forms.css */
+label {font-weight:bold;}
+fieldset {padding:1.4em;margin:0 0 1.5em 0;border:1px solid #ccc;}
+legend {font-weight:bold;font-size:1.2em;}
+input.text, input.title, textarea, select {margin:0.5em 0;border:1px solid #bbb;}
+input.text:focus, input.title:focus, textarea:focus, select:focus {border:1px solid #666;}
+input.text, input.title {width:300px;padding:5px;}
+input.title {font-size:1.5em;}
+textarea {width:300px;height:250px;padding:5px;}
+.error, .notice, .success {padding:.8em;margin-bottom:1em;border:2px solid #ddd;}
+.error {background:#FBE3E4;color:#8a1f11;border-color:#FBC2C4;}
+.notice {background:#FFF6BF;color:#514721;border-color:#FFD324;}
+.success {background:#E6EFC2;color:#264409;border-color:#C6D880;}
+.error a {color:#8a1f11;}
+.notice a {color:#514721;}
+.success a {color:#264409;}
+
+/* contact form */
+.validation-failed {background:#FBE3E4;color:#8a1f11;border-color:#FBC2C4;}
+.validation-passed {background:#E6EFC2;color:#264409;border-color:#C6D880;}
+.validation-advice {background: transparent url('http://www.compactcms.nl/includes/css/icons/arrow_up.gif') no-repeat 0 4px;font-style:italic;color:#CC0000;margin-left:150px;padding-left:17px;font-size:0.825em;}
+label{float:left;margin-top:10px;width:150px;}
+.success{padding:.8em;margin-bottom:1em;border:2px solid #C6D880;background:#E6EFC2;color:#264409;}
+
+body {
+	margin: 0px;
+	padding: 0;
+	background: url(img01.jpg) repeat-x left top;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #291B0C;
+}
+
+h1, h2, h3 {
+	margin: 0;
+	text-transform: uppercase;
+	font-weight: normal;
+	color: #36A12D;
+}
+
+h1 { font-size: 44px; }
+
+h2 { font-size: 18px; }
+
+h3 { }
+
+p, ul, ol {
+	margin-top: 0;
+	line-height: 220%;
+	text-align: justify;
+}
+
+ul, ol { }
+
+blockquote { }
+
+a { color: #36A12D; }
+
+a:hover { text-decoration: none; }
+
+a img {
+	border: none;
+}
+
+img.left {
+	float: left;
+	margin: 7px 30px 0 0;
+}
+
+img.right {
+	float: right;
+	margin: 7px 0 0 30px;
+}
+
+hr { display: none; }
+
+.list1 {
+}
+
+.list1 li {
+	float: left;
+	line-height: normal;
+}
+
+.list1 li img {
+	margin: 0 30px 30px 0;
+}
+
+.list1 li.alt img {
+	margin-right: 0;
+}
+
+#wrapper {
+	margin: 0px;
+	padding: 30px 0px 0px 0px;
+}
+
+/* Header */
+
+#header-wrapper {
+	margin: 0px;
+	padding: 0px;
+}
+
+#header {
+	width: 920px;
+	height: 74px;
+	margin: 0 auto;
+}
+
+/* Menu */
+
+#menu {
+	float: left;
+	width: 630px;
+	height: 50px;
+	padding-top: 24px;
+}
+
+#menu ul {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+	line-height: normal;
+}
+
+#menu li {
+	display: block;
+	float: left;
+}
+
+#menu a {
+	display: block;
+	float: left;
+	margin-right: 2px;
+	padding: 4px 25px;
+	text-decoration: none;
+	text-transform: capitalize;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: #FFFFFF;
+}
+
+#menu a:hover { 
+	background: #6E831C;
+}
+
+
+#menu .current_page_item a {
+	background: #6E831C;
+	color: #FFFFFF;
+}
+
+#menu .first {
+	background: none;
+}
+/* Search */
+
+#search {
+	float: right;
+	width: 280px;
+	height: 74px;
+}
+
+#search form {
+	float: right;
+	margin: 0;
+	padding: 24px 30px 0 0;
+}
+
+#search fieldset {
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+#search input {
+	float: left;
+	font: 12px Georgia, "Times New Roman", Times, serif;
+	border: none;
+}
+
+#search-text {
+	width: 200px;
+	height: 18px;
+	padding: 3px 0 0 5px;
+	border: 1px solid #333333;
+	background: #ECF9E4;
+	color: #000000;
+}
+
+#search-submit {
+	height: 21px;
+	margin-left: 10px;
+	padding: 0px 5px;
+	background: #6E831C;
+	color: #FFFFFF;
+}
+
+/** LOGO */
+
+#logo {
+	width: 920px;
+	height: 427px;
+	margin: 0 auto;
+	background: url(img02.jpg) no-repeat left top;
+}
+
+#logo h1, #logo p {
+	margin: 0px;
+	line-height: normal;
+	text-transform: lowercase;
+	font-weight: normal;
+	color: #FFFFFF;
+}
+
+#logo p {
+	padding-left: 32px;
+	text-transform: uppercase;
+	font-size: 13px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+
+#logo h1 {
+	padding-left: 30px;
+	padding-top: 160px;
+	font-size: 60px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+#logo a {
+	text-decoration: none;
+	color: #FFFFFF;
+}
+
+#logo h1 a {
+	text-decoration: none;
+	color: #FFFFFF;
+}
+
+/* Page */
+
+#page {
+	width: 920px;
+	margin: 0 auto;
+	padding: 0px;
+}
+
+#page-bgtop {
+}
+
+/* Content */
+
+#content {
+	float: right;
+	width: 580px;
+}
+
+/* Post */
+
+.post {
+	margin-bottom: 45px;
+	border-bottom: 1px solid #DFDFDF;
+}
+
+.post .title {
+	height: 30px;
+	color: #08252E;
+}
+
+.post .title a {
+	text-decoration: none;
+	text-transform: capitalize;
+	font-size: 1.4em;
+	font-weight: bold;
+	color: #26731F;
+}
+
+.post .date {
+}
+
+.post .meta {
+	margin-left: 2px;
+	padding: 2px 30px 2px 0px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	font-size: 10px;
+	color: #66665E;
+}
+
+.post .meta span {
+	display: block;
+	margin-top: -10px;
+}
+
+.post .meta a { }
+
+.post .entry {
+	padding: 10px 0 30px 0;
+}
+
+.post .entry-content {
+	float: right;
+	width: 330px;
+}
+
+.post .entry-image {
+	float: left;
+	width: 280px;
+	padding-right: 20px;
+	padding-top: 6px;
+	padding-bottom: 30px;
+}
+
+.post .links a {
+	font-weight: bold;
+}
+
+.post .links .comments {
+}
+
+.post .links .permalink {
+	padding-left: 17px;
+}
+
+/* Sidebar */
+
+#sidebar {
+	float: left;
+	width: 300px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+#sidebar ul {
+	margin: 0px 0px 0px 0px;
+	padding: 0;
+	list-style: none;
+	line-height: normal;
+}
+
+#sidebar li {
+	margin-bottom: 30px;
+}
+
+#sidebar li ul {
+	margin: 0px;
+	padding: 0px;
+	background: #F8DFBB;
+}
+
+#sidebar li li {
+	margin: 0px 15px;
+	padding: 10px 0px 10px 0px;
+	border-bottom: 1px solid #FFFFFF;
+}
+
+#sidebar li li a {
+	font-weight: normal;
+}
+
+#sidebar li li a:hover {
+}
+
+#sidebar p {
+	line-height: 200%;
+	padding: 20px 15px 0px 15px;
+}
+
+#sidebar h2 {
+	height: 30px;
+	padding: 5px 0px 0px 15px;
+	background: url(img04.jpg) no-repeat left top;
+	text-transform: capitalize;
+	font-size: 16px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+
+#sidebar a {
+	text-align: left;
+	text-decoration: none;
+	font-weight: bold;
+	color: #3C2811;
+}
+
+/* Calendar */
+
+#calendar {
+}
+
+#calendar caption {
+	padding-bottom: 5px;
+	font-weight: bold;
+}
+
+#calendar table {
+	width: 100%;
+	border-collapse: collapse;
+	border-bottom: 1px solid #24130F;
+	border-left: 1px solid #24130F;
+	border-right: 1px solid #24130F;
+}
+
+#calendar thead th {
+	padding: 5px 0;
+	text-align: center;
+	border-top: 1px solid #24130F;
+	border-left: 1px solid #24130F;
+	background: #24130F;
+}
+
+#calendar tbody td {
+	padding: 5px 0;
+	text-align: center;
+	border-top: 1px solid #24130F;
+	border-left: 1px solid #24130F;
+	border-bottom: 1px solid #24130F;
+}
+
+#calendar tfoot td {
+	padding: 5px;
+	border-left: 1px solid #24130F;
+	border-bottom: 1px solid #24130F;
+}
+
+#calendar tfoot #next {
+	border-top: 1px solid #24130F;
+	text-align: right;
+}
+
+#calendar tfoot #prev {
+	border-top: 1px solid #24130F;
+}
+
+#calendar .pad {
+	border-bottom: 1px solid #24130F;
+}
+
+#calendar #today {
+	background: #24130F;
+}
+
+/* Footer */
+
+#footer-bgcontent {
+	margin: 0px;
+	padding: 0px;
+	height: 70px;
+	background: #000000 url(img03.jpg) repeat-x left top;
+}
+
+#footer {
+	width: 920px;
+	height: 49px;
+	margin: 0 auto;
+	padding-top: 20px;
+	color: #FFFFFF;
+}
+
+#footer p {
+	margin: 0;
+	padding-right: 30px;
+	text-align: left;
+	line-height: normal;
+	font-size: 10px;
+}
+
+#footer a {
+	color: #F99501;
+}

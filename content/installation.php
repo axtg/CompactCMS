@@ -1,0 +1,3 @@
+<p>Now that you appear to have CompactCMS installed successfully, you should start creating a completely new template <em>or</em> adjust your current one to work with CompactCMS.</p>
+<p>In a nutshell this won't be anything else than to develop a one page lay-out and add variables like $subheader, $content and $structure to where ever you want them to appear dynamically. Take a look at the source of this template file (index.php) for example to see how it could be done.</p>
+<p>If you need any more help or inspiration, you'll find templates at the extras page of the CompactCMS website, or you might want to take a look at the forum for tips&amp;tricks.</p>

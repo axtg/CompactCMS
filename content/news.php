@@ -1,0 +1,1 @@
+<?php include('./lib/modules/news/news.Show.php'); ?>

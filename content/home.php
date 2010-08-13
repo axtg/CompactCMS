@@ -1,0 +1,2 @@
+<p>If you see this message and you're able to navigate through your site using the navigation, it means you have successfully configured <strong>CompactCMS</strong> on your server. Use the administration to modify this file and create new ones. If you would like to see an example of a CSS re-styled version of this page, click on the <em>print</em> link.</p>
+<p><em>Can't navigate or does the administration tells you there was a configuration error? Then check the <a href="http://community.compactcms.nl/forum/">forum for installation issues</a>!</em></p>

@@ -1,0 +1,7 @@
+This folder contains automatically generated GZ libraries
+of included Javascripts within the administration. Caching
+these files optimizes the speed and efficiency of your
+CompactCMS installation.
+
+Do not forget to CHMOD this directory to at least 666 or
+preferably 777 to assure write access.

@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+
+Name       : Fireworks  
+Description: A two-column, fixed-width design with dark color scheme.
+Version    : 1.0
+Released   : 20090905
+Modified   : For CompactCMS.nl 1.4.0+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="{%keywords%}" />
+	<meta name="description" content="{%sitename%} | {%desc%}" />
+	<title>{%title%}</title>
+	<link href="./lib/templates/fireworks/style.css" rel="stylesheet" type="text/css" media="screen" />
+	<script type="text/javascript" src="lib/includes/js/mootools.js" charset="utf-8"></script>
+	<!-- Enable the <link> below to view this template in your WYSIWYG editor offline -->
+	<!--<link href="./fireworks/style.css" rel="stylesheet" type="text/css" media="screen" />-->
+</head>
+<body>
+<div id="wrapper">
+	<div id="header">
+		<div id="logo">
+			<h1>{%sitename%}</h1>
+			<p> design by <a href="http://www.freecsstemplates.org/" rel="nofollow">Free CSS Templates</a> for <a href="http://www.compactcms.nl">CompactCMS</a></p>
+	  </div>
+	</div>
+	<!-- end #header -->
+	<div id="menu">
+		{%mainmenu%}
+	</div>
+	<!-- end #menu -->
+	<div id="page">
+	<div id="page-bgtop">
+	<div id="page-bgbtm">
+		<div id="content">
+			<div><img src="./lib/templates/fireworks/img02.jpg" alt="" width="658" height="377" /></div>
+	  <div class="post">
+				<h2 class="title"><a href="#">{%pagetitle%}</a></h2>
+			<p class="meta">{%subheader%}<a href="#" class="permalink"></a></p>
+				<div class="entry">
+					<p>{%content%}</p>
+				</div>
+			</div>
+			</div>
+		<!-- end #content -->
+		<div id="sidebar">
+			<ul>
+				<li>
+					<div id="search" >
+					<form method="get" action="#">
+						<div>
+							<input type="text" name="s" id="search-text" value="" />
+							<input type="submit" id="search-submit" value="GO" />
+						</div>
+					</form>
+					</div>
+					<div style="clear: both;">&nbsp;</div>
+				</li>
+				<li>
+					<h2>Right menu</h2>
+					<p>{%rightmenu%}</p>
+			  	</li>
+				<li>
+					<h2>Extra menu</h2>
+					{%extramenu%}
+				</li>
+			</ul>
+		</div>
+		<!-- end #sidebar -->
+		<div style="clear: both;">&nbsp;</div>
+	</div>
+	</div>
+	</div>
+	<!-- end #page -->
+</div>
+	<div id="footer">
+		<p>&copy; <?php echo date('Y'); ?> {%sitename%} | Maintained with <a href="http://www.compactcms.nl">CompactCMS</a></p>
+</div>
+	<!-- end #footer -->
+</body>
+</html>

@@ -1,0 +1,6 @@
+User-Agent: *
+Allow: /
+Disallow: /_docs/
+Disallow: /admin/
+Disallow: /content/
+Disallow: /lib/

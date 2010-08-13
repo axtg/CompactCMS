@@ -1,0 +1,147 @@
+<?php
+/* ************************************************************
+Copyright (C) 2008 - 2010 by Xander Groesbeek (CompactCMS.nl)
+Revision:	CompactCMS - v 1.4.1
+	
+This file is part of CompactCMS.
+
+CompactCMS is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+CompactCMS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+A reference to the original author of CompactCMS and its copyright
+should be clearly visible AT ALL TIMES for the user of the back-
+end. You are NOT allowed to remove any references to the original
+author, communicating the product to be your own, without written
+permission of the original copyright owner.
+
+You should have received a copy of the GNU General Public License
+along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
+	
+> Contact me for any inquiries.
+> E: Xander@CompactCMS.nl
+> W: http://community.CompactCMS.nl/forum
+************************************************************ */
+
+// Include general configuration
+require_once('../../sitemap.php');
+
+$canarycage	= md5(session_id());
+$currenthost= md5($_SERVER['HTTP_HOST']);
+$do 		= (isset($_GET['do'])?$_GET['do']:null);
+
+// Open recordset for specified user
+$newsID = (isset($_GET['newsID']) && is_numeric($_GET['newsID'])?$_GET['newsID']:null);
+
+if($newsID!=null) {
+	$news = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."modnews` m LEFT JOIN `".$cfg['db_prefix']."users` u ON m.userID=u.userID WHERE newsID = $newsID");
+}
+
+// Get permissions
+$perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+?>
+<?php if(checkAuth($canarycage,$currenthost)&&$_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+		<title>News module</title>
+		
+		<!-- File uploader styles -->
+		<link rel="stylesheet" media="all" type="text/css" href="../../../admin/includes/fancyupload/Assets/manager.css" />
+	
+		<!-- TinyMCE JS -->
+		<script type="text/javascript" src="../../../admin/includes/tiny_mce/tiny_mce_gzip.js"></script>	
+		
+		<!-- Mootools library -->
+		<script type="text/javascript" src="../../includes/js/mootools.js" charset="utf-8"></script>
+		
+		<!-- File uploader JS -->
+		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/FileManager.js"></script>
+		<script type="text/javascript" src="../../../admin/includes/fancyupload/Language/Language.en.js"></script>
+		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Additions.js"></script>
+		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader/Fx.ProgressBar.js"></script>
+		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader/Swiff.Uploader.js"></script>
+		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader.js"></script>
+		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/FileManager.TinyMCE.js"></script>
+		
+		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,layout.css,sprite.css" />
+		
+		<!-- TinyMCE -->
+		<?php $cfg['language'] = (file_exists('../../../admin/includes/tiny_mce/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en';?>
+		<script type="text/javascript" src="../../../admin/includes/tiny_mce/tiny_mce_gzip.js"></script>	
+		
+		<script type="text/javascript">	tinyMCE_GZ.init({plugins:'safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave',themes:'advanced',<?php echo "languages: '".$cfg['language']."',"; ?>disk_cache:true,debug:false});
+		</script>
+		
+		<script type="text/javascript">
+		tinyMCE.init({mode:"exact",elements:"newsContent",theme:"advanced",<?php echo 'language:"'.$cfg['language'].'",'; ?>skin:"o2k7",skin_variant:"silver",plugins:"safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave",theme_advanced_buttons1:"fullscreen,tinyautosave,print,formatselect,fontselect,fontsizeselect,|,justifyleft,justifycenter,justifyright,justifyfull,|,sub,sup,|,spellchecker,link,unlink,anchor,hr,image,media,|,charmap,code",theme_advanced_buttons2:"undo,redo,cleanup,|,bold,italic,underline,strikethrough,|,forecolor,backcolor,removeformat,|,cut,copy,paste,replace,|,bullist,numlist,outdent,indent,|,tablecontrols",theme_advanced_buttons3:"",theme_advanced_toolbar_location:"top",theme_advanced_toolbar_align:"left",theme_advanced_statusbar_location:"bottom",dialog_type:"modal",paste_auto_cleanup_on_paste:true,theme_advanced_resizing:true,relative_urls:true,convert_urls:false,remove_script_host:true,document_base_url:"../../",<?php if($cfg['iframe'] === true) { ?> extended_valid_elements:"iframe[align<bottom?left?middle?right?top|class|frameborder|height|id|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style|title|width]",<?php } ?>spellchecker_languages: "+English=en,Dutch=nl,German=de,Spanish=es,French=fr,Italian=it,Russian=ru",
+			/* Here goes the Magic */
+			file_browser_callback: FileManager.TinyMCE(function(type){
+				return {
+					url: type=='image' ? '../../../admin/includes/fancyupload/selectImage.php' : '../../../admin/includes/fancyupload/manager.php',
+					assetBasePath: '../../../admin/includes/fancyupload/Assets',
+					language: 'en',
+					selectable: true,
+					uploadAuthData: {session: 'ccms_userLevel'}
+				};
+			})
+		});
+		</script>
+		
+		<!-- Confirm close -->
+		<script type="text/javascript">
+		function confirmation(){var answer=confirm('<?php echo $ccms['lang']['editor']['confirmclose']; ?>');if(answer){try{parent.window.history.go(-1);}catch(e){}}else{return false;}}
+		</script>	
+	</head>
+	
+<body >
+	<div class="module">
+			
+		<h2>Write news</h2>
+		<div class="span-21">
+			<form action="./news.Process.php?action=add-edit-news" method="post" accept-charset="utf-8">
+				<div class="span-6">
+					<label for="newsTitle">Title</label><input type="text" class="text" name="newsTitle" value="<?php echo (isset($news)?$news->newsTitle:null);?>" id="newsTitle"/>
+				</div>
+				<div class="span-6">
+					<label for="newsAuthor">Author</label>
+					<select name="newsAuthor" class="text" id="newsAuthor" size="1">
+						<?php 
+							$db->QueryArray("SELECT * FROM `".$cfg['db_prefix']."users`");
+							while (! $db->EndOfSeek()) {
+		    					$user = $db->Row(); ?>
+								<option value="<?php echo $user->userID;?>" <?php echo (isset($news)&&$user->userID==$news->userID?'selected="SELECTED"':null); ?>><?php echo $user->userFirst.' '.$user->userLast; ?></option>
+							<?php } ?>
+					</select>
+				</div>
+				<div class="span-4">
+					<label for="newsModified">Date</label><input type="text" class="text" style="width:110px;" name="newsModified" value="<?php echo (isset($news)?$news->newsModified:date('Y-m-d'));?>" id="newsModified">
+				</div>
+				<div class="span-2">
+					<label for="newsPublished">Published</label><input type="checkbox" name="newsPublished" <?php echo (isset($news)&&$news->newsPublished=="1"?"checked":null); ?>  value="1" id="newsPublished" />
+				</div>
+				<label class="clear" for="newsTeaser">Teaser</label>
+				<textarea name="newsTeaser" id="newsTeaser" style="height:50px;width:98%;" class="text" rows="4" cols="40"><?php echo (isset($news)?$news->newsTeaser:null);?></textarea>
+				
+				<label for="newsContent">Contents</label>
+				<textarea name="newsContent" id="newsContent" style="height:290px;width:100%;color:#000;" class="text" rows="8" cols="40"><?php echo (isset($news)?$news->newsContent:null);?></textarea>
+				<hr class="space"/>
+				<p>
+					<input type="hidden" name="newsID" value="<?php echo $newsID; ?>" id="newsID" />
+					<button type="submit" name="submitNews" value="<?php echo $newsID; ?>"><span class="ss_sprite ss_newspaper_add">Create</span></button>
+					<span class="ss_sprite ss_cross"><a href="javascript:;" onClick="confirmation()" title="<?php echo $ccms['lang']['editor']['cancelbtn']; ?>"><?php echo $ccms['lang']['editor']['cancelbtn']; ?></a></span>
+				</p>
+			</form>
+		</div>
+		
+	</div>
+</body>
+</html>
+<?php } else die("No external access to file");?>

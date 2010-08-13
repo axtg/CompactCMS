@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+
+Title      : Night Lights
+Version    : 1.0
+Released   : 20090509
+Description: A two-column, fixed-width template suitable for corporate websites and blog use.
+Modified   : For CompactCMS.nl 1.4.0+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="{%keywords%}" />
+	<meta name="description" content="{%sitename%} | {%desc%}" />
+	<title>{%title%}</title>
+	<link href="./lib/templates/nightlights/style.css" rel="stylesheet" type="text/css" media="screen" />
+    <script type="text/javascript" src="lib/includes/js/mootools.js" charset="utf-8"></script>
+	<!-- Enable the <link> below to view this template in your WYSIWYG editor offline -->
+	<!--<link href="./nightlights/style.css" rel="stylesheet" type="text/css" media="screen" />-->
+</head>
+<body>
+<div id="header">
+	<h1><a href="#">{%sitename%}</a></h1>
+  <h2>design by <a href="http://www.freecsstemplates.org/" rel="nofollow">Free CSS Templates</a> for <a href="http://www.compactcms.nl">CompactCMS</a></h2>
+</div>
+<!-- end #header -->
+<div id="page">
+	<div id="content">
+		<div class="post">
+			<h1 class="title"><span>{%subheader%}</span></h1>
+			<img src="./lib/templates/nightlights/img07.jpg" alt="" width="120" height="120" class="left" />
+			<p>{%content%}</p>
+	  </div>
+		<div class="post">
+			<h2 class="title">&nbsp;</h2>
+		  <blockquote>&nbsp;</blockquote>
+	  </div>
+	</div>
+	<!-- end #content -->
+	<div id="sidebar">
+		<div id="menu" class="box">
+			<h2 class="title">Main navigation</h2>
+			{%mainmenu%}
+		</div>
+		<!-- end #menu -->
+		<div id="updates" class="box">
+			<h2 class="title">right menu</h2>
+			{%rightmenu%}
+		</div>
+		<!-- end #updates -->
+	</div>
+	<!-- end #sidebar -->
+	<div style="clear: both;">&nbsp;</div>
+</div>
+<!-- end #page -->
+<div id="footer">
+	<p id="legal">&copy; <?php echo date('Y'); ?> {%sitename%} | Maintained with <a href="http://www.compactcms.nl">CompactCMS</a></p>
+	<p id="links"><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a></p>
+</div>
+<!-- end #footer -->
+</body>
+</html>

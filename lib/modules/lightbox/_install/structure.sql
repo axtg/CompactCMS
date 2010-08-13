@@ -1,0 +1,1 @@
+ALTER TABLE `ccms_cfgpermissions` ADD `manageModLightbox` INT( 1 ) NOT NULL DEFAULT '2' AFTER `manageModNews` 

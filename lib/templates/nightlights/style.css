@@ -1,0 +1,262 @@
+/*
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+*/
+
+/* forms.css */
+label {font-weight:bold;}
+fieldset {padding:1.4em;margin:0 0 1.5em 0;border:1px solid #ccc;}
+legend {font-weight:bold;font-size:1.2em;}
+input.text, input.title, textarea, select {margin:0.5em 0;border:1px solid #bbb;}
+input.text:focus, input.title:focus, textarea:focus, select:focus {border:1px solid #666;}
+input.text, input.title {width:300px;padding:5px;}
+input.title {font-size:1.5em;}
+textarea {width:300px;height:250px;padding:5px;}
+.error, .notice, .success {padding:.8em;margin-bottom:1em;border:2px solid #ddd;}
+.error {background:#FBE3E4;color:#8a1f11;border-color:#FBC2C4;}
+.notice {background:#FFF6BF;color:#514721;border-color:#FFD324;}
+.success {background:#E6EFC2;color:#264409;border-color:#C6D880;}
+.error a {color:#8a1f11;}
+.notice a {color:#514721;}
+.success a {color:#264409;}
+
+/* contact form */
+.validation-failed {background:#FBE3E4;color:#8a1f11;border-color:#FBC2C4;}
+.validation-passed {background:#E6EFC2;color:#264409;border-color:#C6D880;}
+.validation-advice {background: transparent url('http://www.compactcms.nl/includes/css/icons/arrow_up.gif') no-repeat 0 4px;font-style:italic;color:#CC0000;margin-left:150px;padding-left:17px;font-size:0.825em;}
+label{float:left;margin-top:10px;width:150px;}
+.success{padding:.8em;margin-bottom:1em;border:2px solid #C6D880;background:#E6EFC2;color:#264409;}
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: #D5DBB5;
+	text-align: justify;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	color: #525252;
+}
+
+h1, h2, h3 {
+	margin-bottom: 15px;
+	text-transform: lowercase;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-weight: normal;
+	color: #3B3B3B;
+}
+
+h1 {
+	letter-spacing: -1px;
+	font-size: 197%;
+}
+
+h2 {
+	letter-spacing: -1px;
+}
+
+h3 {
+}
+
+p, ol, ul {
+	margin-bottom: 1.5em;
+	line-height: 1.5em;
+}
+
+ul, ol {
+	margin-left: 3em;
+}
+
+blockquote {
+	padding: 0 3em;
+	font-style: italic;
+}
+
+a:link {
+	text-decoration: none;
+	color: #3B3B3B;
+}
+
+a:hover, a:active {
+	text-decoration: none;
+	color: #3B3B3B;
+}
+
+a:visited {
+	color: #3B3B3B;
+}
+
+img {
+	border: none;
+}
+
+img.left {
+	float: left;
+	margin: 0 15px 0 0;
+}
+
+img.right {
+	float: right;
+	margin: 0 0 0 15px;
+}
+
+/* Header */
+
+#header {
+	width: 710px;
+	height: 305px;
+	margin: 0 auto;
+	padding: 0 25px 10px 25px;
+	background: #D5DBB5 url(img01.jpg) no-repeat center top;
+}
+
+#header h1 {
+	margin: 0;
+	padding: 200px 0 0 40px;
+	letter-spacing: -2px;
+	font-size: 40px;
+}
+
+#header h1 a {
+	color: #FFFFFF;
+}
+
+#header h2 {
+	margin: -10px 0 0 0;
+	padding: 0 0 0 175px;
+	letter-spacing: normal;
+	font: bold 10px Arial, Helvetica, sans-serif;
+}
+
+#header h2 a {
+	color: #FFFFFF;
+}
+
+#header a {
+	text-decoration: none;
+}
+
+/* Page */
+
+#page {
+	width: 710px;
+	margin: 0 auto;
+	padding: 0 25px;
+	background: #D5DBB5 url(img02.gif) repeat-y center top;
+}
+
+/* Content */
+
+#content {
+	float: left;
+	width: 460px;
+	padding: 5px 0 0 5px;
+	background: url(img03.gif) no-repeat;
+}
+
+.post {
+	width: 420px;
+	padding: 20px 0 0 20px;
+}
+
+.post h1, .post h2, .post h3 {
+}
+
+.post .title {
+	padding: 0 0 5px 0;
+}
+
+.post .title span {
+	padding-right: 30px;
+}
+
+/* Sidebar */
+
+#sidebar {
+	float: right;
+	width: 240px;
+	padding: 5px 5px 0 0;
+	background: url(img04.gif) no-repeat;
+}
+
+.box {
+	width: 239px;
+	padding-left: 1px;
+}
+
+.box .title {
+	height: 33px;
+	margin: 0;
+	padding: 10px 0 0 20px;
+	background: url(img09.gif) repeat-x;
+	font-size: 18px;
+	color: #3B3B3B;
+}
+
+.box ul {
+	margin: 20px;
+	padding: 0;
+	list-style: none;
+}
+
+.box li {
+	padding: 5px 0;
+	border-bottom: 1px dashed #CCCCCC;
+}
+
+.box li.first {
+	background: none;
+}
+
+.box h3 {
+	margin: 0;
+	font-size: 85%;
+	font-weight: bold;
+	color: #3B3B3B;
+}
+
+.box p {
+	margin: 0;
+	line-height: normal;
+}
+
+.box a {
+	padding-left: 10px;
+	background: url(img11.gif) no-repeat 0 5px;
+}
+
+/* Footer */
+
+#footer {
+	width: 710px;
+	height: 45px;
+	margin: 0 auto;
+	padding: 0 25px 25px 25px;
+	background: #D5DBB5 url(img12.gif) no-repeat center top;
+}
+
+#footer p {
+	margin: 0;
+	padding: 14px 20px;
+	line-height: normal;
+	font-size: 77%;
+}
+
+#footer a {
+	color: #3B3B3B;
+}
+
+#footer a:hover {
+	text-decoration: underline;
+}
+
+#legal {
+	float: left;
+}
+
+#links {
+	float: right;
+}

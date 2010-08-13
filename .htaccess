@@ -1,0 +1,74 @@
+##
+#
+# Copyright 2008 - 2010 by CompactCMS.nl. All rights reserved.
+# This file is part of CompactCMS (refer to license.txt)
+# Revision: CompactCMS - 1.4.1
+#
+##
+
+AddDefaultCharset utf-8
+Options +FollowSymLinks
+RewriteEngine On 
+
+## 
+# Start modification
+# Make sure the RewriteBase variable reflects your file structure
+##
+
+# For an installation under root (default)
+# Example: www.mysite.com/index.php
+RewriteBase /
+
+##
+# End modification
+##
+
+##
+# It's a good idea to make www. and non www. redirect to either one
+# Adjust the two lines below and UNCOMMENT both lines (remove #'s)
+##
+
+# RewriteCond %{HTTP_HOST} ^www.mysite.com [NC] 
+# RewriteRule ^(.*)$ http://mysite.com/$1 [L,R=301]
+
+##
+# Various rewrite rules
+##
+
+RewriteRule ^([^/]+)\.html$ 				index.php?page=$1 [QSA]
+RewriteRule ^print/([^/]+)\.html$ 			afdrukken.php?page=$1 [L]
+RewriteRule ^lib/includes/js/(.+\.js)$ 		lib/includes/combine.inc.php?type=javascript&files=$1 [L]
+RewriteRule ^admin/img/styles/(.+\.css)$ 	lib/includes/combine.inc.php?type=css&files=$1 [L]
+RewriteRule ^sitemap\.xml$ 					lib/sitemap.php [L]
+
+##
+# The lines below improve loading times for the administration, following the best practice
+# rules from: http://developer.yahoo.com/performance/rules.html. Note that both the Apache
+# modules mod_deflate and mod_headers are required for this to work. Falls back nicely if 
+# not enabled.
+##
+
+<IfModule mod_deflate.c>
+	SetOutputFilter DEFLATE
+</IfModule>
+
+<IfModule mod_headers.c>
+	<FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|swf|mp3|mp4)$">
+	Header set Cache-Control "public"
+	Header set Expires "Fri, 1 Jun 2012 20:00:00 GMT"
+	Header unset Last-Modified
+	</FilesMatch>
+	<FilesMatch "\.(html|htm|xml|txt|xsl)$">
+	Header set Cache-Control "max-age=7200, must-revalidate"
+	</FilesMatch>
+	<FilesMatch "\.(js|css)$">
+	Header set Cache-Control "public"
+	Header set Expires "Sun, 1 Jun 2014 20:00:00 GMT"
+	Header unset Last-Modified
+	</FilesMatch>
+	
+	Header unset ETag
+	Header unset Pragma
+</IfModule>
+
+FileETag None

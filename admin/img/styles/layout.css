@@ -1,0 +1,288 @@
+/* ************************************************************
+Copyright (C) 2008 - 2010 by Xander Groesbeek (CompactCMS.nl)
+Revision:	CompactCMS - v 1.4.1
+	
+This file is part of CompactCMS.
+
+CompactCMS is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+CompactCMS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+A reference to the original author of CompactCMS and its copyright
+should be clearly visible at all times for the user of the back-
+end. You are not allowed to remove all references to the original
+author, communicating the product to be your own.
+
+You should have received a copy of the GNU General Public License
+along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
+	
+> Contact me for any inquiries.
+> E: Xander@CompactCMS.nl
+> W: http://community.CompactCMS.nl/forum
+************************************************************ */
+
+/* === 0. MISC === */
+a.external {
+	background: url('../ccms-sprite.png') no-repeat 100% 50%;
+	background-position: 0 -159px;
+	padding: 0 0 0 13px;
+}
+.sprite{background: url('../ccms-sprite.png') no-repeat top left;}
+.sprite-hover:hover{background: url('../ccms-sprite.png') no-repeat top left;}
+.info{background-position: 0 -178px;padding: 0 0 0 20px;}
+
+/* === 1. CORE === */
+/* === LAY-OUT === */
+#wrapper {padding: 20px 0;}
+#footer {text-align: right;margin-bottom:20px;}
+.ff{display:inline-block;width:80px;height:15px;background-position: 0 0;}
+.ie{display:inline-block;width:80px;height:15px;background-position: 0 -20px;}
+.opera{display:inline-block;width:80px;height:15px;background-position: 0 -40px;}
+.safari{display:inline-block;width:80px;height:15px;background-position: 0 -60px;}
+.chrome{display:inline-block;width:80px;height:15px;background-position: 0 -80px;}
+
+/* === 1. CORE === */
+/* === TAGS === */
+#dyn_list.loading {
+	background: #ECC6CD url('../spinner.gif') no-repeat center center;
+	border: #D37A8A 4px solid;
+	padding: 10px;
+	min-height: 45px;
+}
+#notify.loading {background: #EED9BA url('../spinner.gif') no-repeat 50% 70%;}
+#notify span.right {margin-right:200px;}
+.printloading {background: url('../saving.gif') no-repeat 50% 70%;}
+fieldset { 
+	padding: 0 10px 10px 10px;
+	margin-bottom: 10px;
+	background: #E6F5D6;
+	border: 3px solid #90D244;
+	-moz-border-radius: 10px; 
+	border-radius: 10px;
+	behavior: url('PIE.php');
+}
+legend, .loginMsg {
+	background-color: rgba(201,211,217,0.2);
+	font-size:1.1em;
+	font-weight: bold;
+	margin: 0 15px;
+	padding: 0.4em 1em;
+	border: 2px solid #9DAFBB;
+	-moz-border-radius: 5px; 
+	border-radius: 5px;
+	behavior: url('PIE.php');
+}
+
+/* === 1. CORE === */
+/* === INSIDE SUB-DIVS === */
+#dyn_list td, th {
+	vertical-align: top;
+	height: 22px;
+	padding: 5px 0;
+}
+#dyn_list {
+	display: block;
+	min-width: 800px;
+	background: #CDE6B3;
+	border: #9ACC66 4px solid;
+	min-height: 30px;
+	height: auto;
+}
+#menuFields { border: #9ACC66 4px solid; }
+a.editinplace{background-position: 0 100px;}
+a.edit, a.editinplace:hover {
+	cursor: pointer;
+	font-weight: bold;
+	background-position: 0 -121px;
+	padding: 0 0 0 20px;
+}
+
+/* === 1. CORE === */
+/* === STATUS BARS === */
+#logo {
+	height: 100px;
+	padding-top: 10px;
+	margin: 5px 20px;
+}
+.logo {background-position: 0 -228px;}
+#logo h1 {display: none;}
+#logo p {text-align:center;margin-top: 65px;font-weight: bold;}
+.twittlogo {display:block;width:26px;height:25px;background-position: 0 -199px;}
+#notify {
+	float: left;
+	position: relative;
+	background-color: #EED9BA;
+	border: 2px solid #C7892E;
+	-moz-border-radius: 10px; 
+	border-radius: 10px;
+	min-height: 95px;
+	margin: 0 15px 10px 0;
+	padding: 0 0 10px 0;
+	text-align: right;
+	behavior: url('PIE.php');
+}
+.notify{background-position: 0 -449px;}
+#advanced {
+	background-color: #EDE2F8;
+	margin: 0 auto;
+	padding: 0;
+	border: 2px solid #9E65D7;
+	-moz-border-radius: 5px; 
+	border-radius: 5px;
+	behavior: url('PIE.php');
+}
+#notify p, #advanced h2 {
+	background: #DFB77C;
+	margin: 0;
+	padding: 3px;
+	border-bottom: 6px solid #E9CDA5;
+	font-variant: small-caps;
+	font-size: 1em;
+	text-align: center;
+}
+#advanced h2{
+	background: #C6A5E9;
+	border-bottom-color: #E5D6F5;
+}
+#advanced ul{list-style-type:none;}
+#notify_res {
+	min-height: 60px;
+	margin-left: 80px;
+	text-align: left;
+}
+#notify_res p.h1 {
+	background: none;
+	border: 0;
+	text-align: left;
+	font-weight: bold;
+}
+
+/* === 1. CORE === */
+/* === ADD PAGE / MANAGE MENU === */
+#fields label {
+	float: left;
+	padding-top: 3px;
+	width: 90px;
+}
+input[type="text"]{width: 200px;}
+button {margin-right: 15px;}
+optgroup option {padding-left: 10px;}
+#f_de {width: 200px;height: 50px;}
+
+/* === 1. CORE === */
+/* === EDIT in PAGE === */
+.liveedit:hover {
+	cursor: pointer;
+	font-weight: bold;
+	background-position: 0 -121px;
+	padding: 0 0 0 20px;
+}
+.textarea {
+	background: #ECC6CD;
+	padding: 0 4px;
+	border: #D37A8A 2px solid;	
+	font: 90% 'Palatino Linotype', Palatino,Baskerville, 'Book Antiqua', Georgia,serif;
+	width: 85%;
+	height: 35px;
+}
+
+/* === 1. CORE === */
+/* === CODING PRE-TAG === */
+pre {
+	font-size: 12px;
+	padding: 0 5px;
+	margin: 5px;
+	background: #f0f0f0 url('../pre_bg.gif') repeat left top;;
+	border: 1px solid #ccc;
+	line-height: 18px;
+	width: 95%;
+	overflow: auto;
+	overflow-Y: hidden;
+}
+
+/* === 1. CORE === */
+/* === HINTS === */
+span.ss_help{cursor:help;}
+div.ss_help {
+	color: #000;
+	width: 250px;
+	z-index: 13000;
+	background: #DB7075;
+	border-left: 5px solid #EFAAAB;
+	border-right: 5px solid #F7D5D5;
+	border-top: 5px solid #F7D5D5;
+	border-bottom: 5px solid #EFAAAB;
+	-moz-border-radius: 10px; 
+	border-radius: 10px;
+	behavior: url('PIE.php');
+}
+div.tip-title {
+	font-weight: bold;
+	font-size: 100%;
+	margin: 0;
+	color: #FFFFFF;
+	padding: 5px;
+	background: #DB7075;
+	-moz-border-radius: 20px; 
+	border-radius: 20px;
+	behavior: url('PIE.php');
+}
+div.tip-text {
+	font-size: 90%;
+	text-align: justify;
+	padding: 5px;
+	border-top: 3px solid #EFAAAB;
+	background: #F0C1C4;
+}
+
+/* === 1. CORE === */
+/* === LOGIN === */
+#logo{display:block;height:77px}
+#login-wrapper{
+	width:750px;
+	background-color:#E6F5D6;
+	border:10px solid #90D244;
+	-moz-border-radius: 10px; 
+	border-radius: 10px;
+	padding:10px;
+	behavior: url('PIE.php');
+}
+#loginFrm label {display: block;}
+#login-wrapper h2 {font-size:1.2em;border-bottom:solid 1px #90D244;}
+.loginMsg{background-color:rgba(229,215,238,0.8);margin-bottom:15px;}
+
+/* === 1. CORE === */
+/* === MODULES === */
+div.module{font:'Palatino Linotype',Palatino, Baskerville, 'Book Antiqua', Georgia,serif;color:#222;line-height:1.6em;margin:15px;}
+.module label{display:block;}
+.module h1,.module h2 {
+	font-size:1.2em;
+	padding:2px 5px;
+	background-color:#e6f5d6;
+	border:1px solid #9ACC66;
+	text-align:center;
+	-moz-border-radius: 5px; 
+	border-radius: 5px;
+	behavior: url('PIE.php');
+}
+}
+.module h2 {font-size:1.1em;}
+
+/* === 2. MODULE === */
+/* === LIGHTBOX === */
+.thumbview {
+	width:80px;
+	height:80px;
+	border:solid #E3E3E3 3px;
+	margin: 5px 2px;
+	padding: 2px;
+	text-align:center;
+}
+.thumbview:hover{background-color:#E6F2D9;border:solid #A5D611 3px;}
+.albumbox img{border:1px solid #000;}
