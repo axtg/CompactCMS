@@ -64,7 +64,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "create-album" && check
 		if($album_name!=null) {
 			$dest = BASE_PATH.'/media/albums/'.$album_name;
 			if(!is_dir($dest)) {
-				if(mkdir($dest)) {
+				if(mkdir($dest)&&mkdir($dest.'/_thumbs')) {
 					header("Location: lightbox.Manage.php?status=success&msg=created&album=$album_name");
 					exit();
 				} else {
@@ -139,9 +139,10 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "del-image" && checkAuth
 		$image = (isset($_GET['image'])&&!empty($_GET['image'])?$_GET['image']:null);
 		
 		if(!empty($album)&&!empty($image)) {
-			$file = BASE_PATH.'/media/albums/'.$album.'/'.$image;
+			$file	= BASE_PATH.'/media/albums/'.$album.'/'.$image;
+			$thumb	= BASE_PATH.'/media/albums/'.$album.'/_thumbs/'.$image;
 			if(is_file($file)) {
-				if(unlink($file)) {
+				if(unlink($file)&&unlink($thumb)) {
 					header("Location:lightbox.Manage.php?status=success&msg=success&album=$album");
 					exit();
 				} else {
@@ -201,19 +202,27 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files" && checkAu
 	}
 		 
 	list($width,$height)=getimagesize($uploadedfile);
-		
+	
+	// Resize original file to max 640 x 480
+	$newwidth	= '640';
+	$newheight	= ($height/$width)*$newwidth;
+	$tmp		= imagecreatetruecolor($newwidth,$newheight);
+	imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height);
+	
+	// Resize thumbnail to approx 80 x 80
 	$newwidth_t	= '80';
 	$newheight_t= ($height/$width)*$newwidth_t;
 	$tmp_t		= imagecreatetruecolor($newwidth_t,$newheight_t);
-	imagecopyresampled($tmp_t,$src,0,0,0,0,$newwidth_t,$newheight_t,$width,$height);		
-
-	$file_t = $dest.'/thumb-'. $_FILES['Filedata']['name'];
-		
-	imagejpeg($tmp_t,$file_t,100);
-
-	// Processing
-	move_uploaded_file($_FILES['Filedata']['tmp_name'], $dest.'/'.$_FILES['Filedata']['name']);
+	imagecopyresampled($tmp_t,$src,0,0,0,0,$newwidth_t,$newheight_t,$width,$height);
 	
+	// Save newly generated versions
+	$thumbnail	= $dest.'/_thumbs/'. $_FILES['Filedata']['name'];
+	$original	= $dest.'/'.$_FILES['Filedata']['name'];
+	
+	imagejpeg($tmp, $original, 100);
+	imagejpeg($tmp_t, $thumbnail, 100);
+
+	// Check for errors
 	if ($error) {
 		$return = array(
 			'status' => '0',

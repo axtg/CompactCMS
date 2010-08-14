@@ -54,8 +54,8 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 			if ($countdir = opendir(BASE_PATH.'/media/albums/'.$file)) {
 				$count[$index] = '0';
 				while (false !== ($counthandle = readdir($countdir))) {
-					$ext = substr($counthandle, strrpos($counthandle, '.') + 1);
-					if (substr($counthandle,0,6)!="thumb-"&&$ext=="jpg"||$ext=="jpeg"||$ext=="png"||$ext=="gif") {
+					$ext = strtolower(substr($counthandle, strrpos($counthandle, '.') + 1));
+					if ($ext=="jpg"||$ext=="jpeg"||$ext=="png"||$ext=="gif") {
 						$count[$index]++;
 					}
 				} closedir($countdir);
@@ -138,18 +138,20 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 			$images = array();
 			if ($handle = opendir($album_path)) {
 				while (false !== ($file = readdir($handle))) {
-					$ext = substr($file, strrpos($file, '.') + 1);
-					if (substr($file,0,6)!="thumb-"&&$ext=="jpg"||$ext=="jpeg"||$ext=="png"||$ext=="gif") {
-						$images[$file] = '../../../media/albums/'.$_GET['album'].'/thumb-'.$file;
+					$ext = strtolower(substr($file, strrpos($file, '.') + 1));
+					if ($ext=="jpg"||$ext=="jpeg"||$ext=="png"||$ext=="gif") {
+						$images[$file] = '../../../media/albums/'.$_GET['album'].'/_thumbs/'.$file;
 					}
 				} closedir($handle);
 			} ?>
 			<h2>Album content</h2>
 				<?php foreach ($images as $key => $value) { ?>
 					<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {?>
-					<a href="lightbox.Process.php?album=<?php echo $_GET['album']; ?>&amp;image=<?php echo $key; ?>&amp;action=del-image"><img src="<?php echo $value; ?>" class="thumbview" alt="Thumbnail of <?php echo $key; ?>" /></a>
-					<?php } else { ?>
+					<a href="lightbox.Process.php?album=<?php echo $_GET['album']; ?>&amp;image=<?php echo $key; ?>&amp;action=del-image">
+					<?php } ?>
 						<img src="<?php echo $value; ?>" class="thumbview" alt="Thumbnail of <?php echo $key; ?>" />
+					<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {?>
+					</a>
 					<?php } ?>
 				<?php } ?>
 				
