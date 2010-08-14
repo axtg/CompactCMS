@@ -1,0 +1,264 @@
+/* *****************************************************
+Copyright (C) 2008 - 2010 by Xander Groesbeek (CompactCMS.nl)
+Revision:	CompactCMS - v 1.4.1
+
+This file is part of CompactCMS.
+
+CompactCMS is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+CompactCMS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+A reference to the original author of CompactCMS and its copyright
+should be clearly visible at all times for the user of the back-
+end. You are not allowed to remove all references to the original
+author, communicating the product to be your own.
+
+You should have received a copy of the GNU General Public License
+along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
+	
+> Contact me for any inquiries.
+> E: Xander@CompactCMS.nl
+> W: http://community.CompactCMS.nl/forum
+****************************************************** */
+
+@import url('../admin/img/styles/sprite.css');
+
+/* reset.css */
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {margin:0;padding:0;border:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline;}
+body {line-height:1.5;}
+table {border-collapse:separate;border-spacing:0;}
+caption, th, td {text-align:left;font-weight:normal;}
+table, td, th {vertical-align:middle;}
+blockquote:before, blockquote:after, q:before, q:after {content:"";}
+blockquote, q {quotes:"" "";}
+a img {border:none;}
+
+/* typography.css */
+body {font-size:75%;color:#222;background:#fff;font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;}
+h1, h2, h3, h4, h5, h6 {font-weight:normal;color:#111;}
+h1 {font-size:3em;font-weight:bold;line-height:1;margin-bottom:0.5em;}
+h2 {font-size:2em;font-weight:bold;margin-bottom:0.75em;}
+h3 {font-size:1.5em;font-weight:bold;line-height:1;margin-bottom:1em;}
+h4 {font-size:1.2em;font-weight:bold;line-height:1.25;margin-bottom:1.25em;height:1.25em;}
+h5 {font-size:1em;font-weight:bold;margin-bottom:1.5em;}
+h6 {font-size:1em;font-weight:bold;}
+h1 img, h2 img, h3 img, h4 img, h5 img, h6 img {margin:0;}
+p {margin:0 0 1.5em;}
+a:focus, a:hover {color:#000;}
+a {color:#009;text-decoration:underline;}
+blockquote {margin:1.5em;color:#666;font-style:italic;}
+strong {font-weight:bold;}
+em, dfn {font-style:italic;}
+dfn {font-weight:bold;}
+sup, sub {line-height:0;}
+abbr, acronym {border-bottom:1px dotted #666;cursor:hand;}
+address {margin:0 0 1.5em;font-style:italic;}
+del {color:#666;}
+pre, code {margin:1.5em 0;white-space:pre;}
+pre, code, tt {font:1em 'andale mono', 'lucida console', monospace;line-height:1.5;}
+li ul, li ol {margin:0 1.5em;}
+ul, ol {margin:0 1.5em 1.5em 1.5em;}
+ul {list-style-type:disc;}
+ol {list-style-type:decimal;}
+dl {margin:0 0 1.5em 0;}
+dl dt {font-weight:bold;}
+dd {margin-left:1.5em;}
+table {width:100%;}
+th {font-weight:bold;}
+tr.even td {background:#E5ECF9;}
+tfoot {font-style:italic;}
+caption {background:#eee;}
+.small {font-size:.8em;margin-bottom:1.875em;line-height:1.875em;}
+.large {font-size:1.2em;line-height:2.5em;margin-bottom:1.25em;}
+.hide {display:none;}
+.quiet {color:#666;}
+.loud {color:#000;}
+.highlight {background:#ff0;}
+.added {background:#060;color:#fff;}
+.removed {background:#900;color:#fff;}
+.first {margin-left:0;padding-left:0;}
+.last {margin-right:0;padding-right:0;}
+.top {margin-top:0;padding-top:0;}
+.bottom {margin-bottom:0;padding-bottom:0;}
+
+/* grid.css */
+.container {width:990px;margin:0 auto;}
+div.span-1, div.span-2, div.span-3, div.span-4, div.span-5, div.span-6, div.span-7, div.span-8, div.span-9, div.span-10, div.span-11, div.span-12, div.span-13, div.span-14, div.span-15, div.span-16, div.span-17, div.span-18, div.span-19, div.span-20, div.span-21, div.span-22, div.span-23, div.span-24, div.span-25 {float:left;margin-right:10px;}
+div.last {margin-right:0;}
+.span-1 {width:30px;}
+.span-1-1 {width:40px;}
+.span-2 {width:70px;}
+.span-2-1 {width: 85px;}
+.span-3 {width:110px;}
+.span-4 {width:150px;}
+.span-5 {width:190px;}
+.span-6 {width:230px;}
+.span-7 {width:270px;}
+.span-8 {width:310px;}
+.span-9 {width:350px;}
+.span-10 {width:390px;}
+.span-11 {width:430px;}
+.span-12 {width:470px;}
+.span-13 {width:510px;}
+.span-14 {width:550px;}
+.span-14-1 {width:556px;}
+.span-15 {width:590px;}
+.span-16 {width:630px;}
+.span-17 {width:670px;}
+.span-18 {width:710px;}
+.span-19 {width:750px;}
+.span-20 {width:790px;}
+.span-21 {width:830px;}
+.span-22 {width:870px;}
+.span-23 {width:910px;}
+.span-24 {width:950px;}
+.span-25, div.span-25 {width:990px;margin:0;}
+div.border {padding-right:4px;margin-right:5px;border-right:1px solid #eee;}
+div.colborder {padding-right:24px;margin-right:25px;border-right:1px solid #eee;}
+.colborder {padding-right:12px;margin-right:12px;border-right:1px solid #eee;}
+.pull-1 {margin-left:-40px;}
+.pull-1, .pull-2, .pull-3, .pull-4, .pull-5, .pull-6, .pull-7, .pull-8, .pull-9, .pull-10, .pull-11, .pull-12, .pull-13, .pull-14, .pull-15, .pull-16, .pull-17, .pull-18, .pull-19, .pull-20, .pull-21, .pull-22, .pull-23, .pull-24 {float:left;position:relative;}
+.push-1 {margin:0 -40px 0 20px;}
+.push-1, .push-2, .push-3, .push-4, .push-5, .push-6, .push-7, .push-8, .push-9, .push-10, .push-11, .push-12, .push-13, .push-14, .push-15, .push-16, .push-17, .push-18, .push-19, .push-20, .push-21, .push-22, .push-23, .push-24 {float:right;position:relative;}
+.box {padding:1.5em;margin-bottom:1.5em;background:#E5ECF9;}
+.right {text-align:right;}
+hr {background:#ddd;color:#ddd;clear:both;float:none;width:100%;height:.1em;margin:0 0 1.45em;border:none;}
+hr.space {background:#fff;color:#fff;}
+.block {border:3px solid #B3E813; padding: 10px;}
+.clearfix:after, .container:after {content:".";display:block;height:0;clear:both;visibility:hidden;}
+.clearfix, .container {display:inline-block;}
+* html .clearfix, * html .container {height:1%;}
+.clearfix, .container {display:block;}
+.clear {clear:both;}
+
+/* forms.css */
+label{font-weight:bold;}
+#contact label{font-weight:bold;float:left;width:90px;text-align: right;margin-right:5px;padding-top:7px;}
+fieldset {padding:1.4em;margin:0 0 1.5em 0;border:1px solid #ccc;}
+legend {font-weight:bold;font-size:1.2em;}
+input.text, input.title, textarea, select {margin:0.2em 0;border:1px solid #bbb;}
+input.text:focus, input.title:focus, textarea:focus, select:focus {border:1px solid #666;}
+input.text, input.title {width:300px;padding:5px;}
+input.title {font-size:1.5em;}
+textarea {width:390px;height:150px;padding:5px;}
+.fault, .notice, .success {padding:.8em;margin-bottom:1em;border:2px solid #ddd;}
+.fault {background:#FBE3E4;color:#8a1f11;border-color:#FBC2C4;}
+.notice {background:#FFF6BF;color:#514721;border-color:#FFD324;}
+.success {background:#E6EFC2;color:#264409;border-color:#C6D880;}
+.fault a {color:#8a1f11;}
+.notice a {color:#514721;}
+.success a {color:#264409;}
+
+/* fancy-type */
+.alt { 
+  color: #666; 
+  font-family: "Warnock Pro", "Goudy Old Style","Palatino","Book Antiqua", Georgia, serif; 
+  font-style: italic;
+  font-weight: normal;
+}
+
+/* MISC === */
+a.external {
+	background: url('../admin/img/ccms-sprite.png') no-repeat 100% 50%;
+	background-position: 0 -159px;
+	padding: 0 0 0 13px;
+}
+.sprite{background: url('../admin/img/ccms-sprite.png') no-repeat top left;}
+
+/* LAY-OUT === */
+html,body{min-height:100%;height:100%;}
+html, body {
+	font: 90% 'Palatino Linotype',Palatino, Baskerville, 'Book Antiqua', Georgia,serif;
+	line-height: 1.6em;
+	background-color: #e6f5d6;
+	background: -webkit-gradient(linear, 0 0, 0 bottom, from(#C1DAF0), to(#e6f5d6));
+	background: -moz-linear-gradient(#C1DAF0, #e6f5d6);
+	-pie-background: linear-gradient(#C1DAF0, #e6f5d6);
+	behavior: url('../admin/img/styles/PIE.php');
+}
+#footer {text-align: right;}
+#wrapper {padding: 20px 0;}
+.ff{display:inline-block;width:80px;height:15px;background-position: 0 0;}
+.ie{display:inline-block;width:80px;height:15px;background-position: 0 -20px;}
+.opera{display:inline-block;width:80px;height:15px;background-position: 0 -40px;}
+.safari{display:inline-block;width:80px;height:15px;background-position: 0 -60px;}
+.chrome{display:inline-block;width:80px;height:15px;background-position: 0 -80px;}
+
+/* TAGS === */
+fieldset { 
+	padding: 0 10px 10px 10px;
+	margin-bottom: 10px;
+	background: #E6F5D6;
+	border: 3px solid #90D244;
+	-moz-border-radius: 10px; 
+	border-radius: 0;
+	behavior: url('../admin/img/styles/PIE.php');
+}
+legend, .installMsg {
+	background-color: rgba(201,211,217,0.2);
+	font-weight: bold;
+	margin: 0 15px;
+	padding: 0.4em 1em;
+	border: 2px solid #9DAFBB;
+	-moz-border-radius: 5px; 
+	border-radius: 5px;
+	behavior: url('../admin/img/styles/PIE.php');
+}
+.logo {background-position: 0 -228px;}
+#logo h1 {display: none;}
+
+/* HINTS === */
+div.ss_help {
+	color: #000;
+	width: 250px;
+	z-index: 13000;
+	background: #DB7075;
+	border-left: 5px solid #EFAAAB;
+	border-right: 5px solid #F7D5D5;
+	border-top: 5px solid #F7D5D5;
+	border-bottom: 5px solid #EFAAAB;
+	-moz-border-radius: 10px; 
+	border-radius: 10px;
+	behavior: url('../admin/img/styles/PIE.php');
+}
+div.tip-title {
+	font-weight: bold;
+	font-size: 100%;
+	margin: 0;
+	color: #FFFFFF;
+	padding: 5px;
+	background: #DB7075;
+	-moz-border-radius: 20px; 
+	border-radius: 20px;
+	behavior: url('../admin/img/styles/PIE.php');
+}
+div.tip-text {
+	font-size: 90%;
+	text-align: justify;
+	padding: 5px;
+	border-top: 3px solid #EFAAAB;
+	background: #F0C1C4;
+}
+/* LOGIN && INSTALL === */
+#logo{display:block;height:77px}
+#logo h1{display:none;}
+#install-wrapper{
+	width:750px;
+	background-color:#E6F5D6;
+	padding:10px;
+	border:10px solid #90D244;
+	-moz-border-radius: 10px; 
+	border-radius: 10px;
+	behavior: url('../admin/img/styles/PIE.php');
+}
+#install-wrapper h2{font-size:1.2em;border-bottom:solid 1px #90D244;}
+.installMsg{background-color:rgba(229,215,238,0.8);margin-bottom:15px;}
+#installFrm label {display: block;margin-top:10px;}
+#install.loading {}
+#install {margin-top:10px;}
