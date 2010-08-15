@@ -64,7 +64,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			
 			<table border="0" cellspacing="5" cellpadding="5">
 				<tr>
-					<?php if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) { ?><th>&#160;</th><?php } ?>
+					<th>&#160;</th>
 					<th>User</th>
 					<th>Name</th>
 					<th>E-mail</th>
@@ -91,11 +91,13 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 				} else { 
 					echo '<tr>';
 				} ?>
-					<?php if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) { ?><td><input type="checkbox" name="userID[]" value="<?php echo $row->userID; ?>" id="userID" /></td><?php } ?>
 					<td>
-					<?php if($_SESSION['ccms_userLevel']>=5) { ?>
-						<a href="user.Edit.php?userID=<?php echo $row->userID; ?>"><?php echo $row->userName; ?></a>
-					<?php } elseif($_SESSION['ccms_userLevel']>$row->userLevel||$_SESSION['ccms_userID']==$row->userID) { ?>
+					<?php if($_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel&&$_SESSION['ccms_userID']!=$row->userID) { ?>	
+						<input type="checkbox" name="userID[]" value="<?php echo $row->userID; ?>" id="userID" />
+					<?php } else echo "&#160;"; ?>
+					</td>
+					<td>
+					<?php if($_SESSION['ccms_userID']==$row->userID||$_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) { ?>
 						<a href="user.Edit.php?userID=<?php echo $row->userID; ?>"><?php echo $row->userName; ?></a>
 					<?php } else echo $row->userName; ?>
 					</td>

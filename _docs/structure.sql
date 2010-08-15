@@ -1,11 +1,6 @@
 -- phpMyAdmin SQL Dump
 -- version 3.2.0.1
 -- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Aug 11, 2010 at 04:25 PM
--- Server version: 5.1.36
--- PHP Version: 5.3.0
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -30,7 +25,8 @@ CREATE TABLE IF NOT EXISTS `ccms_cfgnews` (
 -- Dumping data for table `ccms_cfgnews`
 --
 
-INSERT INTO `ccms_cfgnews` (`showMessage`, `showAuthor`, `showDate`, `showTeaser`) VALUES (3, '1', '1', '0');
+INSERT INTO `ccms_cfgnews` (`showMessage`, `showAuthor`, `showDate`, `showTeaser`) VALUES
+(3, '1', '1', '0');
 
 -- --------------------------------------------------------
 
@@ -39,23 +35,24 @@ INSERT INTO `ccms_cfgnews` (`showMessage`, `showAuthor`, `showDate`, `showTeaser
 --
 
 CREATE TABLE IF NOT EXISTS `ccms_cfgpermissions` (
-  `manageUsers` int(1) NOT NULL COMMENT 'Explain 1',
-  `managePages` int(1) NOT NULL,
-  `manageMenu` int(1) NOT NULL,
-  `manageTemplate` int(1) NOT NULL,
-  `manageModules` int(1) NOT NULL,
-  `manageActivity` int(1) NOT NULL,
-  `manageVarCoding` int(1) NOT NULL,
-  `manageModBackup` int(1) NOT NULL DEFAULT '3',
-  `manageModNews` int(1) NOT NULL DEFAULT '2',
-  `manageModLightbox` int(1) NOT NULL DEFAULT '2'
+  `manageUsers` int(1) NOT NULL COMMENT 'From what user level on can users manage user accounts (add, modify, delete)',
+  `managePages` int(1) NOT NULL COMMENT 'From what user level on can users manage pages',
+  `manageMenu` int(1) NOT NULL COMMENT 'From what user level on can users manage menu preferences',
+  `manageTemplate` int(1) NOT NULL COMMENT 'From what user level on can users manage all of the available templates',
+  `manageModules` int(1) NOT NULL COMMENT 'From what user level on can users manage modules',
+  `manageActivity` int(1) NOT NULL COMMENT 'From what user level on can users manage the activeness of pages',
+  `manageVarCoding` int(1) NOT NULL COMMENT 'From what user level on can users set the coding variable for pages',
+  `manageModBackup` int(1) NOT NULL DEFAULT '3' COMMENT 'From what user level on can users manage the back-up module ',
+  `manageModNews` int(1) NOT NULL DEFAULT '2' COMMENT 'From what user level on can users manage news items through the news module',
+  `manageModLightbox` int(1) NOT NULL DEFAULT '2' COMMENT 'From what user level on can users manage albums throught the lightbox module'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ccms_cfgpermissions`
 --
 
-INSERT INTO `ccms_cfgpermissions` (`manageUsers`, `managePages`, `manageMenu`, `manageTemplate`, `manageModules`, `manageActivity`, `manageVarCoding`, `manageModBackup`, `manageModNews`, `manageModLightbox`) VALUES (3, 2, 2, 5, 5, 1, 5, 3, 2, 2);
+INSERT INTO `ccms_cfgpermissions` (`manageUsers`, `managePages`, `manageMenu`, `manageTemplate`, `manageModules`, `manageActivity`, `manageVarCoding`, `manageModBackup`, `manageModNews`, `manageModLightbox`) VALUES
+(3, 2, 2, 5, 5, 1, 5, 3, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -117,8 +114,8 @@ INSERT INTO `ccms_pages` (`page_id`, `urlpage`, `module`, `toplevel`, `sublevel`
 (00001, 'home', 'editor', 1, 0, 1, 'ccms', 'Home', 'The CompactCMS demo homepage', 'The CompactCMS demo homepage', 'compactcms, light-weight cms', 'home.php', 'Y', 'Y', 'N', 'Y'),
 (00002, 'installation', 'editor', 2, 0, 1, 'nightlights', 'Installation', 'Get help installing CompactCMS', 'Get help installing CompactCMS', 'compactcms, light-weight cms', 'installation.php', 'Y', 'Y', 'N', 'Y'),
 (00003, 'contact', 'editor', 3, 0, 1, 'sweatbee', 'Contact form', 'A basic contact form using Ajax', 'This is an example of a basic contact form based using Ajax', 'compactcms, light-weight cms', 'contact.php', 'Y', 'Y', 'Y', 'Y'),
-(00004, 'lightbox', 'lightbox', 5, 0, 1, 'reckoning', 'Lightbox', 'View pictures in the lightbox', 'All pictures regarding the CCMS project in one convenient lightbox', '', 'lightbox.php', 'Y', 'Y', 'N', 'Y'),
-(00005, 'news', 'news', 4, 0, 1, 'fireworks', 'Recent news', 'All the latest news on CCMS', 'Read all about the latest changes to the CompactCMS project.', '', 'news.php', 'Y', 'Y', 'N', 'Y');
+(00004, 'lightbox', 'lightbox', 4, 0, 1, 'fireworks', 'Lightbox', 'View pictures in the lightbox', 'All pictures regarding the CCMS project in one convenient lightbox', '', 'lightbox.php', 'Y', 'Y', 'N', 'Y'),
+(00005, 'news', 'news', 5, 0, 1, 'reckoning', 'Recent news', 'All the latest news on CCMS', 'Read all about the latest changes to the CompactCMS project.', '', 'news.php', 'Y', 'Y', 'N', 'Y');
 
 -- --------------------------------------------------------
 
@@ -147,5 +144,5 @@ CREATE TABLE IF NOT EXISTS `ccms_users` (
 --
 
 INSERT INTO `ccms_users` (`userID`, `userName`, `userPass`, `userFirst`, `userLast`, `userEmail`, `userActive`, `userLevel`, `userToken`, `userLastlog`, `userTimestamp`) VALUES
-(1, 'admin', '1a1dc91c907325c69271ddf0c944bc72', 'Xander', 'Groesbeek', 'xander@compactcms.nl', 1, 5, '5168774687486', '2010-08-11 11:47:48', '2010-08-11 13:47:48'),
-(2, 'user', 'ee11cbb19052e40b07aac0ca060c23ee', 'John', 'Doe', 'john@compactcms.nl', 1, 1, '5590832043058', '2010-08-05 21:27:50', '2010-08-05 23:27:50');
+(1, 'admin', '1a1dc91c907325c69271ddf0c944bc72', 'Xander', 'Groesbeek', 'xander@compactcms.nl', 1, 5, '5168774687486', '2010-08-15 10:48:11', '2010-08-15 12:48:11'),
+(2, 'user', 'ee11cbb19052e40b07aac0ca060c23ee', 'John', 'Doe', 'john@compactcms.nl', 1, 1, '5590832043058', '2010-08-15 11:26:13', '2010-08-15 13:31:21');

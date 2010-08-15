@@ -585,6 +585,78 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 
  /**
  *
+ * Edit user details as posted by an authorized user
+ *
+ */
+if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+	
+	// Only if current user has the rights
+	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) {
+	
+		$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
+		$values["userFirst"]= MySQL::SQLValue($_POST['first'],MySQL::SQLVALUE_TEXT);
+		$values["userLast"]	= MySQL::SQLValue($_POST['last'],MySQL::SQLVALUE_TEXT);
+		$values["userEmail"]	= MySQL::SQLValue($_POST['email'],MySQL::SQLVALUE_TEXT);
+		
+		if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
+			header("Location: ./modules/user-management/backend.php?status=success&action=".$ccms['lang']['backend']['success']);
+			exit();
+		}
+	} else die($ccms['lang']['auth']['featnotallowed']);
+}
+ 
+ /**
+ *
+ * Edit users' password as posted by an authorized user
+ *
+ */
+ 
+if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+	
+	// Only if current user has the rights
+	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) {
+	
+		if(md5($_POST['pass'])===md5($_POST['cpass'])) {
+		
+			$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
+			$values["userPass"] = MySQL::SQLValue(md5($_POST['pass']),MySQL::SQLVALUE_TEXT);
+			
+			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
+				header("Location: ./modules/user-management/backend.php?status=success&action=".$ccms['lang']['backend']['success']);
+				exit();
+			}
+		} elseif(md5($_POST['pass'])!==md5($_POST['cpass'])) {
+			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=Passwords do not match");
+			exit();
+		}
+	} else die($ccms['lang']['auth']['featnotallowed']);
+}
+
+ /**
+ *
+ * Edit user level as posted by an authorized user
+ *
+ */
+ 
+if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+	
+	// Only if current user has the rights
+	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) {
+		
+		$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
+		$values["userLevel"] = MySQL::SQLValue($_POST['userLevel'],MySQL::SQLVALUE_NUMBER);
+		$values["userActive"] = MySQL::SQLValue($_POST['userActive'],MySQL::SQLVALUE_NUMBER);
+			
+			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
+				header("Location: ./modules/user-management/backend.php?status=success&action=".$ccms['lang']['backend']['success']);
+				exit();
+			}
+	
+	} else die($ccms['lang']['auth']['featnotallowed']);
+}
+
+ /**
+ *
  * Delete a user as posted by an authorized user
  *
  */

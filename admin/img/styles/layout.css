@@ -41,6 +41,7 @@ a.external {
 /* === LAY-OUT === */
 #wrapper {padding: 20px 0;}
 #footer {text-align: right;margin-bottom:20px;}
+#createnew, #menudepth {margin-top:10px;}
 .ff{display:inline-block;width:80px;height:15px;background-position: 0 0;}
 .ie{display:inline-block;width:80px;height:15px;background-position: 0 -20px;}
 .opera{display:inline-block;width:80px;height:15px;background-position: 0 -40px;}
@@ -65,7 +66,6 @@ fieldset {
 	border: 3px solid #90D244;
 	-moz-border-radius: 10px; 
 	border-radius: 10px;
-	behavior: url('PIE.php');
 }
 legend, .loginMsg {
 	background-color: rgba(201,211,217,0.2);
@@ -76,7 +76,6 @@ legend, .loginMsg {
 	border: 2px solid #9DAFBB;
 	-moz-border-radius: 5px; 
 	border-radius: 5px;
-	behavior: url('PIE.php');
 }
 
 /* === 1. CORE === */
@@ -125,7 +124,6 @@ a.edit, a.editinplace:hover {
 	margin: 0 15px 10px 0;
 	padding: 0 0 10px 0;
 	text-align: right;
-	behavior: url('PIE.php');
 }
 .notify{background-position: 0 -449px;}
 #advanced {
@@ -135,7 +133,6 @@ a.edit, a.editinplace:hover {
 	border: 2px solid #9E65D7;
 	-moz-border-radius: 5px; 
 	border-radius: 5px;
-	behavior: url('PIE.php');
 }
 #notify p, #advanced h2 {
 	background: #DFB77C;
@@ -168,7 +165,7 @@ a.edit, a.editinplace:hover {
 #fields label {
 	float: left;
 	padding-top: 3px;
-	width: 90px;
+	width: 85px;
 }
 input[type="text"]{width: 200px;}
 button {margin-right: 15px;}
@@ -220,7 +217,7 @@ div.ss_help {
 	border-bottom: 5px solid #EFAAAB;
 	-moz-border-radius: 10px; 
 	border-radius: 10px;
-	behavior: url('PIE.php');
+	behavior: url('./img/styles/PIE.php');
 }
 div.tip-title {
 	font-weight: bold;
@@ -231,7 +228,7 @@ div.tip-title {
 	background: #DB7075;
 	-moz-border-radius: 20px; 
 	border-radius: 20px;
-	behavior: url('PIE.php');
+	behavior: url('./img/styles/PIE.php');
 }
 div.tip-text {
 	font-size: 90%;
@@ -251,7 +248,6 @@ div.tip-text {
 	-moz-border-radius: 10px; 
 	border-radius: 10px;
 	padding:10px;
-	behavior: url('PIE.php');
 }
 #loginFrm label {display: block;}
 #login-wrapper h2 {font-size:1.2em;border-bottom:solid 1px #90D244;}
@@ -269,8 +265,6 @@ div.module{font:'Palatino Linotype',Palatino, Baskerville, 'Book Antiqua', Georg
 	text-align:center;
 	-moz-border-radius: 5px; 
 	border-radius: 5px;
-	behavior: url('PIE.php');
-}
 }
 .module h2 {font-size:1.1em;}
 
@@ -280,8 +274,8 @@ div.module{font:'Palatino Linotype',Palatino, Baskerville, 'Book Antiqua', Georg
 	width:80px;
 	height:80px;
 	border:solid #E3E3E3 3px;
-	margin: 5px 2px;
-	padding: 2px;
+	margin: 5px 1px;
+	padding: 1px;
 	text-align:center;
 }
 .thumbview:hover{background-color:#E6F2D9;border:solid #A5D611 3px;}

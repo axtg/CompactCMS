@@ -135,7 +135,9 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 				<hr class="space"/>
 				<p>
 					<input type="hidden" name="newsID" value="<?php echo $newsID; ?>" id="newsID" />
-					<button type="submit" name="submitNews" value="<?php echo $newsID; ?>"><span class="ss_sprite ss_newspaper_add">Create</span></button>
+					<button type="submit" name="submitNews" value="<?php echo $newsID; ?>">
+						<?php if(empty($newsID)) { ?><span class="ss_sprite ss_newspaper_add">Create</span></button><?php } ?>
+						<?php if(!empty($newsID)) { ?><span class="ss_sprite ss_newspaper_go">Modify</span></button><?php } ?>
 					<span class="ss_sprite ss_cross"><a href="javascript:;" onClick="confirmation()" title="<?php echo $ccms['lang']['editor']['cancelbtn']; ?>"><?php echo $ccms['lang']['editor']['cancelbtn']; ?></a></span>
 				</p>
 			</form>

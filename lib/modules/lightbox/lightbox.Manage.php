@@ -95,7 +95,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 			} ?>
 		</div>
 		
-		<div class="span-13 colborder">
+		<div class="span-12 colborder">
 		<?php 
 		// 
 		$album_path = (isset($_GET['album'])&&!empty($_GET['album'])?BASE_PATH.'/media/albums/'.$_GET['album']:null);
@@ -105,9 +105,9 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 			<h2>Current albums</h2>
 				<table border="0" cellspacing="5" cellpadding="5">
 						<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) { ?><th class="span-1">&#160;</th><?php } ?>
-						<th class="span-7">Album</th>
+						<th class="span-5">Album</th>
 						<th class="span-2">Files</th>
-						<th class="span-2">&#160;</th>
+						<th class="span-4">Last modified</th>
 					</tr>
 					<?php 
 					$i = 0;
@@ -123,7 +123,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 							<?php } ?>
 							<td><span class="ss_sprite ss_folder_picture"><a href="lightbox.Manage.php?album=<?php echo $value;?>"><?php echo $value;?></a></span></td>
 							<td><span class="ss_sprite ss_pictures"><?php echo ($count[$i]>0?$count[$i]:'0'); ?></span></td>
-							<td><span class="ss_sprite ss_eye"><a href="">Preview</a></span></td>
+							<td><span class="ss_sprite ss_calendar"><?php echo date("Y-m-d G:i:s", filemtime(BASE_PATH.'/media/albums/'.$value)); ?></td>
 						</tr>
 					<?php
 			  			$i++;

@@ -47,6 +47,8 @@ if($userID!=null) {
 	$row = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."users` WHERE userID = $userID");
 } else die($ccms['lang']['system']['error_general']);
 
+// Get permissions
+$perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 ?>
 <?php if(md5(session_id())==$canarycage && isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && md5($_SERVER['HTTP_HOST']) == $currenthost) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -59,37 +61,49 @@ if($userID!=null) {
 
 <body>
 	<div class="module">
+		<?php if(isset($_GET['status'])&&isset($_GET['action'])) { ?>
+			<div class="<?php echo $_GET['status'];?> center"><strong><?php echo ucfirst($_GET['action']);?></strong></div>
+		<?php } ?>
+		
 		<p class="clear right"><span class="ss_sprite ss_arrow_undo"><a href="backend.php">Back to overview</a></span></p>
 		
-		<div class="span-10 colborder">
-			<?php
-			// Check authority
-			if($row->userLevel>$_SESSION['ccms_userLevel']) {
-				die("[ERR802] ".$ccms['lang']['system']['error_general']);
+		<?php // Check authority 
+		if($_SESSION['ccms_userLevel']<$perm['manageUsers']||$row->userLevel>$_SESSION['ccms_userLevel']) {
+			if($_SESSION['ccms_userID']!=$_GET['userID']) {
+				die("[ERR802] ".$ccms['lang']['auth']['featnotallowed']);
 			}
-			?>
+		} ?>
+		
+		<div class="span-10 colborder">
 			<h2>Edit user's personal details</h2>
-			<form action="user_submit" method="post" accept-charset="utf-8">
+			<form action="../../process.inc.php?action=edit-user-details" method="post" accept-charset="utf-8">
 				<label>Username</label><span style="display:block;height:30px;"><?php echo $row->userName; ?></span>
 				<label for="first">First name</label><input type="text" class="text" name="first" value="<?php echo $row->userFirst; ?>" id="first" />
 				<label for="last">Last name</label><input type="text" class="text" name="last" value="<?php echo $row->userLast; ?>" id="last" />
 				<label for="email">E-mail</label><input type="text" class="text" name="email" value="<?php echo $row->userEmail; ?>" id="email" />
+				
+				<input type="hidden" name="userID" value="<?php echo $row->userID; ?>" id="userID" />
 				<p class="span-6 right"><button type="submit"><span class="ss_sprite ss_user_edit"><?php echo $ccms['lang']['forms']['savebutton'];?></span></button></p>
 			</form>
 			
 		</div>
 		
 		<div class="span-8">
+			<?php if($_SESSION['ccms_userID']==$row->userID||$_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) { ?>
 			<h2>Edit user's password</h2>
-			<form action="user_submit" method="post" accept-charset="utf-8">
-				<label for="pass">Password</label><input type="text" class="text" name="pass" value="" id="pass" />
-				<p class="span-6 right"><button type="submit"><span class="ss_sprite ss_key"><?php echo $ccms['lang']['forms']['savebutton'];?></span></button></p>
+			<form action="../../process.inc.php?action=edit-user-password" method="post" accept-charset="utf-8">
+				<label for="pass">Password</label><input type="password" class="text" name="pass" value="" id="pass" />
+				<label for="cpass">Confirm password</label><input type="password" class="text" name="cpass" value="" id="cpass" />
+				
+				<input type="hidden" name="userID" value="<?php echo $row->userID; ?>" id="userID" />
+				<p class="span-8 right"><button type="submit"><span class="ss_sprite ss_key"><?php echo $ccms['lang']['forms']['savebutton'];?></span></button></p>
 			</form>
 			
 			<hr/>
 			
 			<h2>Account settings</h2>
-			<form action="user_submit" method="get" accept-charset="utf-8">
+			<?php } if($_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) { ?>
+			<form action="../../process.inc.php?action=edit-user-level" method="post" accept-charset="utf-8">
 				<label for="userLevel">User level</label>
 				<select name="userLevel" id="userLevel" size="1">
 					<option value="1" <?php echo ($row->userLevel==1?"selected='SELECTED'":null); ?>>User (Level = 1)</option>
@@ -112,8 +126,10 @@ if($userID!=null) {
 					<input type="radio" name="userActive" <?php echo ($row->userActive==0?"checked='CHECKED'":null); ?> value="0" id="userActive0" />
 				<hr class="space"/>		
 			
-				<p class="span-6 right"><button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton'];?></span></button></p>
+				<input type="hidden" name="userID" value="<?php echo $row->userID; ?>" id="userID" />
+				<p class="span-8 right"><button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton'];?></span></button></p>
 			</form>
+			<?php } else echo $ccms['lang']['auth']['featnotallowed']; ?>
 		</div>
 		
 		<p class="clear right"><span class="ss_sprite ss_arrow_undo"><a href="backend.php">Back to overview</a></span></p>
