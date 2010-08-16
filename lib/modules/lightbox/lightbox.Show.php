@@ -76,5 +76,5 @@ if($handle = opendir($album_path)) {
 			}
 		} closedir($handle);
 	} else echo "<p>&#160;</p><p>".$ccms['lang']['system']['error_value']."</p>";
-	echo "<p style=\"clear:both;\"><a href=\"javascript:history.go(-1);\">".$ccms['lang']['album']['tooverview']."</a></p>";
+	echo "<p style=\"clear:both;\"><a href=\"".$cfg['rootdir'].$_GET['page'].".html\">".$ccms['lang']['album']['tooverview']."</a></p>";
 }?>
