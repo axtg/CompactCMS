@@ -52,7 +52,7 @@ if($nextstep == md5('2') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 	// Installation actions
 	//  - Environmental variables
 	//
-	$rootdir	= array("rootdir" => $_POST['rootdir']);
+	$rootdir	= array("rootdir" => (substr($_POST['rootdir'],-1)!=='/'?$_POST['rootdir'].'/':$_POST['rootdir']));
 	$homepage	= array("homepage" => $_POST['homepage']);
 	$language	= array("language" => $_POST['language']);
 	

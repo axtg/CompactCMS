@@ -164,6 +164,7 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 	// Content variables
     $ccms['language']	= $cfg['language'];
 	$ccms['sitename'] 	= $cfg['sitename'];
+	$ccms['rootdir']	= (substr($cfg['rootdir'],-1)!=='/'?$cfg['rootdir'].'/':$cfg['rootdir']);
 	$ccms['urlpage']	= $row->urlpage;
 	$ccms['pagetitle'] 	= $row->pagetitle;
 	$ccms['subheader'] 	= $row->subheader;
@@ -192,15 +193,15 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 	
 	// Create breadcrumb for the current page
 	if($row->urlpage==$cfg['homepage']) {
-		$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"./\" title=\"".ucfirst($cfg['sitename'])." ".$cfg['homepage']."\">".ucfirst($cfg['homepage'])."</a>";
+		$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir']."\" title=\"".ucfirst($cfg['sitename'])." ".$cfg['homepage']."\">".ucfirst($cfg['homepage'])."</a>";
 	}
 	if($row->urlpage!=$cfg['homepage'] && $row->sublevel=='0') {
-		$ccms['breadcrumb'] .= " &raquo; <a href=\"".$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
+		$ccms['breadcrumb'] .= " &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
 	}
 	if($row->sublevel>'0') {
 		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `toplevel` = '".$row->toplevel."' AND `sublevel`='0'")) $db->Kill();
 		$subpath = $db->Row();
-		$ccms['breadcrumb'] .= " &raquo; <a href=\"".$subpath->urlpage.".html\" title=\"".$subpath->subheader."\">".$subpath->pagetitle."</a> &raquo; <a href=\"".$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
+		$ccms['breadcrumb'] .= " &raquo; <a href=\"".$cfg['rootdir'].$subpath->urlpage.".html\" title=\"".$subpath->subheader."\">".$subpath->pagetitle."</a> &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
 	}
 	$ccms['breadcrumb']	.= "</span>";
 	
@@ -258,8 +259,8 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 		    			$current_class 	= ($row->urlpage==$curr_page)?'class="current"':null;
 		    			$current_link	= ($row->islink=="N"?'#':null);
 		    			$current_link 	= (empty($current_link)&&regexUrl($row->description)?$row->description:$current_link);
-		    			$current_link	= (empty($current_link)&&$row->urlpage==$cfg['homepage']?'./':$current_link);
-		    			$current_link	= (empty($current_link)?$row->urlpage.'.html':$current_link);
+		    			$current_link	= (empty($current_link)&&$row->urlpage==$cfg['homepage']?$cfg['rootdir']:$current_link);
+		    			$current_link	= (empty($current_link)?$cfg['rootdir'].$row->urlpage.'.html':$current_link);
 		    			
 		    			// What text to show for the links
 		    			$link_text		= ucfirst($row->pagetitle);

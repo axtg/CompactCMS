@@ -33,7 +33,7 @@ See below for a simple example that uses all of the tags listed above.
 <meta charset="utf-8">
 <title>{%title%}</title>
 <!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-<link rel="stylesheet" href="./lib/templates/html5/style.css" />
+<link rel="stylesheet" href="{%rootdir%}lib/templates/html5/style.css" />
 </head>
 
 <body>
@@ -45,7 +45,7 @@ See below for a simple example that uses all of the tags listed above.
     <nav>
 		{%mainmenu%}
     </nav>
-    <a href="#" title="{%sitename%}"><img src="./lib/templates/html5/logo.png" alt="{%sitename%}" /></a>
+    <a href="#" title="{%sitename%}"><img src="{%rootdir%}lib/templates/html5/logo.png" alt="{%sitename%}" /></a>
 </header>
 
 <section id="left">
@@ -64,7 +64,11 @@ See below for a simple example that uses all of the tags listed above.
 </section>
 
 <footer>
-	<p>&copy; <?php echo date('Y'); ?> {%sitename%} {%footermenu%}</p>
+	<p>&copy; <?php echo date('Y'); ?> {%sitename%}</p>
+		<!-- Support me by keeping this link (it's not visible to your visitors!). It will help my search engine ranking. -->
+		<div style="display: none;"><a href="http://www.compactcms.nl">Maintained with CompactCMS.nl</a></div>
+		<!-- That's it! Of course you're free to show off CompactCMS anywhere on your website -->
+	<p>{%footermenu%}</p>
 </footer>
 
 </body>

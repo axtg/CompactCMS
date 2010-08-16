@@ -31,9 +31,9 @@ See below for a simple example that uses all of the tags listed above.
 <title>{%title%}</title>
 <meta name="description" content="{%sitename%} | {%desc%}" />
 <meta name="keywords" content="{%keywords%}" />
-<link href="./lib/templates/ccms/base.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="./lib/includes/js/mootools.js" charset="utf-8"></script>
-<link rel="shortcut icon" href="img/favicon.ico" />
+<link href="{%rootdir%}lib/templates/ccms/base.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="{%rootdir%}lib/includes/js/mootools.js" charset="utf-8"></script>
+<link rel="shortcut icon" href="{%rootdir%}media/favicon.ico" />
 </head>
 
 <body>
@@ -58,7 +58,7 @@ See below for a simple example that uses all of the tags listed above.
 		<div id="printable" class="span-18 last" style="text-align: right;">
 			{%breadcrumb%}
 			{%IF printable (eq Y)%}
-				<br/><a href="print/{%urlpage%}.html">Print</a>
+				<br/><a href="{%rootdir%}{%urlpage%}.print">Print</a>
 			{%/IF printable%}
 		</div>
 		{%content%}

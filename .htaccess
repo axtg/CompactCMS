@@ -35,8 +35,9 @@ RewriteBase /
 # Various rewrite rules
 ##
 
+RewriteRule ^([^/]*)/([^/]*)\.html$ 		index.php?page=$1&id=$2 [QSA]
 RewriteRule ^([^/]+)\.html$ 				index.php?page=$1 [QSA]
-RewriteRule ^print/([^/]+)\.html$ 			afdrukken.php?page=$1 [L]
+RewriteRule ^([^/]+)\.print$				afdrukken.php?page=$1 [L]
 RewriteRule ^lib/includes/js/(.+\.js)$ 		lib/includes/combine.inc.php?type=javascript&files=$1 [L]
 RewriteRule ^admin/img/styles/(.+\.css)$ 	lib/includes/combine.inc.php?type=css&files=$1 [L]
 RewriteRule ^sitemap\.xml$ 					lib/sitemap.php [L]

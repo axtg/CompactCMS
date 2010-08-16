@@ -1,0 +1,14 @@
+strong.date {
+	background: transparent url("./calendar.png") no-repeat 0 0;
+	color:#fff;
+	display:block;
+	float:left;
+	font-size:0.8em;
+	width:95px;
+	height:72px;
+	line-height:2.2em;
+	margin-right:10px;
+	text-align:center;
+	text-transform:uppercase;
+}
+strong.date span {color:#000;display:block;font-size:2.5em;line-height:1.8em;}

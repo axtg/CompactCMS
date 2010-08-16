@@ -148,7 +148,7 @@ function setLanguage($lang) {
 				<?php if(!isset($_GET['do'])&&empty($_GET['do'])) { ?>
 				<p>The details below have been filled-out based on information readily available. Please confirm these settings, select your language and click proceed.</p>
 				
-				<label for="rootdir"><span class="ss_sprite ss_application_osx_terminal">Root directory</span></label>
+				<label for="rootdir"><span class="ss_sprite ss_application_osx_terminal">Root directory</span> &#160;<span class="small quiet"><em>must include trailing slash!</em></span></label>
 				<input type="text" class="alt title" name="rootdir" style="width:300px;" autofocus value="<?php echo $rootdir;?>" id="rootdir" />
 				
 				<label for="homepage"><span class="ss_sprite ss_house">Default homepage</span></label>
