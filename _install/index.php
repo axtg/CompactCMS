@@ -96,7 +96,7 @@ function setLanguage($lang) {
 		<title>CompactCMS Installation</title>
 		<meta name="description" content="CompactCMS administration. CompactCMS is a light-weight and SEO friendly Content Management System for developers and novice programmers alike." />
 		<link rel="stylesheet" type="text/css" href="./install.css" />
-		<script type="text/javascript" src="./install.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../lib/includes/js/mootools.js" charset="utf-8"></script>
 		<script type="text/javascript" charset="utf-8">
 			window.addEvent('domready', function(){
 				// Process steps
@@ -104,6 +104,7 @@ function setLanguage($lang) {
 					new Event(install).stop();
 						
 					var install_div = $('install');
+					var scroll = new Fx.Scroll(window, {wait: false, duration: 500, transition: Fx.Transitions.Quad.easeInOut});
 					
 					new Request.HTML({
 						method: 'post',
@@ -114,6 +115,7 @@ function setLanguage($lang) {
 						}, 
 						onComplete: function() {
 							install_div.removeClass('loading');
+							scroll.toElement('install-wrapper');
 						}
 					}).send($('installFrm'));
 				});

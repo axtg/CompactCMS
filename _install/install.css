@@ -260,5 +260,5 @@ div.tip-text {
 #install-wrapper h2{font-size:1.2em;border-bottom:solid 1px #90D244;}
 .installMsg{background-color:rgba(229,215,238,0.8);margin-bottom:15px;}
 #installFrm label {display: block;margin-top:10px;}
-#install.loading {}
+#install.loading {display:block;height:300px;background:transparent url('../admin/img/spinner.gif') no-repeat 50% 50%;}
 #install {margin-top:10px;}
