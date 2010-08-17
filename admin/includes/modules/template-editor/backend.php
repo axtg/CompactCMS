@@ -69,7 +69,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>Back-up &amp; Restore module</title>
 		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,layout.css,sprite.css" />
-		<script type="text/javascript" src="../../../../lib/includes/js/editorwindow.js"></script>
+		
 		<script type="text/javascript" src="../../edit_area/edit_area_compressor.php"></script>
 		<script type="text/javascript">editAreaLoader.init({id:"content",allow_resize:'both',allow_toggle:false,word_wrap:true,start_highlight:true,<?php echo 'language:"'.$cfg['language'].'",'; ?>syntax:"html"});</script>
 		<script type="text/javascript">function confirmation(){var answer=confirm(<?php echo"'".$ccms['lang']['editor']['confirmclose']."'";?>);if(answer){try{parent.MochaUI.closeWindow(parent.$('sys-tmp_ccms'));}catch(e){}}else{return false;}}</script>

@@ -37,8 +37,16 @@ if($db->HasRecords()) {
 		<strong class="date"><?php echo date('F',strtotime($rsNews->newsModified)); ?><span><?php echo date('j',strtotime($rsNews->newsModified)); ?></span></strong>
 	<?php } ?>
 	
-	<?php if(!isset($_GET['id'])||empty($_GET['id'])) { ?>
-		<h2><a href="<?php echo $cfg['rootdir'].$_GET['page'].'/'.$rsNews->newsID.'-'.strtolower(str_replace(" ","-",$rsNews->newsTitle)); ?>.html"><?php echo $rsNews->newsTitle; ?></a></h2>
+	<?php if(!isset($_GET['id'])||empty($_GET['id'])) { 
+		$special_chars = array("#","$","%","@","^","&","*","!","~","‘","\"","’","'","=","?","/","[","]","(",")","|","<",">",";","\\",",");
+	
+		// Filter spaces, non-file characters and account for UTF-8
+		$newsTitle = @htmlentities(strtolower($rsNews->newsTitle),ENT_COMPAT,'UTF-8');
+  		$newsTitle = str_replace($special_chars, "", $newsTitle); 
+		$newsTitle = str_replace(' ','-',$newsTitle);
+		
+		?>
+		<h2><a href="<?php echo $cfg['rootdir'].$_GET['page'].'/'.$rsNews->newsID.'-'.$newsTitle; ?>.html"><?php echo $rsNews->newsTitle; ?></a></h2>
 		<p><strong><?php echo $rsNews->newsTeaser; ?></strong></p>
 		<?php if($rsCfg->showTeaser==0) { ?><p><?php echo $rsNews->newsContent; ?></p><?php } ?>
 		

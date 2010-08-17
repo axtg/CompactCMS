@@ -186,19 +186,17 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files" && checkAu
 		$error = 'Please upload an image bigger than 50px.';
 	}
 	
-	// Get file extension
-	$extension	= strtolower(substr($_FILES['Filedata']['name'], strrpos($_FILES['Filedata']['name'], '.') + 1));
+	// Set file and get file extension
+	$uploadedfile	= $_FILES['Filedata']['tmp_name'];
+	$extension		= strtolower(substr($_FILES['Filedata']['name'], strrpos($_FILES['Filedata']['name'], '.') + 1));
 	
 	// Do resize
 	if($extension=="jpg" || $extension=="jpeg" ) {
-		$uploadedfile = $_FILES['Filedata']['tmp_name'];
 		$src = imagecreatefromjpeg($uploadedfile);
-	} else if($extension=="png") {
-		$uploadedfile = $_FILES['Filedata']['tmp_name'];
+	} elseif($extension=="png") {
 		$src = imagecreatefrompng($uploadedfile);
-	}
-	else {
-		$src = imagecreatefromgif($_FILES['Filedata']['tmp_name']);
+	} else {
+		$src = imagecreatefromgif($uploadedfile);
 	}
 		 
 	list($width,$height)=getimagesize($uploadedfile);
@@ -219,8 +217,17 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files" && checkAu
 	$thumbnail	= $dest.'/_thumbs/'. $_FILES['Filedata']['name'];
 	$original	= $dest.'/'.$_FILES['Filedata']['name'];
 	
-	imagejpeg($tmp, $original, 100);
-	imagejpeg($tmp_t, $thumbnail, 100);
+	if($extension=="jpg" || $extension=="jpeg" ) {
+		imagejpeg($tmp, $original, 100);
+		imagejpeg($tmp_t, $thumbnail, 100);
+	} elseif($extension=="png") {
+		imagepng($tmp, $original, 7);
+		imagepng($tmp_t, $thumbnail, 7);
+	} else {
+		imagegif($tmp, $original, 100);
+		imagegif($tmp_t, $thumbnail, 100);
+	}
+	
 
 	// Check for errors
 	if ($error) {
