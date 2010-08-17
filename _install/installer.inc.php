@@ -137,35 +137,35 @@ if($nextstep == md5('4') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 	//
 	// Check for current chmod() if server != Windows
 	//
-	$chmod = 0;
 	if(!strpos($_SERVER['SERVER_SOFTWARE'], "Win")) {
-		(substr(decoct(fileperms('../.htaccess')),1)!='0666'?$chmod++:null);
-		(substr(decoct(fileperms('../lib/config.inc.php')),1)!='0666'?$chmod++:null);
-		(substr(decoct(fileperms('../content/')),1)!='0755'?$chmod++:null);
-		(substr(decoct(fileperms('../lib/includes/cache/')),1)!='0777'?$chmod++:null);
-		(substr(decoct(fileperms('../lib/modules/backup-restore/files/')),1)!='0777'?$chmod++:null);
-		(substr(decoct(fileperms('../media/')),1)!='0777'?$chmod++:null);
-		(substr(decoct(fileperms('../media/albums/')),1)!='0777'?$chmod++:null);
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/.htaccess')),-4)!='0666') { $chfile[] = '.htaccess (0666)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/lib/config.inc.php')),-4)!='0666') { $chfile[] = '/lib/config.inc.php (0666)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/')),-4)!='0777') { $chfile[] = '/content/ (0777)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/home.php')),-4)!='0666') { $chfile[] = '/content/home.php (0666)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/installation.php')),-4)!='0666') { $chfile[] = '/content/installation.php (0666)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/contact.php')),-4)!='0666') { $chfile[] = '/content/contact.php (0666)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/lib/includes/cache/')),-4)!='0777') { $chfile[] = '/lib/includes/cache/ (0777)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/lib/templates/ccms.tpl.html')),-4)!='0666') { $chfile[] = '/lib/templates/ccms.tpl.html (0666)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/admin/includes/modules/backup-restore/files/')),-4)!='0777') { $chfile[] = '/admin/includes/modules/backup-restore/files/ (0777)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/media/')),-4)!='0777') { $chfile[] = '/media/ (0777)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/media/albums/')),-4)!='0777') { $chfile[] = '/media/albums/ (0777)'; }
 	}
 ?>	
 	<legend class="installMsg">Step 4 - Review your input</legend>
-		<?php if(ini_get('safe_mode') || $chmod>0) {?>
-			<h2>Warning</h2>
-			<p>It appears that it <abbr title="Based on current chmod() rights and/or safe mode restrictions">might not be possible</abbr> for the installer to chmod() various files. Please consider doing so manually <em>or</em> by using the <a href="index.php?do=ff104b2dfab9fe8c0676587292a636d3">built-in FTP chmod function</a>.</p>
-			<span>&rarr; <em>Files that require chmod():</em></span>
+		<?php if(!isset($chfile)) { ?><p class="center"><span class="ss_sprite ss_tick"><em>All files are already correctly chmod()'ed</em></span></p><?php } ?>
+		<?php if(ini_get('safe_mode') || isset($chfile)) { ?>
+			<span class="ss_sprite ss_exclamation">&#160;</span><h2 style="display:inline;">Warning</h2>
+			<p>It appears that it <abbr title="Based on current chmod() rights and/or safe mode restrictions">may not be possible</abbr> for the installer to chmod() various files. Please consider doing so manually <em>or</em> by using the <a href="index.php?do=ff104b2dfab9fe8c0676587292a636d3">built-in FTP chmod function</a>.</p>
+			<span>&rarr; <em>Files that still require chmod():</em></span>
 				<ul>
-					<li>./.htaccess (0666)</li>
-					<li>./lib/config.inc.php (0666)</li>
-					<li>./content/ (0777) <a href="http://community.compactcms.nl/forum/" target="_blank"><span class="small quiet">more info</span></a></li>
-					<li>./lib/includes/cache/ (0777)</li>
-					<li>../lib/modules/backup-restore/files/ (0777)</li>
-					<li>./media/ (0777)</li>
-					<li>./media/albums/ (0777)</li>
+					<?php foreach ($chfile as $value) {
+						if(!empty($value)&&!is_numeric($value)) { echo "<li>$value</li>"; }
+					}?>
 				</ul>
 		<?php } ?>
 		<span class="ss_sprite ss_computer">&#160;</span><h2 style="display:inline;">Environment</h2>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
+			<tr style="background-color: <?php echo $alt_row; ?>;">
 				<th width="45%" scope="row">Root directory</th>
 				<td><?php echo $_SESSION['variables']['rootdir'];?></td>
 			</tr>
@@ -301,26 +301,44 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 		if(ini_get('safe_mode')) {
 			$errors[] = 'Warning: safe mode is enabled, skipping chmod()';
 		}
-		// Count chmod() successes
+		
+		// Set default value
 		$chmod = 0;
 		
+		// Chmod check and set function
+		function setChmod($path, $value) {
+			// Check current chmod() status
+			if(substr(sprintf('%o', fileperms(BASE_PATH.$path)), -4)!=$value) {
+				// If not set, set
+				if(@chmod(BASE_PATH.$path, $value)) { 
+					return true;
+				} 
+			} else {
+				return true;
+			}
+		}
+		
 		// Do chmod() per necessary folder and set status
-		if(@chmod(BASE_PATH."/.htaccess", 0666)) { $chmod++; }
-		if(@chmod(BASE_PATH."/lib/config.inc.php", 0666)) { $chmod++; }
-		if(@chmod(BASE_PATH."/content/", 0777)) { $chmod++; }
-		if(@chmod(BASE_PATH."/content/home.php", 0666)) { $chmod++; }
-		if(@chmod(BASE_PATH."/content/installation.php", 0666)) { $chmod++; }
-		if(@chmod(BASE_PATH."/content/contact.php", 0666)) { $chmod++; }
-		if(@chmod(BASE_PATH."/lib/includes/cache/", 0777)) { $chmod++; }
-		if(@chmod(BASE_PATH."/lib/templates/ccms.tpl.html", 0666)) { $chmod++; }
-		if(@chmod(BASE_PATH."/admin/includes/modules/backup-restore/files/", 0777)) { $chmod++; }
-		if(@chmod(BASE_PATH."/media/", 0777)) { $chmod++; }
-		if(@chmod(BASE_PATH."/media/albums/", 0777)) { $chmod++; }
+		if(setChmod('/.htaccess','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /.htaccess/';
+		if(setChmod('/lib/config.inc.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/config.inc.php';
+		if(setChmod('/content/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/';
+		if(setChmod('/content/home.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/home.php';
+		if(setChmod('/content/installation.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/installation.php';
+		if(setChmod('/content/contact.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/contact.php';
+		if(setChmod('/lib/includes/cache/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/includes/cache/';
+		if(setChmod('/lib/templates/ccms.tpl.html','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/templates/ccms.tpl.html';
+		if(setChmod('/admin/includes/modules/backup-restore/files/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /admin/includes/modules/backup-restore/files/';
+		if(setChmod('/media/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /media/';
+		if(setChmod('/media/albums/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /media/albums/';
 		
 		if($chmod>0) { 
-			$log[] = '<abbr title=".htaccess, config.inc.php, ./content/, ./lib/includes/cache/, back-up folder &amp; 2 media folders">Successful chmod() on '.$chmod.' files</abbr>';
-		} elseif($chmod==0) {
+			$log[] = '<abbr title=".htaccess, config.inc.php, ./content/, ./lib/includes/cache/, back-up folder &amp; 2 media folders">Confirmed correct chmod() on '.$chmod.' files</abbr>';
+		} 
+		if(!isset($chmod)||$chmod==0||$errfile>0) {
 			$errors[] = 'Warning: could not chmod() all files.';
+			foreach ($errfile as $key => $value) {
+				$errors[] = $value;
+			}
 			$errors[] = 'Either use the <a href="index.php?do=ff104b2dfab9fe8c0676587292a636d3">built-in FTP chmod function</a>, or manually perform chmod().';
 		}
 	}
@@ -437,7 +455,8 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 	
 ?>	
 	<legend class="installMsg">Final - Finishing the installation</legend>
-		<?php if(isset($log)) { ?>
+		<?php if(isset($log)) { 
+			unset($_SESSION['variables']); ?>
 		<h2>Process results</h2>
 		<p>
 			<?php 
@@ -458,7 +477,7 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 		<p>The installation has been successful! You should now follow the steps below, to get you started.</p>
 		<ol>
 			<li>Delete the <em>./_install</em> directory</li>
-			<li><a href="../admin/">Login</a> using details <strong>admin</strong> and <strong>pass</strong></li>
+			<li><a href="../admin/">Login</a> using details <span class="ss_sprite ss_user_red"><strong>admin</strong></span> and <span class="ss_sprite ss_key"><strong>pass</strong></span></li>
 			<li>Change your password through the back-end</li>
 			<li><a href="http://www.compactcms.nl/contact.html" target="_blank">Let me know</a> how you like CompactCMS!</li>
 		</ol>

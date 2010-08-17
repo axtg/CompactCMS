@@ -147,7 +147,7 @@ a.edit, a.editinplace:hover {
 	background: #C6A5E9;
 	border-bottom-color: #E5D6F5;
 }
-#advanced ul{list-style-type:none;}
+#advanced ul{margin:5px;list-style-type:none;}
 #notify_res {
 	min-height: 60px;
 	margin-left: 80px;

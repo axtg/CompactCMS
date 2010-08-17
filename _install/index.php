@@ -40,7 +40,7 @@ if(!isset($nextstep) && !isset($_SESSION['id']) && !isset($_SESSION['host'])) {
 
 } 
 // Set root directory
-$rootdir = dirname(dirname($_SERVER['REQUEST_URI']));
+$rootdir = dirname(dirname($_SERVER['PHP_SELF']));
 if($rootdir=='\\'||$rootdir=='/') {
 	$rootdir = '/';
 } else $rootdir = $rootdir.'/';
@@ -96,7 +96,7 @@ function setLanguage($lang) {
 		<title>CompactCMS Installation</title>
 		<meta name="description" content="CompactCMS administration. CompactCMS is a light-weight and SEO friendly Content Management System for developers and novice programmers alike." />
 		<link rel="stylesheet" type="text/css" href="./install.css" />
-		<script type="text/javascript" src="../lib/includes/js/mootools.js" charset="utf-8"></script>
+		<script type="text/javascript" src="./mootools.js" charset="utf-8"></script>
 		<script type="text/javascript" charset="utf-8">
 			window.addEvent('domready', function(){
 				// Process steps

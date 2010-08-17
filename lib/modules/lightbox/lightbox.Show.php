@@ -28,7 +28,7 @@ if($handle = opendir($album_path)) {
 <script type="text/javascript" charset="utf-8">window.addEvent("domready", function() {initImageZoom({loadImage: '<?php echo $cfg['rootdir']."lib/modules/lightbox/resources/loading.gif"; ?>'});});</script>
 
 <!-- lay-out -->
-<?php if(!isset($_GET['id'])&&empty($_GET['id'])) { ?>
+<?php if(!isset($_GET['id'])&&empty($_GET['id'])&&count($albums)>1) { ?>
 	<?php if(!empty($albums)) {
 		foreach ($albums as $i => $file) { 
 			// Get the images in an album
@@ -56,10 +56,10 @@ if($handle = opendir($album_path)) {
 			}
 		} 
 	} else echo $ccms['lang']['album']['noalbums'];
-} elseif(isset($_GET['id'])&&!empty($_GET['id'])) {
-	$album = htmlentities($_GET['id']);
+} elseif(isset($_GET['id'])&&!empty($_GET['id'])||count($albums)==1) {
+	$album = (isset($_GET['id'])?htmlentities($_GET['id']):$albums[0]);
 	echo "<h3>".$ccms['lang']['album']['album']." ".ucfirst($album)."</h3>";
-	echo "<a href=\"javascript:history.go(-1);\">".$ccms['lang']['album']['tooverview']."</a><br/>";
+	if(isset($_GET['id'])) { echo "<a href=\"".$cfg['rootdir'].$_GET['page'].".html\"\">".$ccms['lang']['album']['tooverview']."</a><br/>"; }
 
 	if($handle = @opendir($album_path.'/'.$album)) {
 		while (false !== ($content = readdir($handle))) {
@@ -76,5 +76,5 @@ if($handle = opendir($album_path)) {
 			}
 		} closedir($handle);
 	} else echo "<p>&#160;</p><p>".$ccms['lang']['system']['error_value']."</p>";
-	echo "<p style=\"clear:both;\"><a href=\"".$cfg['rootdir'].$_GET['page'].".html\">".$ccms['lang']['album']['tooverview']."</a></p>";
+	if(isset($_GET['id'])) { echo "<p style=\"clear:both;\"><a href=\"".$cfg['rootdir'].$_GET['page'].".html\">".$ccms['lang']['album']['tooverview']."</a></p>"; }
 }?>

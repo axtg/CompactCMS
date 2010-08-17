@@ -489,10 +489,10 @@ if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	
 	if(!empty($_POST['content']) && strlen($_POST['content'])>=3 && strlen($_POST['content'])<=240) {
 		if (!get_magic_quotes_gpc()) {
-    		$content = htmlspecialchars(addslashes($_POST['content']));
+    		$content = addslashes($_POST['content']);
     		$content = str_replace("'", "&#039;", $content); 
 		} else {
-    		$content = htmlspecialchars($_POST['content']);
+    		$content = $_POST['content'];
     	}
 	} else die($ccms['lang']['system']['error_value']);
 	
@@ -599,6 +599,12 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 		$values["userEmail"]	= MySQL::SQLValue($_POST['email'],MySQL::SQLVALUE_TEXT);
 		
 		if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
+			
+			if($userID==$_SESSION['ccms_userID']) {
+				$_SESSION['ccms_userFirst']	= htmlspecialchars($_POST['first']);
+				$_SESSION['ccms_userLast']	= htmlspecialchars($_POST['last']);
+			}
+			
 			header("Location: ./modules/user-management/backend.php?status=success&action=".$ccms['lang']['backend']['success']);
 			exit();
 		}
@@ -648,6 +654,11 @@ if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && ch
 		$values["userActive"] = MySQL::SQLValue($_POST['userActive'],MySQL::SQLVALUE_NUMBER);
 			
 			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
+				
+				if($userID==$_SESSION['ccms_userID']) {
+					$_SESSION['ccms_userLevel']	= (is_numeric($_POST['userLevel'])?$_POST['userLevel']:$_SESSION['ccms_userLevel']);
+				}
+				
 				header("Location: ./modules/user-management/backend.php?status=success&action=".$ccms['lang']['backend']['success']);
 				exit();
 			}

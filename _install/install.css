@@ -27,7 +27,7 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ****************************************************** */
 
-@import url('../admin/img/styles/sprite.css');
+@import url('./sprite.css');
 
 /* reset.css */
 html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {margin:0;padding:0;border:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline;}
@@ -154,6 +154,7 @@ textarea {width:390px;height:150px;padding:5px;}
 .fault a {color:#8a1f11;}
 .notice a {color:#514721;}
 .success a {color:#264409;}
+.center {text-align:center;}
 
 /* fancy-type */
 .alt { 
