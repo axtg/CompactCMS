@@ -45,6 +45,11 @@ if($rootdir=='\\'||$rootdir=='/') {
 	$rootdir = '/';
 } else $rootdir = $rootdir.'/';
 
+// FTP directories
+function findFiles() {
+	
+}
+
 // Set friendly local names languages
 function setLanguage($lang) {
 	switch ($lang) {
@@ -187,9 +192,8 @@ function setLanguage($lang) {
 					<label for="ftp_pass">FTP password</label>
 					<input type="password" class="title" name="ftp_pass" style="width:300px;" value="" id="ftp_pass"/>
 					
-					<label for="ftp_path">Installation path</label
-					><input type="text" class="alt title" name="ftp_path" style="width:300px;" value="" id="ftp_path"/>
-					
+					<label for="ftp_path">Installation path</label>
+					<input type="text" class="alt title" name="ftp_path" style="width:300px;" value="<?php echo dirname(getcwd()); ?>" id="ftp_path"/>
 					
 					<input type="hidden" name="do" value="<?php echo md5('final'); ?>" id="do" />
 				<?php } ?>

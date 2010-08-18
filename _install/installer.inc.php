@@ -352,9 +352,28 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 		$conn_id = ftp_connect($_POST['ftp_host']) or die("Couldn't connect to ".$_POST['ftp_host']); 
 		
 		// Try to login using provided details
-		if (@ftp_login($conn_id, $_POST['ftp_user'], $_POST['ftp_pass'])) {
-		    if (ftp_chdir($conn_id, $_POST['ftp_path'])) {
-				$log[] = "Successfully connected to FTP server";
+		if(@ftp_login($conn_id, $_POST['ftp_user'], $_POST['ftp_pass'])) {
+		    
+			// trimPath function
+			function trimPath($path,$depth) {
+				$path = explode('/',$path);
+				$np = '/';
+				for ($i=$depth; $i<count($path); $i++) { 
+					$np .= $path[$i].'/';
+				}
+				return $np;	
+			}
+			
+			// Find FTP path
+			$i 		= 1;
+			$path 	= $_POST['ftp_path'];
+			
+			// Set max tries to 15
+			for ($i=1; $i<15; $i++) { 
+				if(ftp_chdir($conn_id, trimPath($path,$i))) {
+					$log[] = "Successfully connected to FTP server";
+					$i = 15;
+				}
 			}
 		} else {
 		    $errors[] = "Fatal: couldn't connect to the FTP server. Perform chmod() manually.";
@@ -456,7 +475,7 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 ?>	
 	<legend class="installMsg">Final - Finishing the installation</legend>
 		<?php if(isset($log)) { 
-			unset($_SESSION['variables']); ?>
+			//unset($_SESSION['variables']); ?>
 		<h2>Process results</h2>
 		<p>
 			<?php 
@@ -481,7 +500,7 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 			<li>Change your password through the back-end</li>
 			<li><a href="http://www.compactcms.nl/contact.html" target="_blank">Let me know</a> how you like CompactCMS!</li>
 		</ol>
-		<?php } else echo '<a href="index.php">Retry setting the necessary variables</a>'; ?>
+		<?php } else echo '<a href="index.php">Retry setting the variables</a>'; ?>
 	
 <?php
 } // Close final processing
