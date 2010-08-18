@@ -155,8 +155,10 @@ function setLanguage($lang) {
 				<?php if(!isset($_GET['do'])&&empty($_GET['do'])) { ?>
 				<p>The details below have been filled-out based on information readily available. Please confirm these settings, select your language and click proceed.</p>
 				
-				<label for="rootdir"><span class="ss_sprite ss_application_osx_terminal">Root directory</span> &#160;<span class="small quiet"><em>must include trailing slash!</em></span></label>
+				<label for="rootdir"><span class="ss_sprite ss_application_osx_terminal">Web root directory</span></label>
 				<input type="text" class="alt title" name="rootdir" style="width:300px;" autofocus value="<?php echo $rootdir;?>" id="rootdir" />
+				<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">When www.domain.ext/ccms/, <strong>/ccms/</strong> is your web root</span>
+				<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">Must include trailing slash!</span>
 				
 				<label for="homepage"><span class="ss_sprite ss_house">Default homepage</span></label>
 				<input type="text" class="alt title" name="homepage" style="width:300px;" value="home" id="homepage" />
@@ -185,6 +187,7 @@ function setLanguage($lang) {
 					
 					<label for="ftp_host">FTP host</label>
 					<input type="text" class="alt title" name="ftp_host" style="width:300px;" value="" id="ftp_host"/>
+					<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">Often www.domain.ext or ftp.domain.ext</span>
 					
 					<label for="ftp_user">FTP username</label>
 					<input type="text" class="alt title" name="ftp_user" style="width:300px;" value="" id="ftp_user"/>
@@ -194,6 +197,7 @@ function setLanguage($lang) {
 					
 					<label for="ftp_path">Installation path</label>
 					<input type="text" class="alt title" name="ftp_path" style="width:300px;" value="<?php echo dirname(getcwd()); ?>" id="ftp_path"/>
+					<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">CCMS will try to auto-find this using the default value above</span>
 					
 					<input type="hidden" name="do" value="<?php echo md5('final'); ?>" id="do" />
 				<?php } ?>

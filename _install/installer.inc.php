@@ -63,12 +63,16 @@ if($nextstep == md5('2') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 		<label for="sitename"><span class="ss_sprite ss_pencil">Site name</span></label><input type="text" class="alt title" name="sitename" style="width:300px;" value="<?php echo (!isset($_SESSION['variables']['sitename'])?ucfirst(preg_replace("/^www\./", "", $_SERVER['HTTP_HOST'])):$_SESSION['variables']['sitename']);?>" id="sitename" />
 		<br class="clear"/>
 		<label for="version"><input type="checkbox" name="version" value="true" checked id="version" /> Show version information</label>
+		&#160;<span class="ss_sprite ss_bullet_star small quiet">Want to see the latest CCMS version at the dashboard?</span>
 		<label for="iframe"><input type="checkbox" name="iframe" value="true" id="iframe" /> Support &amp; allow iframes</label>
+		&#160;<span class="ss_sprite ss_bullet_star small quiet">Can iframes be managed from within the WYSIWYG editor?</span>
 		<label for="wysiwyg"><input type="checkbox" name="wysiwyg" value="true" checked id="wysiwyg" /> Enable the visual content editor</label>
+		&#160;<span class="ss_sprite ss_bullet_star small quiet">Uncheck if you want to disable the visual editor all together</span>
 		<label for="protect"><input type="checkbox" name="protect" value="true" checked id="protect" /> Password protect the administration</label>
 		<br class="clear"/>
 		<label for="authcode"><span class="ss_sprite ss_textfield_key">Authentication PIN</span></label>
 		<input type="text" class="alt title" name="authcode" maxlenght="5" style="width:300px;" value="<?php echo rand('12345','98765');?>" id="authcode" />
+		<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">Adding this PIN to the URL even shows unpublished pages</span>
 		
 		<p class="span-8 right">
 			<button name="submit" type="submit"><span class="ss_sprite ss_lock_go">Proceed</span></button>
