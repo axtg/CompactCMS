@@ -175,7 +175,7 @@ $ccms['lang']['editor']['keywords']		= "Ключевые слова - <em>раз
 $ccms['lang']['backup']['createhd']		= "Создать новый бэк-ап";
 $ccms['lang']['backup']['explain']		= "Для предотвращения потери данных в результате какой-либо ошибки рекомендуется регулярно делать резервную копию ваших файлов.";
 $ccms['lang']['backup']['currenthd']	= "Доступные бэк-апы";
-$ccms['lang']['backup']['timestamp']	= "Дата бэк-апа";
+$ccms['lang']['backup']['timestamp']	= "Back-up file name";
 $ccms['lang']['backup']['download']		= "Загрузить архив";
 
 // Album messages

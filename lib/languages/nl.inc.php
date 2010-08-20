@@ -173,7 +173,7 @@ $ccms['lang']['editor']['keywords'] 	= "Keywords - <em>gescheiden door komma's, 
 $ccms['lang']['backup']['createhd']		= "Cre&euml;r nieuwe back-up";
 $ccms['lang']['backup']['explain']		= "Om mogelijk verlies van data door externe omstandigheden te voorkomen, is het verstandig om regelmatig back-ups te maken.";
 $ccms['lang']['backup']['currenthd']	= "Beschikbare back-ups";
-$ccms['lang']['backup']['timestamp']	= "Back-up datum";
+$ccms['lang']['backup']['timestamp']	= "Back-up bestandsnaam";
 $ccms['lang']['backup']['download']		= "Download archief";
 
 // Album messages

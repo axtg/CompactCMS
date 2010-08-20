@@ -177,7 +177,7 @@ $ccms['lang']['auth']['featnotallowed']	= "Your current account level does not a
 $ccms['lang']['backup']['createhd']		= "Create new back-up";
 $ccms['lang']['backup']['explain']		= "To prevent possible loss of data due to whatever external event, it's wise to create back-ups of your files reguraly.";
 $ccms['lang']['backup']['currenthd']	= "Available back-ups";
-$ccms['lang']['backup']['timestamp']	= "Back-up timestamp";
+$ccms['lang']['backup']['timestamp']	= "Back-up file name";
 $ccms['lang']['backup']['download']		= "Download archive";
 
 // Album messages

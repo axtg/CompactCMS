@@ -15,8 +15,8 @@ RewriteEngine On
 # Make sure the RewriteBase variable reflects your file structure
 ##
 
-# For an installation under root (default)
-# Example: www.mysite.com/index.php
+# For an installation under root use / (default)
+# For an installation under /ccms use /ccms/
 RewriteBase /
 
 ##

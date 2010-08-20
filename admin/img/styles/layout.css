@@ -148,6 +148,7 @@ a.edit, a.editinplace:hover {
 	border-bottom-color: #E5D6F5;
 }
 #advanced ul{margin:5px;list-style-type:none;}
+#advanced li{line-height:1.8em;}
 #notify_res {
 	min-height: 60px;
 	margin-left: 80px;
@@ -266,7 +267,9 @@ div.module{font:'Palatino Linotype',Palatino, Baskerville, 'Book Antiqua', Georg
 	-moz-border-radius: 5px; 
 	border-radius: 5px;
 }
-.module h2 {font-size:1.1em;}
+.module h2 {font-size:1em;}
+.hover{height:32px;border:1px solid #EFEFEF;}
+.hover:hover{border:solid 2px #618CBD;background-color:#E2EAF3;}
 
 /* === 2. MODULE === */
 /* === LIGHTBOX === */
