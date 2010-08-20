@@ -74,10 +74,11 @@ require_once('./includes/process.inc.php');
 		<h2><span class="ss_sprite ss_user_red">Hi</span> <?php echo $_SESSION['ccms_userFirst']; ?></h2>
 		<div id="advanced_res">
 			<ul>
-				<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=5) { ?>
-					<li><span class="ss_sprite ss_group_key"><a id="sys-perm" href="./includes/modules/permissions/permissions.Manage.php" rel="Permissions" class="tabs">Set permissions</a></span></li>
-				<?php } if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=3) {?>
-					<li><span class="ss_sprite ss_bricks"><a id="sys-mod" href="./includes/modules/module-management/backend.php" rel="Module management" class="tabs">Manage modules</a></span></li>
+				<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>='4') { ?>
+					<li><span class="ss_sprite ss_group_key"><a id="sys-perm" href="./includes/modules/permissions/permissions.Manage.php" rel="Overall CCMS permissions" class="tabs">Set CCMS permissions</a></span></li>
+				<?php } if($perm['manageOwners']>0&&isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageOwners']) { ?>
+					<li><span class="ss_sprite ss_folder_user "><a id="sys-pow" href="./includes/modules/content-owners/content-owners.Manage.php" rel="Define content owners" class="tabs">Content owners</a></span></li>
+				<?php } if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageTemplate']) { ?>
 					<li><span class="ss_sprite ss_color_swatch"><a id="sys-tmp" href="./includes/modules/template-editor/backend.php" rel="Template editor" class="tabs">Template editor</a></span></li>
 				<?php } ?>
 				<li><span class="ss_sprite ss_group"><a id="sys-usr" href="./includes/modules/user-management/backend.php" rel="User management" class="tabs">User management</a></span></li>

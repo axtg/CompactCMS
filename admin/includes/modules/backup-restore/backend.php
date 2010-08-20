@@ -54,7 +54,7 @@ if(!empty($do) && $_GET['do']=="backup" && $_POST['btn_backup']=="dobackup" && c
 	
 	$configBackup 		= array('../../../../content/','../../../../lib/templates/');
 	$configBackupDir 	= 'files/';
-	$backupName 		= "backup-".date('d-m-y H-i-s').'.zip';
+	$backupName 		= date('Ymd_His').'-data.zip';
 	
 	$createZip = new createZip;
 	if (isset($configBackup) && is_array($configBackup) && count($configBackup)>0) {
@@ -114,7 +114,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) {
 	
-		echo "<div class=\"notice center\">";
+		echo "<div class=\"module notice center\">";
 		foreach ($_POST['file'] as $key => $value) {
 			unlink('./files/'.$value);
 			echo ucfirst($value)." ".$ccms['lang']['backend']['statusremoved'].".<br/>";
@@ -123,7 +123,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 	} else die($ccms['lang']['auth']['featnotallowed']);
 	
 } elseif($do=="delete" && empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth($canarycage,$currenthost)) {
-	echo "<div class=\"error center\">".$ccms['lang']['system']['error_selection']."</div>";
+	echo "<div class=\"module error center\">".$ccms['lang']['system']['error_selection']."</div>";
 }
 ?>
 <?php if(md5(session_id())==$canarycage && isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && md5($_SERVER['HTTP_HOST']) == $currenthost) { ?>
@@ -133,15 +133,6 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>Back-up &amp; Restore module</title>
 		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,layout.css,sprite.css" />
-		<script type="text/javascript">
-			<!--
-			function confirmation() {
-				try {
-					parent.window.hs.getExpander('backup_restore').close();
-				} catch (e) {}
-			}
-			//-->
-		</script>
 	</head>
 <body>
 	<div class="module">
@@ -164,7 +155,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 				<table border="0" cellspacing="5" cellpadding="5">
 					<tr>
 						<?php if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) { ?><th class="span-1">&#160;</th><?php } ?>
-						<th class="span-4"><?php echo $ccms['lang']['backup']['timestamp'];?></th>
+						<th class="span-5"><?php echo $ccms['lang']['backup']['timestamp'];?></th>
 						<th>&#160;</th>
 					</tr>
 					<?php 
@@ -172,13 +163,12 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 						$i=0;
 						while (false !== ($file = readdir($handle))) {
 					        if ($file != "." && $file != ".." && strpos($file, ".zip")) {
-					        	$timestamp	= explode('-',$file);
-						        $isEven 	= !($i % 2);
-						        echo ($isEven=='1')?'<tr>':'<tr style="background-color: #E6F2D9;">';
+						        $isEven = !($i % 2);
+						        echo ($isEven=='1')?'<tr style="background-color: #E6F2D9;">':'<tr>';
 						        if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) {
 						        	echo '<td><input type="checkbox" name="file[]" value="'.$file.'" id="'.$i.'"></td>';
 						        }
-						        echo '<td>'.$timestamp['1'].'/'.$timestamp['2'].'/20'.$timestamp['3'].':'.$timestamp['4'].'</td>';
+						        echo '<td>'.$file.'</td>';
 						        echo '<td><span class="ss_sprite ss_package_green"><a href="./files/'.$file.'" title="'.ucfirst($file).'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
 						        echo '</tr>';
 					        } 

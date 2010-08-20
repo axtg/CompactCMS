@@ -112,7 +112,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 					<?php } if($_SESSION['ccms_userLevel']>2) { ?>
 						<option value="3" <?php echo ($row->userLevel==3?"selected='SELECTED'":null); ?>>Manager (Level = 3)</option>
 					<?php } if($_SESSION['ccms_userLevel']>3) { ?>
-					<option value="5" <?php echo ($row->userLevel==5?"selected='SELECTED'":null); ?>>Administrator (Level = 5)</option>
+					<option value="4" <?php echo ($row->userLevel==4?"selected='SELECTED'":null); ?>>Administrator (Level = 4)</option>
 					<?php } ?>
 				</select>
 				<hr class="space"/>

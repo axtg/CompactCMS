@@ -57,11 +57,11 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 // Open recordset for sites' pages
 $db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` ORDER BY `published`, `menu_id`, `toplevel` ASC, `sublevel` ASC");
 
-	// Check whether the recordset is not empty
-	if($db->HasRecords()) {
+// Check whether the recordset is not empty
+if($db->HasRecords()) {
 
-	// Set the pointer to the first row
-	$db->MoveFirst();
+// Set the pointer to the first row
+$db->MoveFirst();
 
 // Prevent PHP warning by setting default (null) values
 $do_action = (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:null);
@@ -117,9 +117,14 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
 	// Get previously opened DB stream
 	$db->MoveFirst();
 	while (!$db->EndOfSeek()) {
+		
     	// Fill $row with values
 		$row = $db->Row();
 		
+	// Check whether current user is owner, or no owners at all
+	$owner = @explode('||', $row->user_ids);
+	if($row->user_ids==0||$perm['manageOwners']==0||$_SESSION['ccms_userLevel']>='4'||in_array($_SESSION['ccms_userID'], $owner)) {
+				
 		// Determine file specific variables
 		if($row->module=="editor") {
 			$module = './includes/process.inc.php';
@@ -163,7 +168,9 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
 					<a href="#" id="iscoding-<?php echo $row->page_id; ?>" rel="<?php echo $row->iscoding; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php if($row->iscoding == "Y") { echo "<span style=\"color:#8F0000;font-weight:bold;\">".$ccms['lang']['backend']['yes']."</span>"; } else echo $ccms['lang']['backend']['no']; ?></a>
 				<?php } else echo "&ndash;"; ?>
 			</td>
-			<?php if(!in_array($row->urlpage, $cfg['restrict'])) { ?>
+			<?php 
+			// Check for restrictions
+			if(!in_array($row->urlpage, $cfg['restrict'])||!in_array($row->page_id, $owners)) { ?>
 				<td class="span-5" style="text-align: right;">
 					<a id="<?php echo $row->urlpage;?>" href="<?php echo $module; ?>?file=<?php echo $row->urlpage; ?>&amp;action=edit&amp;restrict=<?php echo $row->iscoding; ?>&amp;active=<?php echo $row->published;?>" rel="Edit <?php echo $row->urlpage.'.html';?>" class="tabs sprite edit"><?php echo $ccms['lang']['backend']['editpage']; ?></a> | <a href="../<?php echo ($row->urlpage!=$cfg['homepage'])?$row->urlpage.'.html?preview='.$cfg['authcode']:'?preview='.$cfg['authcode']; ?>" class="external"><?php echo $ccms['lang']['backend']['previewpage']; ?></a>&#160;
 				</td>
@@ -189,7 +196,15 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
 				<?php } elseif($row->module!="editor") { echo "<span class=\"ss_sprite ss_information\"><strong>".ucfirst($row->module)."</strong></span> ".strtolower($ccms['lang']['forms']['module']);} else echo "<em>".$ccms['lang']['backend']['notinmenu']."</em>"; ?>
 			</td>
 		</tr>
-	<?php $i++; } ?>
+	<?php
+		} 
+		// If user is not a page owner 
+		else { 
+			$i++;
+		} 
+	// Regular move on	
+	$i++;
+	} ?>
 	</table>
 <?php }
 
@@ -521,7 +536,7 @@ if($do_action == "save-template" && $_SERVER['REQUEST_METHOD'] == "POST" && chec
 	if($_SESSION['ccms_userLevel']>=$perm['manageTemplate']) {
 	
 		$filename	= "../../lib/templates/".htmlentities($_POST['template']);
-		$filenoext	= substr($_POST['template'],0,-9);
+		$filenoext	= $_POST['template'];
 		$content	= $_POST['content'];
 		
 		if (is_writable($filename)) {
@@ -711,6 +726,12 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($ca
 	$active		= $_GET['active'];
 	$filename	= "../../content/".htmlentities($_GET['file']).".php";
 	
+	// Check for editor.css in template directory
+	$template	= $db->QuerySingleValue("SELECT `variant` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '$name'");
+	if (is_file('../../lib/templates/'.$template.'/editor.css')) {
+	    $css = '../../lib/templates/'.$template.'/editor.css';
+	}
+	
 	// Check for filename	
 	if(!empty($filename)) {
 		if(@fopen("$filename", "r")) {
@@ -756,30 +777,16 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($ca
 		<script type="text/javascript" src="./fancyupload/Source/Uploader/Fx.ProgressBar.js"></script>
 		<script type="text/javascript" src="./fancyupload/Source/Uploader/Swiff.Uploader.js"></script>
 		<script type="text/javascript" src="./fancyupload/Source/Uploader.js"></script>
-		<script type="text/javascript" src="./fancyupload/Source/FileManager.TinyMCE.js"></script>
+		<script type="text/javascript">FileManager.TinyMCE=function(options){return function(field,url,type,win){var manager=new FileManager($extend({onComplete:function(path){if(!win.document)return;win.document.getElementById(field).value='<?php echo $cfg['rootdir']; ?>'+path;if(win.ImageDialog)win.ImageDialog.showPreviewImage('<?php echo $cfg['rootdir']; ?>'+path,1);this.container.destroy();}},options(type)));manager.dragZIndex=400002;manager.SwiffZIndex=400003;manager.el.setStyle('zIndex',400001);manager.overlay.el.setStyle('zIndex',400000);document.id(manager.tips).setStyle('zIndex',400010);manager.show();return manager;};};FileManager.implement('SwiffZIndex',400003);var Dialog=new Class({Extends:Dialog,initialize:function(text,options){this.parent(text,options);this.el.setStyle('zIndex',400010);this.overlay.el.setStyle('zIndex',400009);}});</script>
 		
 		<!-- GZ version of TinyMCE -->
 		<script type="text/javascript">	tinyMCE_GZ.init({plugins:'safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave',themes:'advanced',<?php echo "languages: '".$cfg['language']."',"; ?>disk_cache:true,debug:false});
 		</script>
 		
 		<script type="text/javascript">
-		tinyMCE.init({mode:"textareas",theme:"advanced",<?php echo 'language:"'.$cfg['language'].'",'; ?>skin:"o2k7",skin_variant:"silver",plugins:"safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave",theme_advanced_buttons1:"fullscreen,tinyautosave,print,formatselect,fontselect,fontsizeselect,|,justifyleft,justifycenter,justifyright,justifyfull,|,sub,sup,|,spellchecker,link,unlink,anchor,hr,image,media,|,charmap,code",theme_advanced_buttons2:"undo,redo,cleanup,|,bold,italic,underline,strikethrough,|,forecolor,backcolor,removeformat,|,cut,copy,paste,replace,|,bullist,numlist,outdent,indent,|,tablecontrols",theme_advanced_buttons3:"",theme_advanced_toolbar_location:"top",theme_advanced_toolbar_align:"left",theme_advanced_statusbar_location:"bottom",dialog_type:"modal",paste_auto_cleanup_on_paste:true,theme_advanced_resizing:true,relative_urls:true,convert_urls:false,remove_script_host:true,document_base_url:"../../",<?php if($cfg['iframe'] === true) { ?> extended_valid_elements:"iframe[align<bottom?left?middle?right?top|class|frameborder|height|id|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style|title|width]",<?php } ?>spellchecker_languages: "+English=en,Dutch=nl,German=de,Spanish=es,French=fr,Italian=it,Russian=ru",
-		
-			/* Here goes the Magic */
-			file_browser_callback: FileManager.TinyMCE(function(type){
-				return {
-					url: type=='image' ? './fancyupload/selectImage.php' : './fancyupload/manager.php',
-					assetBasePath: './fancyupload/Assets',
-					language: 'en',
-					selectable: true,
-					uploadAuthData: {session: 'ccms_userLevel'}
-				};
-			})
-		});
+		tinyMCE.init({mode:"textareas",theme:"advanced",<?php echo 'language:"'.$cfg['language'].'",'; ?>skin:"o2k7",skin_variant:"silver",<?php echo (isset($css)&&!empty($css)?'content_css:"'.$css.'",':null);?>plugins:"safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave",theme_advanced_buttons1:"fullscreen,tinyautosave,print,formatselect,fontselect,fontsizeselect,|,justifyleft,justifycenter,justifyright,justifyfull,|,sub,sup,|,spellchecker,link,unlink,anchor,hr,image,media,|,charmap,code",theme_advanced_buttons2:"undo,redo,cleanup,|,bold,italic,underline,strikethrough,|,forecolor,backcolor,removeformat,|,cut,copy,paste,replace,|,bullist,numlist,outdent,indent,|,tablecontrols",theme_advanced_buttons3:"",theme_advanced_toolbar_location:"top",theme_advanced_toolbar_align:"left",theme_advanced_statusbar_location:"bottom",dialog_type:"modal",paste_auto_cleanup_on_paste:true,theme_advanced_resizing:true,relative_urls:true,convert_urls:false,remove_script_host:true,document_base_url:"../../",<?php if($cfg['iframe'] === true) { ?> extended_valid_elements:"iframe[align<bottom?left?middle?right?top|class|frameborder|height|id|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style|title|width]",<?php } ?>spellchecker_languages:"+English=en,Dutch=nl,German=de,Spanish=es,French=fr,Italian=it,Russian=ru",file_browser_callback:FileManager.TinyMCE(function(type){return{url:type=='image'?'./fancyupload/selectImage.php':'./fancyupload/manager.php',assetBasePath:'./fancyupload/Assets',language:'en',selectable:true,uploadAuthData:{session:'ccms_userLevel'}};})});
 		</script>
-		
 
-		
 	<?php } // End TinyMCE. Start load Editarea for code editing
 	elseif($cfg['wysiwyg']===false || $iscoding=="Y") { 
 		$cfg['language'] = (file_exists('./edit_area/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en'; ?>

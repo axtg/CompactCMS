@@ -44,7 +44,8 @@ if(!empty($do) && $_GET['do']=="backup" && $_POST['btn_backup']=="dobackup" && m
 
 // Set the default template
 $dir_temp = "../../../../lib/templates/";
-$get_temp = (isset($_GET['template'])?htmlentities($_GET['template']).".tpl.html":$template[0].".tpl.html");
+$get_temp = (isset($_GET['template'])?htmlentities($_GET['template']):$template[0].'.tpl.html');
+$chstatus = (substr(sprintf('%o', fileperms($dir_temp.$get_temp)), -4)>='0666'?1:0);
 	
 // Check for filename	
 if(!empty($get_temp)) {
@@ -77,6 +78,9 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 <body>
 	<div class="module">
 
+		<?php if(!strpos($_SERVER['SERVER_SOFTWARE'], "Win") && $chstatus==0) { ?>
+			<p class="error center">The current template is <strong>not</strong> writable</p>
+		<?php } ?>	
 		<div class="span-9">
 			<h1 class="editor">Manage templates</h1>
 		</div>
@@ -85,13 +89,28 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" id="changeTmp" method="get" class="right" accept-charset="utf-8">
 				<label for="template" style="display:inline;"><?php echo $ccms['lang']['backend']['template'];?></label>
 				<select class="text" onChange="document.getElementById('changeTmp').submit();" id="template" name="template">
-					<optgroup label="<?php echo $ccms['lang']['backend']['template'];?>">
-						<?php $x = 0; while($x<count($template)) { ?>
-						<option <?php echo ($get_temp==$template[$x].".tpl.html") ? "selected=\"selected\"" : ""; ?> value="<?php echo $template[$x]; ?>"><?php echo ucfirst($template[$x]); ?></option>
-						<?php $x++; } ?>
-					</optgroup>
+					<?php
+					$x = 0; 
+					while($x<count($template)) { ?>
+						<optgroup label="<?php echo ucfirst($template[$x]); ?>">
+							<option <?php echo ($get_temp==$template[$x].".tpl.html") ? "selected=\"selected\"" : ""; ?> value="<?php echo $template[$x]; ?>.tpl.html"><?php echo ucfirst($template[$x]).': '.strtolower($ccms['lang']['backend']['template']); ?></option>
+							<?php 
+							
+							// Get CSS files
+							if ($handle = opendir($dir_temp.$template[$x].'/')) {
+								while (false !== ($file = readdir($handle))) {
+							        if ($file != "." && $file != ".." && strtolower(substr($file, strrpos($file, '.') + 1))=='css') {
+							            $cssfiles[$x][] = $file;
+							        }
+							    }
+							    closedir($handle);
+							}
+							foreach ($cssfiles[$x] as $css) { ?>
+								<option <?php echo ($get_temp==$template[$x].'/'.$css) ? "selected=\"selected\"" : ""; ?> value="<?php echo $template[$x].'/'.$css; ?>"><?php echo ucfirst($template[$x]).': '.$css; ?></option>
+							<?php } ?>
+						</optgroup>
+					<?php $x++; } ?>
 				</select>
-				<br/><span class="quiet small">Always make sure that templates are writable</span>
 			</form>
 		</div>
 		<hr class="space"/>
@@ -108,7 +127,9 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			
 			<p>
 				<input type="hidden" name="template" value="<?php echo $get_temp; ?>" id="template" />
-				<button type="submit" name="do" id="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['editor']['savebtn']; ?></span></button>
+				<?php if(strpos($_SERVER['SERVER_SOFTWARE'], "Win") || $chstatus>0) { ?>
+					<button type="submit" name="do" id="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['editor']['savebtn']; ?></span></button>
+				<?php }  ?>
 				<span class="ss_sprite ss_cross"><a href="javascript:;" onClick="confirmation()" title="<?php echo $ccms['lang']['editor']['cancelbtn']; ?>"><?php echo $ccms['lang']['editor']['cancelbtn']; ?></a></span>
 			</p>
 			

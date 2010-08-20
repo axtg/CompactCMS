@@ -60,9 +60,9 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 					<tr>
 						<?php if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?><th class="span-1">&#160;</th><?php } ?>
 						<th class="span-1">&#160;</th>
-						<th class="span-6">Title</th>
+						<th class="span-5">Title</th>
 						<th class="span-4">Author</th>
-						<th class="span-3">Date</th>
+						<th class="span-4">Date</th>
 					</tr>
 					<?php
 					// Load recordset
@@ -91,7 +91,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 							<td><?php echo $rsNews->newsTitle; ?></td>
 						<?php } ?>
 						<td><span class="ss_sprite ss_email"><a href="mailto:<?php echo $rsNews->userEmail; ?>"><?php echo substr(ucfirst($rsNews->userFirst),0,1).'. '.ucfirst($rsNews->userLast); ?></a></span></td>
-						<td><span class="ss_sprite ss_calendar"><?php echo $rsNews->newsModified; ?></span></td>
+						<td><span class="ss_sprite ss_calendar"><?php echo date('Y-m-d G:i', strtotime($rsNews->newsModified)); ?></span></td>
 					</tr>
 					<?php 
 					$i++; }

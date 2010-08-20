@@ -65,17 +65,17 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 <h2>Permission preferences</h2>
 <?php 
 	// (!) Only administrators can change these values
-	if($_SESSION['ccms_userLevel']>='5') {
+	if($_SESSION['ccms_userLevel']>='4') {
 ?>
 <form action="permissions.Process.php" method="post" accept-charset="utf-8">
 <table border="0" cellspacing="5" cellpadding="5">
 	<tr>
 		<th class="span-4"><em>Target</em></th>
+		<th class="span-4 center">Disabled</th>
 		<th class="span-4 center">Level 1 - User</th>
 		<th class="span-4 center">Level 2 - Editor</th>
 		<th class="span-4 center">Level 3 - Manager</th>
-		<th class="span-4 center">Level 4</th>
-		<th class="span-4 center">Level 5 - Admin</th>
+		<th class="span-4 center">Level 4 - Admin</th>
 	</tr>
 	<?php
 	$i = 0;
@@ -92,6 +92,9 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 				}  ?>
     	<th><?php echo ($comments!=""?"<abbr title=\"$comments\">$columnName</abbr>":$columnName); ?></th>
 		<td class="center">
+			<input type="radio" name="<?php echo $columnName; ?>" <?php echo ($rsCfg->$columnName=='0'?"checked":null); ?> value="0" id="<?php echo $columnName; ?>">
+		</td>
+		<td class="center">
 			<input type="radio" name="<?php echo $columnName; ?>" <?php echo ($rsCfg->$columnName=='1'?"checked":null); ?> value="1" id="<?php echo $columnName; ?>">
 		</td>
 		<td class="center">
@@ -102,9 +105,6 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		</td>
 		<td class="center">
 			<input type="radio" name="<?php echo $columnName; ?>" <?php echo ($rsCfg->$columnName=='4'?"checked":null); ?> value="4" id="<?php echo $columnName; ?>">
-		</td>
-		<td class="center">
-			<input type="radio" name="<?php echo $columnName; ?>" <?php echo ($rsCfg->$columnName=='5'?"checked":null); ?> value="5" id="<?php echo $columnName; ?>">
 		</td>
 	</tr>
 	<?php $i++;

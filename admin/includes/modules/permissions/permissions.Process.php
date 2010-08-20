@@ -55,7 +55,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 if($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST) && checkAuth($canarycage,$currenthost)) {
 	
 	// (!) Only administrators can change these values
-	if($_SESSION['ccms_userLevel']>='5') {
+	if($_SESSION['ccms_userLevel']>='4') {
 		
 		// Execute either INSERT or UPDATE
 		if($db->UpdateRows($cfg['db_prefix']."cfgpermissions", $_POST)) {

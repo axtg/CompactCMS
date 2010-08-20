@@ -69,7 +69,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader/Fx.ProgressBar.js"></script>
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader/Swiff.Uploader.js"></script>
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader.js"></script>
-		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/FileManager.TinyMCE.js"></script>
+		<script type="text/javascript">FileManager.TinyMCE=function(options){return function(field,url,type,win){var manager=new FileManager($extend({onComplete:function(path){if(!win.document)return;win.document.getElementById(field).value='<?php echo $cfg['rootdir']; ?>'+path;if(win.ImageDialog)win.ImageDialog.showPreviewImage('<?php echo $cfg['rootdir']; ?>'+path,1);this.container.destroy();}},options(type)));manager.dragZIndex=400002;manager.SwiffZIndex=400003;manager.el.setStyle('zIndex',400001);manager.overlay.el.setStyle('zIndex',400000);document.id(manager.tips).setStyle('zIndex',400010);manager.show();return manager;};};FileManager.implement('SwiffZIndex',400003);var Dialog=new Class({Extends:Dialog,initialize:function(text,options){this.parent(text,options);this.el.setStyle('zIndex',400010);this.overlay.el.setStyle('zIndex',400009);}});</script>
 		
 		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,layout.css,sprite.css" />
 		
@@ -122,7 +122,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 					</select>
 				</div>
 				<div class="span-4">
-					<label for="newsModified">Date</label><input type="text" class="text" style="width:110px;" name="newsModified" value="<?php echo (isset($news)?$news->newsModified:date('Y-m-d'));?>" id="newsModified">
+					<label for="newsModified">Date</label><input type="text" class="text" style="width:120px;" name="newsModified" value="<?php echo (isset($news)?date('Y-m-d G:i',strtotime($news->newsModified)):date('Y-m-d G:i'));?>" id="newsModified">
 				</div>
 				<div class="span-2">
 					<label for="newsPublished">Published</label><input type="checkbox" name="newsPublished" <?php echo (isset($news)&&$news->newsPublished=="1"?"checked":null); ?>  value="1" id="newsPublished" />

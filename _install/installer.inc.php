@@ -374,7 +374,7 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 			
 			// Set max tries to 15
 			for ($i=1; $i<15; $i++) { 
-				if(ftp_chdir($conn_id, trimPath($path,$i))) {
+				if(@ftp_chdir($conn_id, trimPath($path,$i))) {
 					$log[] = "Successfully connected to FTP server";
 					$i = 15;
 				}
@@ -460,19 +460,23 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 	// Modify .htaccess file
 	//
 	if($err==0 && $_SESSION['variables']['rootdir']!='/') {
-		$htaccess = file_get_contents(BASE_PATH.'/.htaccess');
-		$htaccess = preg_replace("/RewriteBase \//", "RewriteBase ".$_SESSION['variables']['rootdir'], $htaccess);
+		$htaccess 	= file_get_contents(BASE_PATH.'/.htaccess');
+		$newline	= "RewriteBase ".$_SESSION['variables']['rootdir'];
+	
+		if(strpos($htaccess, $newline)===false) {
+			$htaccess = preg_replace("/RewriteBase \//", $newline, $htaccess);
 
-		if ($fp = fopen(BASE_PATH.'/.htaccess', 'w')) {			
-			if(fwrite($fp, $htaccess, strlen($htaccess))) {
-				$log[] = "Successfully rewrote the .htaccess file";
-			} 
-		} elseif($_SESSION['variables']['rootdir']=="/") {
-			$errors[] = 'Warning: the .htaccess file is not writable.';
-		} elseif($_SESSION['variables']['rootdir']!="/") {
-			$errors[] = 'Fatal: the .htaccess file is not writable.';
-			$errors[] = 'Make sure the file is writable, or <a href="index.php?do=ff104b2dfab9fe8c0676587292a636d3">do so now</a>.';
-			$err++;
+			if ($fp = fopen(BASE_PATH.'/.htaccess', 'w')) {			
+				if(fwrite($fp, $htaccess, strlen($htaccess))) {
+					$log[] = "Successfully rewrote the .htaccess file";
+				} 
+			} elseif($_SESSION['variables']['rootdir']=="/") {
+				$errors[] = 'Warning: the .htaccess file is not writable.';
+			} elseif($_SESSION['variables']['rootdir']!="/") {
+				$errors[] = 'Fatal: the .htaccess file is not writable.';
+				$errors[] = 'Make sure the file is writable, or <a href="index.php?do=ff104b2dfab9fe8c0676587292a636d3">do so now</a>.';
+				$err++;
+			}
 		}
 	}
 	

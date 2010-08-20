@@ -56,6 +56,11 @@ if(file_exists($langfile)) {
 } else {
 	require_once(BASE_PATH . '/lib/languages/en.inc.php');
 }
+// Set local for time, currency, etc
+setlocale(LC_ALL, $cfg['language']);
+
+// Set default charset
+ini_set('default_charset', "UTF-8");
 
 // SECURITY ==
 // Include security file only for administration directory
@@ -192,12 +197,15 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 	$ccms['breadcrumb'] = null;
 	
 	// Create breadcrumb for the current page
+	// Show if current page is the homepage
 	if($row->urlpage==$cfg['homepage']) {
-		$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir']."\" title=\"".ucfirst($cfg['sitename'])." ".$cfg['homepage']."\">".ucfirst($cfg['homepage'])."</a>";
+		$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir']."\" title=\"".ucfirst($row->subheader)."\">".ucfirst($cfg['sitename'])."</a>";
 	}
+	// If root level, but not homepage
 	if($row->urlpage!=$cfg['homepage'] && $row->sublevel=='0') {
 		$ccms['breadcrumb'] .= " &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
 	}
+	// If sublevel
 	if($row->sublevel>'0') {
 		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `toplevel` = '".$row->toplevel."' AND `sublevel`='0'")) $db->Kill();
 		$subpath = $db->Row();

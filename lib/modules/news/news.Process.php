@@ -69,7 +69,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkA
 		$values["newsTitle"]  = MySQL::SQLValue($_POST['newsTitle'], MySQL::SQLVALUE_TEXT);
 		$values["newsTeaser"]  = MySQL::SQLValue($_POST['newsTeaser'], MySQL::SQLVALUE_TEXT);
 		$values["newsContent"]  = MySQL::SQLValue($_POST['newsContent'], MySQL::SQLVALUE_TEXT);
-		$values["newsModified"]  = MySQL::SQLValue($_POST['newsModified'], MySQL::SQLVALUE_DATE);
+		$values["newsModified"]  = MySQL::SQLValue($_POST['newsModified'], MySQL::SQLVALUE_TEXT);
 		$values["newsPublished"]  = MySQL::SQLValue($newsPublished);
 	
 		// Execute either INSERT or UPDATE based on $newsID
