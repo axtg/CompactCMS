@@ -67,12 +67,12 @@ $users = $db->QueryArray("SELECT userID,userName,userFirst,userLast,userEmail,us
 	</div>
 	
 	<div>
-		<h2><span class="ss_sprite ss_group_gear">Content owners</span></h2>
-		
+		<h2><span class="ss_sprite ss_group_gear"><?php echo $ccms['lang']['owners']['header']; ?></span></h2>
+		<p><?php echo $ccms['lang']['owners']['explain']; ?></p>
 		<form action="content-owners.Process.php" method="post" accept-charset="utf-8">
 		<table border="0" cellspacing="5" cellpadding="5">
 		<tr>
-			<th><span class="ss_sprite ss_arrow_down">Pages</span> \ <span class="ss_sprite ss_arrow_right">Users</span></th>
+			<th><span class="ss_sprite ss_arrow_down"><?php echo $ccms['lang']['owners']['pages']; ?></span> \ <span class="ss_sprite ss_arrow_right"><?php echo $ccms['lang']['owners']['users']; ?></span></th>
 			<?php
 			for ($ar1=0; $ar1<count($users); $ar1++) { ?>
 				<th class="center span-2" style="border-bottom:solid #AD8CCF 2px;">

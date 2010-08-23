@@ -48,7 +48,6 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>News module</title>
 		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,layout.css,sprite.css" />
-		<?php $cfg['language'] = (file_exists('../../../admin/includes/tiny_mce/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en';?>
 		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
 	</head>
 <body>
@@ -59,15 +58,15 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		</div>
 		
 		<div class="span-14 colborder">
-			<h2>Manage current news items</h2>
+			<h2><?php echo $ccms['lang']['news']['manage']; ?></h2>
 			<form action="news.Process.php?action=del-news" method="post" accept-charset="utf-8">
 				<table border="0" cellspacing="5" cellpadding="5">
 					<tr>
 						<?php if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?><th class="span-1">&#160;</th><?php } ?>
 						<th class="span-1">&#160;</th>
-						<th class="span-5">Title</th>
-						<th class="span-4">Author</th>
-						<th class="span-4">Date</th>
+						<th class="span-5"><?php echo $ccms['lang']['news']['title']; ?></th>
+						<th class="span-4"><?php echo $ccms['lang']['news']['author']; ?></th>
+						<th class="span-4"><?php echo $ccms['lang']['news']['date']; ?></th>
 					</tr>
 					<?php
 					// Load recordset
@@ -103,45 +102,45 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 					} ?>
 				</table>
 				<hr />
-				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?><button type="submit" onclick="return confirmation();" name="deleteNews"><span class="ss_sprite ss_newspaper_delete">Delete</span></button><?php } ?>
+				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?><button type="submit" onclick="return confirmation();" name="deleteNews"><span class="ss_sprite ss_newspaper_delete"><?php echo $ccms['lang']['backend']['delete']; ?></span></button><?php } ?>
 			</form>
 		</div>
 		<div class="span-6">
-			<h2>Add news</h2>
+			<h2><?php echo $ccms['lang']['news']['addnews']; ?></h2>
 			<?php if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?>
-			<p><span class="ss_sprite ss_newspaper_add"><a href="news.Write.php">Add news article</a></span></p>
+			<p><span class="ss_sprite ss_newspaper_add"><a href="news.Write.php"><?php echo $ccms['lang']['news']['addnewslink']; ?></a></span></p>
 			
-			<h2>Manage settings</h2>
+			<h2><?php echo $ccms['lang']['news']['settings']; ?></h2>
 			<?php $rsCfg = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgnews`"); ?>
 			<form action="news.Process.php?action=cfg-news" method="post" accept-charset="utf-8">
-				<label for="show_messages">Number of messages on front-end</label>
+				<label for="show_messages"><?php echo $ccms['lang']['news']['numbermess']; ?></label>
 				<input type="text" class="text" name="messages" value="<?php echo (isset($rsCfg)?$rsCfg->showMessage:5); ?>" id="messages" />
 				
-				<label>Show author</label>
+				<label><?php echo $ccms['lang']['news']['showauthor']; ?></label>
 					<img src="../../../admin/img/spacer.gif" height="10" width="20" alt=" "/>
-					<label style="display:inline;" for="show_author1">Yes</label>
+					<label style="display:inline;" for="show_author1"><?php echo $ccms['lang']['backend']['yes']; ?></label>
 					<input type="radio" name="author" <?php echo (isset($rsCfg)&&$rsCfg->showAuthor==1?"checked":null); ?> value="1" id="author1" />
 						<img src="../../../admin/img/spacer.gif" height="10" width="50" alt=" "/>
-					<label style="display:inline;" for="show_author0">No</label>
+					<label style="display:inline;" for="show_author0"><?php echo $ccms['lang']['backend']['no']; ?></label>
 					<input type="radio" name="author" <?php echo (isset($rsCfg)&&$rsCfg->showAuthor==0?"checked":null); ?> value="0" id="author0" />
 				<br/><br/>
-				<label>Show publication date</label>
+				<label><?php echo $ccms['lang']['news']['showdate']; ?></label>
 					<img src="../../../admin/img/spacer.gif" height="10" width="20" alt=" "/>
-					<label style="display:inline;" for="show_modified1">Yes</label>
+					<label style="display:inline;" for="show_modified1"><?php echo $ccms['lang']['backend']['yes']; ?></label>
 					<input type="radio" name="show_modified" <?php echo (isset($rsCfg)&&$rsCfg->showDate==1?"checked":null); ?> value="1" id="show_modified1" />
 						<img src="../../../admin/img/spacer.gif" height="10" width="50" alt=" "/>
-					<label style="display:inline;" for="show_modified0">No</label>
+					<label style="display:inline;" for="show_modified0"><?php echo $ccms['lang']['backend']['no']; ?></label>
 					<input type="radio" name="show_modified" <?php echo (isset($rsCfg)&&$rsCfg->showDate==0?"checked":null); ?> value="0" id="show_modified0" />
 				<br/><br/>
-				<label>Only show teaser</label>
+				<label><?php echo $ccms['lang']['news']['showteaser']; ?></label>
 					<img src="../../../admin/img/spacer.gif" height="10" width="20" alt=" "/>
-					<label style="display:inline;" for="show_teaser1">Yes</label>
+					<label style="display:inline;" for="show_teaser1"><?php echo $ccms['lang']['backend']['yes']; ?></label>
 					<input type="radio" name="show_teaser" <?php echo (isset($rsCfg)&&$rsCfg->showTeaser==1?"checked":null); ?> value="1" id="show_teaser1" />
 						<img src="../../../admin/img/spacer.gif" height="10" width="50" alt=" "/>
-					<label style="display:inline;" for="show_modified0">No</label>
+					<label style="display:inline;" for="show_modified0"><?php echo $ccms['lang']['backend']['no']; ?></label>
 					<input type="radio" name="show_teaser" <?php echo (isset($rsCfg)&&$rsCfg->showTeaser==0?"checked":null); ?> value="0" id="show_teaser0" />
 				<br/><br/>			
-				<p class="prepend-3"><button type="submit"><span class="ss_sprite ss_disk">Save</span></button></p>
+				<p class="prepend-3"><button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button></p>
 			</form>
 			<?php } else echo $ccms['lang']['auth']['featnotallowed']; ?>
 		</div>

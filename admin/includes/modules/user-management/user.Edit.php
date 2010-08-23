@@ -57,6 +57,15 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<title>Edit users</title>
 	<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,layout.css,sprite.css" />
+	<script type="text/javascript" src="../../../../lib/includes/js/mootools.js" charset="utf-8"></script>
+	<!-- Check form and post -->
+	<script type="text/javascript" charset="utf-8">
+	window.addEvent('domready', function(){
+		new FormValidator($('userDetail'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}})
+		new FormValidator($('userPass'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}})
+		new FormValidator($('userLevel'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}})
+	;});
+	</script>
 </head>
 
 <body>
@@ -65,7 +74,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			<div class="<?php echo $_GET['status'];?> center"><strong><?php echo ucfirst($_GET['action']);?></strong></div>
 		<?php } ?>
 		
-		<p class="clear right"><span class="ss_sprite ss_arrow_undo"><a href="backend.php">Back to overview</a></span></p>
+		<p class="clear right"><span class="ss_sprite ss_arrow_undo"><a href="backend.php"><?php echo $ccms['lang']['backend']['tooverview']; ?></a></span></p>
 		
 		<?php // Check authority 
 		if($_SESSION['ccms_userLevel']<$perm['manageUsers']||$row->userLevel>$_SESSION['ccms_userLevel']) {
@@ -75,12 +84,12 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		} ?>
 		
 		<div class="span-10 colborder">
-			<h2>Edit user's personal details</h2>
-			<form action="../../process.inc.php?action=edit-user-details" method="post" accept-charset="utf-8">
-				<label>Username</label><span style="display:block;height:30px;"><?php echo $row->userName; ?></span>
-				<label for="first">First name</label><input type="text" class="text" name="first" value="<?php echo $row->userFirst; ?>" id="first" />
-				<label for="last">Last name</label><input type="text" class="text" name="last" value="<?php echo $row->userLast; ?>" id="last" />
-				<label for="email">E-mail</label><input type="text" class="text" name="email" value="<?php echo $row->userEmail; ?>" id="email" />
+			<h2><?php echo $ccms['lang']['users']['editdetails']; ?></h2>
+			<form action="../../process.inc.php?action=edit-user-details" id="userDetail" method="post" accept-charset="utf-8">
+				<label><?php echo $ccms['lang']['users']['username']; ?></label><span style="display:block;height:30px;"><?php echo $row->userName; ?></span>
+				<label for="first"><?php echo $ccms['lang']['users']['firstname']; ?></label><input type="text" class="required text" name="first" value="<?php echo $row->userFirst; ?>" id="first" />
+				<label for="last"><?php echo $ccms['lang']['users']['lastname']; ?></label><input type="text" class="required text" name="last" value="<?php echo $row->userLast; ?>" id="last" />
+				<label for="email"><?php echo $ccms['lang']['users']['email']; ?></label><input type="text" class="required validate-email text" name="email" value="<?php echo $row->userEmail; ?>" id="email" />
 				
 				<input type="hidden" name="userID" value="<?php echo $row->userID; ?>" id="userID" />
 				<p class="span-6 right"><button type="submit"><span class="ss_sprite ss_user_edit"><?php echo $ccms['lang']['forms']['savebutton'];?></span></button></p>
@@ -90,10 +99,10 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		
 		<div class="span-8">
 			<?php if($_SESSION['ccms_userID']==$row->userID||$_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) { ?>
-			<h2>Edit user's password</h2>
-			<form action="../../process.inc.php?action=edit-user-password" method="post" accept-charset="utf-8">
-				<label for="pass">Password</label><input type="password" class="text" name="pass" value="" id="pass" />
-				<label for="cpass">Confirm password</label><input type="password" class="text" name="cpass" value="" id="cpass" />
+			<h2><?php echo $ccms['lang']['users']['editpassword']; ?></h2>
+			<form action="../../process.inc.php?action=edit-user-password" id="userPass" method="post" accept-charset="utf-8">
+				<label for="pass"><?php echo $ccms['lang']['users']['password']; ?></label><input type="password" class="required minLength:6 text" name="pass" value="" id="pass" />
+				<label for="cpass"><?php echo $ccms['lang']['users']['cpassword']; ?></label><input type="password" class="validate-match matchInput:'pass' matchName:'Password' required minLength:6 text" name="cpass" value="" id="cpass" />
 				
 				<input type="hidden" name="userID" value="<?php echo $row->userID; ?>" id="userID" />
 				<p class="span-8 right"><button type="submit"><span class="ss_sprite ss_key"><?php echo $ccms['lang']['forms']['savebutton'];?></span></button></p>
@@ -101,29 +110,31 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			
 			<hr/>
 			
-			<h2>Account settings</h2>
+			<h2><?php echo $ccms['lang']['users']['accountcfg']; ?></h2>
 			<?php } if($_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) { ?>
-			<form action="../../process.inc.php?action=edit-user-level" method="post" accept-charset="utf-8">
-				<label for="userLevel">User level</label>
-				<select name="userLevel" id="userLevel" size="1">
-					<option value="1" <?php echo ($row->userLevel==1?"selected='SELECTED'":null); ?>>User (Level = 1)</option>
+			<form action="../../process.inc.php?action=edit-user-level" id="userLevel" method="post" accept-charset="utf-8">
+				<label for="userLevel"><?php echo $ccms['lang']['users']['userlevel']; ?></label>
+				<select name="userLevel" class="required" id="userLevel" size="1">
+					<option value="1" <?php echo ($row->userLevel==1?"selected='SELECTED'":null); ?>><?php echo $ccms['lang']['permission']['level1']; ?></option>
 					<?php if($_SESSION['ccms_userLevel']>1) { ?>
-						<option value="2" <?php echo ($row->userLevel==2?"selected='SELECTED'":null); ?>>Editor (Level = 2)</option>
+						<option value="2" <?php echo ($row->userLevel==2?"selected='SELECTED'":null); ?>><?php echo $ccms['lang']['permission']['level2']; ?></option>
 					<?php } if($_SESSION['ccms_userLevel']>2) { ?>
-						<option value="3" <?php echo ($row->userLevel==3?"selected='SELECTED'":null); ?>>Manager (Level = 3)</option>
+						<option value="3" <?php echo ($row->userLevel==3?"selected='SELECTED'":null); ?>><?php echo $ccms['lang']['permission']['level3']; ?></option>
 					<?php } if($_SESSION['ccms_userLevel']>3) { ?>
-					<option value="4" <?php echo ($row->userLevel==4?"selected='SELECTED'":null); ?>>Administrator (Level = 4)</option>
+					<option value="4" <?php echo ($row->userLevel==4?"selected='SELECTED'":null); ?>><?php echo $ccms['lang']['permission']['level4']; ?></option>
 					<?php } ?>
 				</select>
 				<hr class="space"/>
-				<label>Active</label>
-					<label for="userActive1" style="display:inline;font-weight:normal;">Yes</label>
+				<div>
+				<label><?php echo $ccms['lang']['users']['active']; ?></label>
+					<label for="userActive1" style="display:inline;font-weight:normal;"><?php echo $ccms['lang']['backend']['yes']; ?></label>
 					<input type="radio" name="userActive" <?php echo ($row->userActive==1?"checked='CHECKED'":null); ?> value="1" id="userActive1" />	
 					
 					<img src="../../../img/spacer.gif" height="10" width="50" alt=" "/>
 					
-					<label for="userActive0" style="display:inline;font-weight:normal;">No</label>
-					<input type="radio" name="userActive" <?php echo ($row->userActive==0?"checked='CHECKED'":null); ?> value="0" id="userActive0" />
+					<label for="userActive0" style="display:inline;font-weight:normal;"><?php echo $ccms['lang']['backend']['no']; ?></label>
+					<input type="radio" name="userActive" class="validate-one-required" <?php echo ($row->userActive==0?"checked='CHECKED'":null); ?> value="0" id="userActive0" />
+				</div>
 				<hr class="space"/>		
 			
 				<input type="hidden" name="userID" value="<?php echo $row->userID; ?>" id="userID" />
@@ -132,7 +143,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			<?php } else echo $ccms['lang']['auth']['featnotallowed']; ?>
 		</div>
 		
-		<p class="clear right"><span class="ss_sprite ss_arrow_undo"><a href="backend.php">Back to overview</a></span></p>
+		<p class="clear right"><span class="ss_sprite ss_arrow_undo"><a href="backend.php"><?php echo $ccms['lang']['backend']['tooverview']; ?></a></span></p>
 	
 	</div>
 </body>

@@ -68,7 +68,7 @@ if($db->HasRecords()) {
 			<?php if($rsCfg->showAuthor==1) { echo '<strong>&ndash; '.$rsNews->userFirst.' '.$rsNews->userLast.'</strong>'; } ?>
 		</p>
 		<?php } ?>
-		<p>&laquo; <a href="<?php echo $cfg['rootdir'].$_GET['page']; ?>.html?do=all">View archive</a> | <a href="<?php echo $cfg['rootdir'].$_GET['page']; ?>.html"><?php echo $db->QuerySingleValue("SELECT `pagetitle` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '".$_GET['page']."'"); ?></a></p>
+		<p>&laquo; <a href="<?php echo $cfg['rootdir'].$_GET['page']; ?>.html?do=all"><?php echo $ccms['lang']['news']['viewarchive']; ?></a> | <a href="<?php echo $cfg['rootdir'].$_GET['page']; ?>.html"><?php echo $db->QuerySingleValue("SELECT `pagetitle` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '".$_GET['page']."'"); ?></a></p>
 	<?php } ?>
 	
 </div>
@@ -76,7 +76,7 @@ if($db->HasRecords()) {
 <?php
 		}
 		if(!isset($_GET['id'])||empty($_GET['id'])&&$db->RowCount()>$rsCfg->showMessage) { ?>
-			<hr/><p style="text-align:center;"><a href="?do=all">View archive</a></p>
+			<hr/><p style="text-align:center;"><a href="?do=all"><?php echo $ccms['lang']['news']['viewarchive']; ?></a></p>
 		<?php 
 		}
 	}

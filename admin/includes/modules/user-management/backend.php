@@ -50,7 +50,9 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>Manage users</title>
 		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,layout.css,sprite.css" />
+		<script type="text/javascript" src="../../../../lib/includes/js/mootools.js" charset="utf-8"></script>
 		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
+		<script type="text/javascript" charset="utf-8">window.addEvent('domready',function(){new FormValidator($('addUser'),{onFormValidate:function(passed,form,event){if(passed)form.submit();}});});</script>
 	</head>
 <body>
 	<div class="module">
@@ -60,18 +62,18 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<?php } ?>
 		
 		<div class="span-15 colborder">
-			<h2>Overview CMS users</h2>
+			<h2><?php echo $ccms['lang']['users']['overviewusers']; ?></h2>
 			<form action="../../process.inc.php?action=delete-user" method="post" accept-charset="utf-8">
 			
 			<table border="0" cellspacing="5" cellpadding="5">
 				<tr>
 					<th>&#160;</th>
-					<th>User</th>
-					<th>Name</th>
-					<th>E-mail</th>
-					<th>Active</th>
-					<th>Level</th>
-					<th>Last log</th>
+					<th><?php echo $ccms['lang']['users']['user']; ?></th>
+					<th><?php echo $ccms['lang']['users']['name']; ?></th>
+					<th><?php echo $ccms['lang']['users']['email']; ?></th>
+					<th><?php echo $ccms['lang']['users']['active']; ?></th>
+					<th><?php echo $ccms['lang']['users']['level']; ?></th>
+					<th><?php echo $ccms['lang']['users']['lastlog']; ?></th>
 				</tr>
 			
 			<?php 
@@ -111,34 +113,36 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 				<?php $i++; } ?>
 			</table>
 			<hr class="space"/>
-				<?php if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) { ?><button type="submit" onclick="return confirmation();" name="deleteUser"><span class="ss_sprite ss_user_delete">Delete</span></button><?php } ?>
+				<?php if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) { ?><button type="submit" onclick="return confirmation();" name="deleteUser"><span class="ss_sprite ss_user_delete"><?php echo $ccms['lang']['backend']['delete']; ?></span></button><?php } ?>
 			</form>
 			
 		</div>
 		
 		<div class="span-5">
 			
-			<h2>Create a user</h2>
+			<h2><?php echo $ccms['lang']['users']['createuser']; ?></h2>
 			<?php if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) { ?>
-			<form action="../../process.inc.php?action=add-user" method="post" accept-charset="utf-8">
-				<label for="userName">Username</label><input type="text" class="text" name="user" value="" id="userName" />
-				<label for="userPass">Password</label><input type="text" class="text" name="pass" value="<?php echo createPassword(); ?>" id="userPass" />
-				<label for="userFirstname">First name</label><input type="text" class="text" name="userFirstname" value="" id="userFirstname" />
-				<label for="userLastname">Last name</label><input type="text" class="text" name="userLastname" value="" id="userLastname" />
-				<label for="userEmail">E-mail</label><input type="text" class="text" name="userEmail" value="" id="userEmail" />
+			<form action="../../process.inc.php?action=add-user" method="post" id="addUser" accept-charset="utf-8">
+				<label for="userName"><?php echo $ccms['lang']['users']['username']; ?></label><input type="text" class="minLength:3 text" name="user" value="" id="userName" />
+				<label for="userPass"><?php echo $ccms['lang']['users']['password']; ?></label><input type="text" class="minLength:6 text" name="pass" value="<?php echo createPassword(); ?>" id="userPass" />
+				<label for="userFirstname"><?php echo $ccms['lang']['users']['firstname']; ?></label><input type="text" class="required text" name="userFirstname" value="" id="userFirstname" />
+				<label for="userLastname"><?php echo $ccms['lang']['users']['lastname']; ?></label><input type="text" class="required text" name="userLastname" value="" id="userLastname" />
+				<label for="userEmail"><?php echo $ccms['lang']['users']['email']; ?></label><input type="text" class="required validate-email text" name="userEmail" value="" id="userEmail" />
 				
 				<hr class="space"/>
-				<label for="userLevel">User level</label>
-				<select name="userLevel" id="userLevel" size="1">
-					<option value="1">User (Level = 1)</option>
-					<?php if($_SESSION['ccms_userLevel']>1) { ?><option value="2">Editor (Level = 2)</option>
-					<?php } if($_SESSION['ccms_userLevel']>2) { ?><option value="3">Manager (Level = 3)</option>
-					<?php } if($_SESSION['ccms_userLevel']>3) { ?><option value="4">Administrator (Level = 4)</option><?php } ?>
+				<label for="userLevel"><?php echo $ccms['lang']['users']['userlevel']; ?></label>
+				<select name="userLevel" class="required text" id="userLevel" size="1">
+					<option value="1"><?php echo $ccms['lang']['permission']['level1']; ?></option>
+					<?php if($_SESSION['ccms_userLevel']>1) { ?><option value="2"><?php echo $ccms['lang']['permission']['level2']; ?></option>
+					<?php } if($_SESSION['ccms_userLevel']>2) { ?><option value="3"><?php echo $ccms['lang']['permission']['level3']; ?></option>
+					<?php } if($_SESSION['ccms_userLevel']>3) { ?><option value="4"><?php echo $ccms['lang']['permission']['level4']; ?></option><?php } ?>
 				</select>
-				<label>Activated</label>
-					<label for="userActive1" style="display:inline;font-weight:normal;">Yes</label><input type="radio" name="userActive" value="1" id="userActive1" />	
+				<div>
+				<label><?php echo $ccms['lang']['users']['active']; ?></label>
+					<label for="userActive1" style="display:inline;font-weight:normal;"><?php echo $ccms['lang']['backend']['yes']; ?></label><input type="radio" class="validate-one-required" name="userActive" value="1" id="userActive1" />	
 					<img src="../../../img/spacer.gif" height="10" width="50" alt=" "/>
-					<label for="userActive0" style="display:inline;font-weight:normal;">No</label><input type="radio" name="userActive" value="0" id="userActive0" />
+					<label for="userActive0" style="display:inline;font-weight:normal;"><?php echo $ccms['lang']['backend']['no']; ?></label><input type="radio" name="userActive" value="0" id="userActive0" />
+				</div>
 				<hr class="space"/>
 				<p class="right"><button type="submit"><span class="ss_sprite ss_user_add"><?php echo $ccms['lang']['forms']['createbutton']; ?></span></button></p>
 			</form>

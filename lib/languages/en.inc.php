@@ -1,6 +1,6 @@
 <?php
 /* ************************************************************
-Copyright (C) 2008 - 2009 by Xander Groesbeek (CompactCMS.nl)
+Copyright (C) 2008 - 2010 by Xander Groesbeek (CompactCMS.nl)
 Revision:	CompactCMS - v 1.4.1
 	
 This file is part of CompactCMS.
@@ -74,6 +74,7 @@ $ccms['lang']['backend']['confirmdelete'] 	= "Please confirm that you want to de
 $ccms['lang']['backend']['settingssaved']	= "Your changes have been successfully saved.";
 $ccms['lang']['backend']['itemcreated']		= "Successfully processed the submitted item(s).";
 $ccms['lang']['backend']['fullremoved']		= "Successfully deleted the selected item(s).";
+$ccms['lang']['backend']['tooverview']		= "Back to overview";
 $ccms['lang']['backend']['changevalue']		= "Click to change";
 $ccms['lang']['backend']['previewpage']		= "Preview";
 $ccms['lang']['backend']['editpage']		= "Edit";
@@ -144,6 +145,7 @@ $ccms['lang']['forms']['printable'] 	= "Printable";
 $ccms['lang']['forms']['published'] 	= "Active";
 $ccms['lang']['forms']['iscoding'] 		= "Coding";
 $ccms['lang']['forms']['createbutton'] 	= "Create!";
+$ccms['lang']['forms']['modifybutton'] 	= "Modify";
 $ccms['lang']['forms']['savebutton'] 	= "Save";
 
 // Administration hints for form fields
@@ -186,21 +188,78 @@ $ccms['lang']['backup']['currenthd']	= "Available back-ups";
 $ccms['lang']['backup']['timestamp']	= "Back-up file name";
 $ccms['lang']['backup']['download']		= "Download archive";
 
+// User management messages
+$ccms['lang']['users']['createuser']	= "Create a user";
+$ccms['lang']['users']['overviewusers']	= "Overview CCMS users";
+$ccms['lang']['users']['editdetails']	= "Edit user's personal details";
+$ccms['lang']['users']['editpassword']	= "Edit user's password";
+$ccms['lang']['users']['accountcfg']	= "Account settings";
+$ccms['lang']['users']['user']			= "User";
+$ccms['lang']['users']['username']		= "Username";
+$ccms['lang']['users']['name']			= "Name";
+$ccms['lang']['users']['firstname']		= "First name";
+$ccms['lang']['users']['lastname']		= "Last name";
+$ccms['lang']['users']['password']		= "Password";
+$ccms['lang']['users']['cpassword']		= "Confirm password";
+$ccms['lang']['users']['email']			= "E-mail";
+$ccms['lang']['users']['active']		= "Active";
+$ccms['lang']['users']['level']			= "Level";
+$ccms['lang']['users']['userlevel']		= "User level";
+$ccms['lang']['users']['lastlog']		= "Last log";
+
+// Template editor
+$ccms['lang']['template']['manage']		= "Manage templates";
+$ccms['lang']['template']['nowrite']	= "The current template is <strong>not</strong> writable";
+
+// Permissions
+$ccms['lang']['permission']['header']	= "Permission preferences";
+$ccms['lang']['permission']['explain']	= "Use ...";
+$ccms['lang']['permission']['target']	= "Target";
+$ccms['lang']['permission']['level1']	= "Level 1 - User";
+$ccms['lang']['permission']['level2']	= "Level 2 - Editor";
+$ccms['lang']['permission']['level3']	= "Level 3 - Manager";
+$ccms['lang']['permission']['level4']	= "Level 4 - Admin";
+
+// Content owners
+$ccms['lang']['owners']['header']		= "Content owners";
+$ccms['lang']['owners']['explain']		= "Use ...";
+$ccms['lang']['owners']['pages']		= "Pages";
+$ccms['lang']['owners']['users']		= "Users";
+
 // Album messages
 $ccms['lang']['album']['album']			= "Album";
-$ccms['lang']['album']['errordir']		= "The specified album name is too short (min. 4).";
-$ccms['lang']['album']['newdircreated']	= "album directory has been created.";
-$ccms['lang']['album']['renamed']		= "has been renamed to";
-$ccms['lang']['album']['removed']		= "and all of its contents have been removed.";
-$ccms['lang']['album']['refresh']		= "Refresh";
-$ccms['lang']['album']['manage']		= "Manage albums";
+$ccms['lang']['album']['currentalbums']	= "Current albums";
+$ccms['lang']['album']['uploadcontent']	= "Upload content";
+$ccms['lang']['album']['toexisting']	= "Upload to existing album";
+$ccms['lang']['album']['upload']		= "Start upload";
+$ccms['lang']['album']['browse']		= "Browse files";
+$ccms['lang']['album']['clear']			= "Clear list";
+$ccms['lang']['album']['singlefile']	= "<strong>Single file upload</strong><br/><p>The Flash loader failed to initialize. Make sure Javascript is enabled and Flash is installed. Single file uploads are possible, but not optimized.</p>";
+$ccms['lang']['album']['manage']		= "Manage album";
 $ccms['lang']['album']['albumlist']		= "Album list";
-$ccms['lang']['album']['newalbum']		= "New album name";
+$ccms['lang']['album']['newalbum']		= "Create new album";
 $ccms['lang']['album']['noalbums']		= "No albums have been created yet!";
-$ccms['lang']['album']['directory']		= "Directory (#)";
-$ccms['lang']['album']['tooverview']	= "Return to overview";
-$ccms['lang']['album']['rename']		= "Rename";
+$ccms['lang']['album']['files']			= "Files";
 $ccms['lang']['album']['nodir']			= "Please make sure the directory <strong>albums</strong> exists in your image directory";
+$ccms['lang']['album']['lastmod']		= "Last modified";
+
+// News messages
+$ccms['lang']['news']['manage']			= "Manage current news items";
+$ccms['lang']['news']['addnews']		= "Add news";
+$ccms['lang']['news']['addnewslink']	= "Write new article";
+$ccms['lang']['news']['settings']		= "Manage settings";
+$ccms['lang']['news']['writenews']		= "Write news";
+$ccms['lang']['news']['numbermess']		= "# messages on front-end";
+$ccms['lang']['news']['showauthor']		= "Show author";
+$ccms['lang']['news']['showdate']		= "Show publication date";
+$ccms['lang']['news']['showteaser']		= "Only show teaser";
+$ccms['lang']['news']['title']			= "News title";
+$ccms['lang']['news']['author']			= "News author";
+$ccms['lang']['news']['date']			= "Date";
+$ccms['lang']['news']['published']		= "Published?";
+$ccms['lang']['news']['teaser']			= "Teaser";
+$ccms['lang']['news']['contents']		= "Article contents";
+$ccms['lang']['news']['viewarchive']	= "View archive";
 
 // Guestbook message
 $ccms['lang']['guestbook']['guestbook']	= "Guestbook";

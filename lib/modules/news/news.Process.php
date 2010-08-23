@@ -109,7 +109,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth($
 	
 		// Check for errors
 		if($result&&$i==$total) {
-			header("Location: news.Manage.php?status=notice&msg=".$ccms['lang']['backend']['statusremoved']);
+			header("Location: news.Manage.php?status=notice&msg=".$ccms['lang']['backend']['fullremoved']);
 			exit();
 		} else $db->Kill();
 	} else die($ccms['lang']['auth']['featnotallowed']);

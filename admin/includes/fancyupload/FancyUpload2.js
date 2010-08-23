@@ -217,8 +217,8 @@ FancyUpload2.File = new Class({
 // Avoiding MooTools.lang dependency
 (function() {
 	var phrases = {
-		'progressOverall': 'Overall Progress ({total})',
-		'currentTitle': 'File Progress',
+		'progressOverall': 'Overall progress ({total})',
+		'currentTitle': 'File progress',
 		'currentFile': 'Uploading "{name}"',
 		'currentProgress': 'Upload: {bytesLoaded} with {rate}, {timeRemaining} remaining.',
 		'fileName': '{name}',

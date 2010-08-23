@@ -349,6 +349,11 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
     		$description = htmlspecialchars($_POST['description']);
     	}
     	
+    	// Check radio button values
+    	$printable_pref = (isset($_POST['printable'])&&!empty($_POST['printable'])?$_POST['printable']:'Y');
+    	$published_pref = (isset($_POST['published'])&&!empty($_POST['published'])?$_POST['published']:'Y');
+    	$iscoding_pref	= (isset($_POST['iscoding'])&&!empty($_POST['iscoding'])?$_POST['iscoding']:'N');
+    	
 		// Insert new page into database
 		// $arrayVariable["column name"] = formatted SQL value
 		$values['urlpage']		= MySQL::SQLValue(strtolower($post_urlpage),MySQL::SQLVALUE_TEXT);
@@ -360,9 +365,9 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		$values['subheader']	= MySQL::SQLValue($subheader,MySQL::SQLVALUE_TEXT);
 		$values['description']	= MySQL::SQLValue($description,MySQL::SQLVALUE_TEXT);
 		$values['srcfile']		= MySQL::SQLValue(strtolower($post_urlpage).".php",MySQL::SQLVALUE_TEXT);
-		$values['printable']	= MySQL::SQLValue($_POST['printable'],MySQL::SQLVALUE_Y_N);
-		$values['published']	= MySQL::SQLValue($_POST['published'],MySQL::SQLVALUE_Y_N);
-		$values['iscoding']		= MySQL::SQLValue($_POST['iscoding'],MySQL::SQLVALUE_Y_N);
+		$values['printable']	= MySQL::SQLValue($printable_pref,MySQL::SQLVALUE_Y_N);
+		$values['published']	= MySQL::SQLValue($published_pref,MySQL::SQLVALUE_Y_N);
+		$values['iscoding']		= MySQL::SQLValue($iscoding_pref,MySQL::SQLVALUE_Y_N);
 		
 		// Execute the insert
 		$result = $db->InsertRow($cfg['db_prefix']."pages", $values);
@@ -577,7 +582,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	
 		$i=0;
 		foreach ($_POST as $key => $value) {
-			$count[] = (strlen($value)>'2'?$i++:null);
+			$count[] = (strlen($value)>'0'?$i++:null);
 		}
 		if($i<=6) {
 			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_tooshort']);

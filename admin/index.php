@@ -52,6 +52,16 @@ require_once('./includes/process.inc.php');
 	<link rel="stylesheet" type="text/css" href="img/styles/base.css,layout.css,editor.css,sprite.css" />
 	<!--[if IE]><script type="text/javascript" src="../lib/includes/js/excanvas.js"></script><![endif]-->
 	<script type="text/javascript" src="../lib/includes/js/mootools.js,common.js,mocha.js" charset="utf-8"></script>
+	<script type="text/javascript" charset="utf-8">
+	window.addEvent('domready',function(){
+		new FormValidator($('addForm'),{
+			onFormValidate:function(passed,form,event){
+				event.stop();
+				if(passed)form.submit();
+			}
+		});
+	});
+	</script>
 </head>
 
 <body id="desktop">	
@@ -100,19 +110,19 @@ require_once('./includes/process.inc.php');
 				<p><?php echo $ccms['lang']['backend']['createtip']; ?></p>
 				<div id="fields">
 				<label for="urlpage"><?php echo $ccms['lang']['forms']['filename']; ?></label> 
-				<input class="text" type="text" id="urlpage" name="urlpage" />
+				<input class="required minLength:3 text" type="text" id="urlpage" name="urlpage" />
 				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['filename']; ?>">&#160;</span><br/>
 				
 				<label for="f_pt"><?php echo $ccms['lang']['forms']['pagetitle']; ?></label>
-				<input class="text" type="text" id="f_pt" name="pagetitle" />
+				<input class="required minLength:3 text" type="text" id="f_pt" name="pagetitle" />
 				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['pagetitle']; ?>">&#160;</span><br/>
 				
 				<label for="f_sh"><?php echo $ccms['lang']['forms']['subheader']; ?></label> 
-				<input class="text" type="text" id="f_sh" name="subheader" />
+				<input class="required minLength:3 text" type="text" id="f_sh" name="subheader" />
 				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['subheader']; ?>">&#160;</span><br/>
 				
 				<label for="f_de"><?php echo $ccms['lang']['forms']['description']; ?></label>
-				<textarea id="f_de" name="description" rows="4" cols="30"></textarea>
+				<textarea class="required minLength:3" id="f_de" name="description" rows="4" cols="30"></textarea>
 				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['description']; ?>">&#160;</span><br/>
 				
 				<?php if(getModule("count")>0) { ?>
@@ -127,23 +137,26 @@ require_once('./includes/process.inc.php');
 				</select>&#160;<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['module']; ?>">&#160;</span><br/>
 				<?php } ?>
 				
+				<div>
 				<label><?php echo $ccms['lang']['forms']['printable']; ?>?</label> 
-					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" id="f_pr1" checked="checked" name="printable" value="Y" />  
+					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" class="validate-one-required" id="f_pr1" checked="checked" name="printable" value="Y" />  
 					<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" id="f_pr2" name="printable" value="N" />
 					<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['printable']; ?>">&#160;</span><br/>
-	
+				</div>
+				<div>
 				<label style="clear:both; margin-top: 6px;"><?php echo $ccms['lang']['forms']['published']; ?>?</label> 
-					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio"  id="f_pu1" checked="checked" name="published" value="Y" />  
+					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" class="validate-one-required" id="f_pu1" checked="checked" name="published" value="Y" />  
 					<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" style="margin-top: 10px;" id="f_pu2" name="published" value="N" />
 					<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['published']; ?>">&#160;</span><br/>
-	
+				</div>
+				<div>
 				<label style="clear:both; margin-top: 3px;"><?php echo $ccms['lang']['forms']['iscoding']; ?>?</label> 
-					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio"  id="f_cod" name="iscoding" value="Y" />  
+					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" class="validate-one-required" id="f_cod" name="iscoding" value="Y" />  
 					<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" style="margin-top: 10px;" id="f_co2" checked="checked" name="iscoding" value="N" />
 					<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['iscoding']; ?>">&#160;</span><br/>
-	
+				</div>
 				<input type="hidden" name="form" value="create" />
-				<div class="right"><button type="submit" name="submit"><span class="ss_sprite ss_wand"><?php echo $ccms['lang']['forms']['createbutton']; ?></span></button></div>
+				<div class="right"><button type="submit" id="addbtn" name="submit"><span class="ss_sprite ss_wand"><?php echo $ccms['lang']['forms']['createbutton']; ?></span></button></div>
 				</div>
 		</form>	
 		</div>

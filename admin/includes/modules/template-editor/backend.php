@@ -79,10 +79,10 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	<div class="module">
 
 		<?php if(!strpos($_SERVER['SERVER_SOFTWARE'], "Win") && $chstatus==0) { ?>
-			<p class="error center">The current template is <strong>not</strong> writable</p>
+			<p class="error center"><?php echo $ccms['lang']['template']['nowrite']; ?></p>
 		<?php } ?>	
 		<div class="span-13">
-			<h1 class="editor">Manage templates</h1>
+			<h1 class="editor"><?php echo $ccms['lang']['template']['manage']; ?></h1>
 		</div>
 		
 		<div class="span-8 right">

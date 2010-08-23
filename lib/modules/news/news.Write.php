@@ -81,18 +81,11 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		</script>
 		
 		<script type="text/javascript">
-		tinyMCE.init({mode:"exact",elements:"newsContent",theme:"advanced",<?php echo 'language:"'.$cfg['language'].'",'; ?>skin:"o2k7",skin_variant:"silver",plugins:"safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave",theme_advanced_buttons1:"fullscreen,tinyautosave,print,formatselect,fontselect,fontsizeselect,|,justifyleft,justifycenter,justifyright,justifyfull,|,sub,sup,|,spellchecker,link,unlink,anchor,hr,image,media,|,charmap,code",theme_advanced_buttons2:"undo,redo,cleanup,|,bold,italic,underline,strikethrough,|,forecolor,backcolor,removeformat,|,cut,copy,paste,replace,|,bullist,numlist,outdent,indent,|,tablecontrols",theme_advanced_buttons3:"",theme_advanced_toolbar_location:"top",theme_advanced_toolbar_align:"left",theme_advanced_statusbar_location:"bottom",dialog_type:"modal",paste_auto_cleanup_on_paste:true,theme_advanced_resizing:true,relative_urls:true,convert_urls:false,remove_script_host:true,document_base_url:"../../",<?php if($cfg['iframe'] === true) { ?> extended_valid_elements:"iframe[align<bottom?left?middle?right?top|class|frameborder|height|id|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style|title|width]",<?php } ?>spellchecker_languages: "+English=en,Dutch=nl,German=de,Spanish=es,French=fr,Italian=it,Russian=ru",
-			/* Here goes the Magic */
-			file_browser_callback: FileManager.TinyMCE(function(type){
-				return {
-					url: type=='image' ? '../../../admin/includes/fancyupload/selectImage.php' : '../../../admin/includes/fancyupload/manager.php',
-					assetBasePath: '../../../admin/includes/fancyupload/Assets',
-					language: 'en',
-					selectable: true,
-					uploadAuthData: {session: 'ccms_userLevel'}
-				};
-			})
-		});
+		tinyMCE.init({mode:"exact",elements:"newsContent",theme:"advanced",<?php echo 'language:"'.$cfg['language'].'",'; ?>skin:"o2k7",skin_variant:"silver",plugins:"safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave",theme_advanced_buttons1:"fullscreen,tinyautosave,print,formatselect,fontselect,fontsizeselect,|,justifyleft,justifycenter,justifyright,justifyfull,|,sub,sup,|,spellchecker,link,unlink,anchor,hr,image,media,|,charmap,code",theme_advanced_buttons2:"undo,redo,cleanup,|,bold,italic,underline,strikethrough,|,forecolor,backcolor,removeformat,|,cut,copy,paste,replace,|,bullist,numlist,outdent,indent,|,tablecontrols",theme_advanced_buttons3:"",theme_advanced_toolbar_location:"top",theme_advanced_toolbar_align:"left",theme_advanced_statusbar_location:"bottom",dialog_type:"modal",paste_auto_cleanup_on_paste:true,theme_advanced_resizing:true,relative_urls:true,convert_urls:false,remove_script_host:true,document_base_url:"../../",<?php if($cfg['iframe'] === true) { ?> extended_valid_elements:"iframe[align<bottom?left?middle?right?top|class|frameborder|height|id|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style|title|width]",<?php } ?>spellchecker_languages: "+English=en,Dutch=nl,German=de,Spanish=es,French=fr,Italian=it,Russian=ru",file_browser_callback:FileManager.TinyMCE(function(type){return{url:type=='image'?'../../../admin/includes/fancyupload/selectImage.php':'../../../admin/includes/fancyupload/manager.php',assetBasePath:'../../../admin/includes/fancyupload/Assets',language:'en',selectable:true,uploadAuthData:{session:'ccms_userLevel'}};})});
+		</script>
+		
+		<!-- Check form and post -->
+		<script type="text/javascript" charset="utf-8">window.addEvent('domready',function(){new FormValidator($('newsForm'),{onFormValidate:function(passed,form,event){if(passed)form.submit();}});});
 		</script>
 		
 		<!-- Confirm close -->
@@ -103,16 +96,20 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	
 <body >
 	<div class="module">
+		
+		<div id="status">
+			<!-- spinner -->
+		</div>
 			
-		<h2>Write news</h2>
+		<h2><?php echo $ccms['lang']['news']['writenews']; ?></h2>
 		<div class="span-21">
-			<form action="./news.Process.php?action=add-edit-news" method="post" accept-charset="utf-8">
+			<form action="./news.Process.php?action=add-edit-news" id="newsForm" method="post" accept-charset="utf-8">
 				<div class="span-6">
-					<label for="newsTitle">Title</label><input type="text" class="text" name="newsTitle" value="<?php echo (isset($news)?$news->newsTitle:null);?>" id="newsTitle"/>
+					<label for="newsTitle"><?php echo $ccms['lang']['news']['title']; ?></label><input type="text" class="minLength:3 text" name="newsTitle" value="<?php echo (isset($news)?$news->newsTitle:null);?>" id="newsTitle"/>
 				</div>
 				<div class="span-6">
-					<label for="newsAuthor">Author</label>
-					<select name="newsAuthor" class="text" id="newsAuthor" size="1">
+					<label for="newsAuthor"><?php echo $ccms['lang']['news']['author']; ?></label>
+					<select name="newsAuthor" class="required text" id="newsAuthor" size="1">
 						<?php 
 							$db->QueryArray("SELECT * FROM `".$cfg['db_prefix']."users`");
 							while (! $db->EndOfSeek()) {
@@ -122,22 +119,24 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 					</select>
 				</div>
 				<div class="span-4">
-					<label for="newsModified">Date</label><input type="text" class="text" style="width:120px;" name="newsModified" value="<?php echo (isset($news)?date('Y-m-d G:i',strtotime($news->newsModified)):date('Y-m-d G:i'));?>" id="newsModified">
+					<label for="newsModified"><?php echo $ccms['lang']['news']['date']; ?></label><input type="text" class="required text" style="width:120px;" name="newsModified" value="<?php echo (isset($news)?date('Y-m-d G:i',strtotime($news->newsModified)):date('Y-m-d G:i'));?>" id="newsModified">
 				</div>
 				<div class="span-2">
-					<label for="newsPublished">Published</label><input type="checkbox" name="newsPublished" <?php echo (isset($news)&&$news->newsPublished=="1"?"checked":null); ?>  value="1" id="newsPublished" />
+					<label for="newsPublished"><?php echo $ccms['lang']['news']['published']; ?></label><input type="checkbox" name="newsPublished" <?php echo (isset($news)&&$news->newsPublished=="1"?"checked":null); ?>  value="1" id="newsPublished" />
 				</div>
-				<label class="clear" for="newsTeaser">Teaser</label>
-				<textarea name="newsTeaser" id="newsTeaser" style="height:50px;width:98%;" class="text" rows="4" cols="40"><?php echo (isset($news)?$news->newsTeaser:null);?></textarea>
+				<label class="clear" for="newsTeaser"><?php echo $ccms['lang']['news']['teaser']; ?></label>
+				<textarea name="newsTeaser" id="newsTeaser" style="height:50px;width:98%;" class="minLength:3 text" rows="4" cols="40"><?php echo (isset($news)?$news->newsTeaser:null);?></textarea>
 				
-				<label for="newsContent">Contents</label>
-				<textarea name="newsContent" id="newsContent" style="height:290px;width:100%;color:#000;" class="text" rows="8" cols="40"><?php echo (isset($news)?$news->newsContent:null);?></textarea>
+				<label for="newsContent"><?php echo $ccms['lang']['news']['contents']; ?></label>
+				<textarea name="newsContent" id="newsContent" style="height:290px;width:100%;color:#000;" class="text" rows="8" cols="40">
+					<?php echo (isset($news)?$news->newsContent:null);?>
+				</textarea>
 				<hr class="space"/>
 				<p>
 					<input type="hidden" name="newsID" value="<?php echo $newsID; ?>" id="newsID" />
 					<button type="submit" name="submitNews" value="<?php echo $newsID; ?>">
-						<?php if(empty($newsID)) { ?><span class="ss_sprite ss_newspaper_add">Create</span></button><?php } ?>
-						<?php if(!empty($newsID)) { ?><span class="ss_sprite ss_newspaper_go">Modify</span></button><?php } ?>
+						<?php if(empty($newsID)) { ?><span class="ss_sprite ss_newspaper_add"><?php echo $ccms['lang']['forms']['createbutton']; ?></span></button><?php } ?>
+						<?php if(!empty($newsID)) { ?><span class="ss_sprite ss_newspaper_go"><?php echo $ccms['lang']['forms']['modifybutton']; ?></span></button><?php } ?>
 					<span class="ss_sprite ss_cross"><a href="javascript:;" onClick="confirmation()" title="<?php echo $ccms['lang']['editor']['cancelbtn']; ?>"><?php echo $ccms['lang']['editor']['cancelbtn']; ?></a></span>
 				</p>
 			</form>

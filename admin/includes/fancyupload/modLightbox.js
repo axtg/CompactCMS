@@ -93,10 +93,10 @@ window.addEvent('domready', function() { // wait for the content
 			
 			if (json.get('status') == '1') {
 				file.element.addClass('file-success');
-				file.info.set('html', '<strong>Image was uploaded:</strong> ' + json.get('width') + ' x ' + json.get('height') + 'px');
+				file.info.set('html', '<strong>&#8730;</strong> ' + json.get('width') + ' x ' + json.get('height') + 'px');
 			} else {
 				file.element.addClass('file-failed');
-				file.info.set('html', '<strong>An error occured:</strong> ' + (json.get('error') ? (json.get('error') + ' #' + json.get('code')) : response));
+				file.info.set('html', '<strong>X</strong> ' + (json.get('error') ? (json.get('error') + ' #' + json.get('code')) : response));
 			}
 		},
 		

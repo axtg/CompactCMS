@@ -210,6 +210,11 @@ button img, a.button img{margin:0 3px -3px 0 !important;padding:0;border:none;wi
 button:hover, a.button:hover{background-color:#dff4ff;border:1px solid #c2e1ef;color:#336699;}
 a.button:active{background-color:#6299c5;border:1px solid #6299c5;color:#fff;}
 
+/* validation */
+.validation-failed {background:#FBE3E4;color:#8a1f11;border-color:#FBC2C4;}
+.validation-passed {background:#E6EFC2;color:#264409;border-color:#C6D880;}
+.validation-advice {font-style:italic;color:#CC0000;margin-left:150px;padding-left:17px;font-size:0.825em;}
+
 /* fancy-type */
 .alt { 
   color: #666; 

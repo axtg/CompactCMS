@@ -62,20 +62,21 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<? if(isset($_GET['msg'])) { echo '<span class="ss_sprite ss_confirm">'.$_GET['msg'].'</span>'; } ?>
 	</div>
 
-<h2>Permission preferences</h2>
+<h2><?php echo $ccms['lang']['permission']['header']; ?></h2>
 <?php 
 	// (!) Only administrators can change these values
 	if($_SESSION['ccms_userLevel']>='4') {
 ?>
+<p><?php echo $ccms['lang']['permission']['explain']; ?></p>
 <form action="permissions.Process.php" method="post" accept-charset="utf-8">
 <table border="0" cellspacing="5" cellpadding="5">
 	<tr>
-		<th class="span-4"><em>Target</em></th>
-		<th class="span-4 center">Disabled</th>
-		<th class="span-4 center">Level 1 - User</th>
-		<th class="span-4 center">Level 2 - Editor</th>
-		<th class="span-4 center">Level 3 - Manager</th>
-		<th class="span-4 center">Level 4 - Admin</th>
+		<th class="span-4"><em><?php echo $ccms['lang']['permission']['target']; ?></em></th>
+		<th class="span-4 center"><?php echo $ccms['lang']['backend']['disabled']; ?></th>
+		<th class="span-4 center"><?php echo $ccms['lang']['permission']['level1']; ?></th>
+		<th class="span-4 center"><?php echo $ccms['lang']['permission']['level2']; ?></th>
+		<th class="span-4 center"><?php echo $ccms['lang']['permission']['level3']; ?></th>
+		<th class="span-4 center"><?php echo $ccms['lang']['permission']['level4']; ?></th>
 	</tr>
 	<?php
 	$i = 0;

@@ -96,12 +96,12 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 		$album_path = (is_dir($album_path)?$album_path:null);
 		if($album_path==null) { ?>
 			<form action="lightbox.Process.php?action=del-album" method="post" accept-charset="utf-8">
-			<h2>Current albums</h2>
+			<h2><?php echo $ccms['lang']['album']['currentalbums']; ?></h2>
 				<table border="0" cellspacing="5" cellpadding="5">
 						<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) { ?><th class="span-1">&#160;</th><?php } ?>
-						<th class="span-5">Album</th>
-						<th class="span-2">Files</th>
-						<th class="span-4">Last modified</th>
+						<th class="span-5"><?php echo $ccms['lang']['album']['album']; ?></th>
+						<th class="span-2"><?php echo $ccms['lang']['album']['files']; ?></th>
+						<th class="span-4"><?php echo $ccms['lang']['album']['lastmod']; ?></th>
 					</tr>
 					<?php 
 					$i = 0;
@@ -124,7 +124,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 	  				} ?>
 				</table>
 				<hr />
-				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) { ?><button type="submit" onclick="return confirmation();" name="deleteAlbum"><span class="ss_sprite ss_bin_empty">Delete</span></button><?php } ?>
+				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) { ?><button type="submit" onclick="return confirmation();" name="deleteAlbum"><span class="ss_sprite ss_bin_empty"><?php echo $ccms['lang']['backend']['delete']; ?></span></button><?php } ?>
 			</form>
 				
 		<?php } elseif($album_path!=null) { 
@@ -138,7 +138,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 					}
 				} closedir($handle);
 			} ?>
-			<h2>Album content</h2>
+			<h2><?php echo $ccms['lang']['album']['manage']; ?></h2>
 				<?php foreach ($images as $key => $value) { ?>
 					<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {?>
 					<a onclick="return confirmation()" href="lightbox.Process.php?album=<?php echo $_GET['album']; ?>&amp;image=<?php echo $key; ?>&amp;action=del-image">
@@ -149,29 +149,29 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 					<?php } ?>
 				<?php } ?>
 				
-				<p class="clear right"><span class="ss_sprite ss_arrow_undo"><a href="lightbox.Manage.php">All albums</a></span></p>
+				<p class="clear right"><span class="ss_sprite ss_arrow_undo"><a href="lightbox.Manage.php"><?php echo $ccms['lang']['album']['albumlist']; ?></a></span></p>
 		<?php } ?>
 		</div>
 	
 		<div class="span-8">
 			
 		<?php if(!isset($_GET['album'])&&empty($_GET['album'])) { ?>
-			<h2>Create new album</h2>
+			<h2><?php echo $ccms['lang']['album']['newalbum']; ?></h2>
 			<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {?>
 			<form action="lightbox.Process.php?action=create-album" method="post" accept-charset="utf-8">
-				<label for="album">Album name</label><input type="text" class="text" style="width:185px;" name="album" value="" id="album" />
-				<button type="submit"><span class="ss_sprite ss_wand">Create</span></button>
+				<label for="album"><?php $ccms['lang']['album']['album']; ?></label><input type="text" class="text" style="width:185px;" name="album" value="" id="album" />
+				<button type="submit"><span class="ss_sprite ss_wand"><?php echo $ccms['lang']['forms']['createbutton']; ?></span></button>
 			</form>
 			<?php } else echo $ccms['lang']['auth']['featnotallowed']; ?>
 		
 		<hr class="space" />
 		<?php } ?>
 		
-		<h2>Upload content</h2>
+		<h2><?php echo $ccms['lang']['album']['uploadcontent']; ?></h2>
 		<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {?>
 		<form action="./lightbox.Process.php?action=save-files" method="post" enctype="multipart/form-data" id="lightboxForm">
 	
-			<label for="album" style="margin-right:5px;display:inline;">Upload to existing album</label>
+			<label for="album" style="margin-right:5px;display:inline;"><?php echo $ccms['lang']['album']['toexisting']; ?></label>
 			<select name="album" id="album" class="span-4" size="1">
 				<?php foreach ($albums as $value) { ?>
 					<option <?php echo (isset($_GET['album'])&&$_GET['album']===$value?"selected":null); ?> value="<?php echo $value; ?>"><?php echo $value; ?></option>
@@ -180,19 +180,17 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 			<hr class="space"/>
 			<div id="lightbox-fallback">
 				<form action="lightbox.Process.php?action=save-files" method="post" accept-charset="utf-8">
-					<strong>Single file upload</strong><br/>
-					<p>The Flash loader failed to initialize. Make sure Javascript is enabled and Flash is installed. Single file uploads are possible, but not optimized.</p>
-					<label for="lightbox-photoupload">Upload a single photo</label>
+					<?php echo $ccms['lang']['album']['singlefile']; ?>
 					<input id="lightbox-photoupload" type="file" name="ccms_file" />
-					<p><button type="submit"><span class="ss_sprite ss_add">Upload</span></button></p>
+					<p><button type="submit"><span class="ss_sprite ss_add"><?php echo $ccms['lang']['album']['upload']; ?></span></button></p>
 				</form>
 			</div>
 		
 			<div id="lightbox-status" class="hide">
 				<p>
-					<span class="ss_sprite ss_folder_image"><a href="#" id="lightbox-browse">Browse files</a></span> |
-					<span class="ss_sprite ss_cross"><a href="#" id="lightbox-clear">Clear list</a></span> |
-					<span class="ss_sprite ss_picture_save"><a href="#" id="lightbox-upload">Start upload</a></span>
+					<span class="ss_sprite ss_folder_image"><a href="#" id="lightbox-browse"><?php echo $ccms['lang']['album']['browse']; ?></a></span> |
+					<span class="ss_sprite ss_cross"><a href="#" id="lightbox-clear"><?php echo $ccms['lang']['album']['clear']; ?></a></span> |
+					<span class="ss_sprite ss_picture_save"><a href="#" id="lightbox-upload"><?php echo $ccms['lang']['album']['upload']; ?></a></span>
 				</p>
 				<div>
 					<strong class="overall-title"></strong><br />
