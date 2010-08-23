@@ -142,9 +142,9 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
 				echo '<tr style="background-color: #EBC6CD;">';
 			} else echo '<tr>'; } ?>
 			<td style="padding-left:2px;" class="span-1">
-			<?php if($cfg['homepage'] == $row->urlpage || in_array($row->urlpage, $cfg['restrict'])) { ?>
-				<span class="ss_sprite ss_accept" title="<?php echo $ccms['lang']['system']['error_default']; ?>"></span>
-			<?php } else { ?>
+			<?php if($_SESSION['ccms_userLevel']<$perm['managePages'] || $cfg['homepage'] == $row->urlpage || in_array($row->urlpage, $cfg['restrict'])) { ?>
+				<span class="ss_sprite ss_bullet_red" title="<?php echo $ccms['lang']['auth']['featnotallowed']; ?>"></span>
+			<?php } elseif($_SESSION['ccms_userLevel']>=$perm['managePages'] && $cfg['homepage'] != $row->urlpage || !in_array($row->urlpage, $cfg['restrict'])) { ?>
 				<input type="checkbox" id="page_id_<?php echo $i;?>" name="page_id[]" value="<?php echo $_SESSION['rc1'].$_SESSION['rc2'].$row->page_id; ?>" />
 			<?php } ?>
 			</td>
@@ -161,15 +161,18 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
 				<a href="#" id="printable-<?php echo $row->page_id; ?>" rel="<?php echo $row->printable; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php if($row->printable == "Y") { echo $ccms['lang']['backend']['yes']; } else echo $ccms['lang']['backend']['no']; ?></a>
 			</td>
 			<td class="span-2" style="text-align: center;">
-				<a href="#" id="published-<?php echo $row->page_id; ?>" rel="<?php echo $row->published; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php if($row->published == "Y") { echo $ccms['lang']['backend']['yes']; } else echo $ccms['lang']['backend']['no']; ?></a>
+				<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageActivity']) { ?>
+					<a href="#" id="published-<?php echo $row->page_id; ?>" rel="<?php echo $row->published; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php if($row->published == "Y") { echo $ccms['lang']['backend']['yes']; } else echo $ccms['lang']['backend']['no']; ?></a>
+				<?php } ?>
 			</td>
 			<td class="span-2" style="text-align: center;">
-				<?php if($row->module=="editor") { ?>
-					<a href="#" id="iscoding-<?php echo $row->page_id; ?>" rel="<?php echo $row->iscoding; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php if($row->iscoding == "Y") { echo "<span style=\"color:#8F0000;font-weight:bold;\">".$ccms['lang']['backend']['yes']."</span>"; } else echo $ccms['lang']['backend']['no']; ?></a>
-				<?php } else echo "&ndash;"; ?>
+				<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageVarCoding']) { ?>
+					<?php if($row->module=="editor") { ?>
+						<a href="#" id="iscoding-<?php echo $row->page_id; ?>" rel="<?php echo $row->iscoding; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php if($row->iscoding == "Y") { echo "<span style=\"color:#8F0000;font-weight:bold;\">".$ccms['lang']['backend']['yes']."</span>"; } else echo $ccms['lang']['backend']['no']; ?></a>
+					<?php } else echo "&ndash;"; ?>
+				<?php } ?>
 			</td>
-			<?php 
-			// Check for restrictions
+			<?php // Check for restrictions
 			if(!in_array($row->urlpage, $cfg['restrict'])||!in_array($row->page_id, $owners)) { ?>
 				<td class="span-5" style="text-align: right;">
 					<a id="<?php echo $row->urlpage;?>" href="<?php echo $module; ?>?file=<?php echo $row->urlpage; ?>&amp;action=edit&amp;restrict=<?php echo $row->iscoding; ?>&amp;active=<?php echo $row->published;?>" rel="Edit <?php echo $row->urlpage.'.html';?>" class="tabs sprite edit"><?php echo $ccms['lang']['backend']['editpage']; ?></a> | <a href="../<?php echo ($row->urlpage!=$cfg['homepage'])?$row->urlpage.'.html?preview='.$cfg['authcode']:'?preview='.$cfg['authcode']; ?>" class="external"><?php echo $ccms['lang']['backend']['previewpage']; ?></a>&#160;
@@ -214,70 +217,74 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
  *
  */
 if($do_action == "renderlist" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($canarycage,$currenthost)) {
-	echo "<table class=\"span-14-1\" cellpadding=\"0\" cellspacing=\"0\">";
-	$i = 0;
-	// Get previously opened DB stream
-	while (!$db->EndOfSeek()) {
-    	// Fill $row with values
-		$row = $db->Row();
-		
-		// Define $isEven for alternate table coloring
-		$isEven = !($i % 2);
-		if($isEven != '1') {
-			echo "<tr style=\"background-color: #CDE6B3;\">";
-		} else { 
-			echo "<tr>"; } ?>
-			<td class="span-2">
-				<select class="span-2" name="menuid[<?php echo $row->page_id; ?>]">
-					<optgroup label="Menu">
-						<?php $y = 1; while($y<='5') { ?>
-						<option <?php echo ($row->menu_id==$y) ? "selected=\"selected\"" : ""; ?> value="<?php echo $y; ?>"><?php echo $ccms['lang']['menu'][$y]; ?></option>
-						<?php $y++; } ?>
-					</optgroup>
-				</select>
-			</td>
-			<td class="span-2">
-				<select class="span-2" name="template[<?php echo $row->page_id; ?>]">
-					<optgroup label="<?php echo $ccms['lang']['backend']['template'];?>">
-						<?php $x = 0; while($x<count($template)) { ?>
-						<option <?php echo ($row->variant==$template[$x]) ? "selected=\"selected\"" : ""; ?> value="<?php echo $template[$x]; ?>"><?php echo ucfirst($template[$x]); ?></option>
-						<?php $x++; } ?>
-					</optgroup>
-				</select>
-			</td>
-			<td class="span-2">&#160;
-				<select class="span-2" name="toplevel[<?php echo $row->page_id; ?>]">
-					<optgroup label="Toplevel">
-						<?php $z = 1; while($z <= $db->RowCount()) { ?>
-							<option <?php echo ($row->toplevel==$z) ? "selected=\"selected\"" : ""; ?> value="<?php echo $z; ?>"><?php echo $z; ?></option>
-						<?php $z++; } ?>
-					</optgroup>
-				</select>
-			</td>
-			<td class="span-2">
-				<select class="span-2" name="sublevel[<?php echo $row->page_id; ?>]">
-					<optgroup label="Sublevel">
-						<?php $y = 0; while($y+1 < $db->RowCount()) { ?>
-							<option <?php echo ($row->sublevel==$y) ? "selected=\"selected\"" : ""; ?> value="<?php echo $y; ?>"><?php echo $y; ?></option>
-						<?php $y++; } ?>
-					</optgroup>
-				</select>
-			</td>
-			<td class="span-1-1" id="td-islink-<?php echo $row->page_id; ?>">
-				<?php if($cfg['homepage'] == $row->urlpage) { ; ?>
-					<input type="checkbox" checked="checked" disabled="disabled" />
-				<?php } else { ?>
-					<input type="checkbox" name="islink" id="<?php echo $row->page_id; ?>" class="islink" <?php echo($row->islink==="Y")?'checked="checked"':null;?> />
-				<?php } ?>
-			</td>
-			<td class="span-3">
-				<?php echo $row->urlpage; ?><em>(.html)</em>
-				<input type="hidden" name="pageid[]" value="<?php echo $row->page_id; ?>" id="pageid"/>
-			</td>
-		</tr>
-	<?php $i++; } ?>
-	</table>
-<?php }
+	if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageMenu']) {
+		echo "<table class=\"span-14-1\" cellpadding=\"0\" cellspacing=\"0\">";
+		$i = 0;
+		// Get previously opened DB stream
+		while (!$db->EndOfSeek()) {
+	    	// Fill $row with values
+			$row = $db->Row();
+			
+			// Define $isEven for alternate table coloring
+			$isEven = !($i % 2);
+			if($isEven != '1') {
+				echo "<tr style=\"background-color: #CDE6B3;\">";
+			} else { 
+				echo "<tr>"; } ?>
+				<td class="span-2">
+					<select class="span-2" name="menuid[<?php echo $row->page_id; ?>]">
+						<optgroup label="Menu">
+							<?php $y = 1; while($y<='5') { ?>
+							<option <?php echo ($row->menu_id==$y) ? "selected=\"selected\"" : ""; ?> value="<?php echo $y; ?>"><?php echo $ccms['lang']['menu'][$y]; ?></option>
+							<?php $y++; } ?>
+						</optgroup>
+					</select>
+				</td>
+				<td class="span-2">
+					<select class="span-2" name="template[<?php echo $row->page_id; ?>]">
+						<optgroup label="<?php echo $ccms['lang']['backend']['template'];?>">
+							<?php $x = 0; while($x<count($template)) { ?>
+							<option <?php echo ($row->variant==$template[$x]) ? "selected=\"selected\"" : ""; ?> value="<?php echo $template[$x]; ?>"><?php echo ucfirst($template[$x]); ?></option>
+							<?php $x++; } ?>
+						</optgroup>
+					</select>
+				</td>
+				<td class="span-2">&#160;
+					<select class="span-2" name="toplevel[<?php echo $row->page_id; ?>]">
+						<optgroup label="Toplevel">
+							<?php $z = 1; while($z <= $db->RowCount()) { ?>
+								<option <?php echo ($row->toplevel==$z) ? "selected=\"selected\"" : ""; ?> value="<?php echo $z; ?>"><?php echo $z; ?></option>
+							<?php $z++; } ?>
+						</optgroup>
+					</select>
+				</td>
+				<td class="span-2">
+					<select class="span-2" name="sublevel[<?php echo $row->page_id; ?>]">
+						<optgroup label="Sublevel">
+							<?php $y = 0; while($y+1 < $db->RowCount()) { ?>
+								<option <?php echo ($row->sublevel==$y) ? "selected=\"selected\"" : ""; ?> value="<?php echo $y; ?>"><?php echo $y; ?></option>
+							<?php $y++; } ?>
+						</optgroup>
+					</select>
+				</td>
+				<td class="span-1-1" id="td-islink-<?php echo $row->page_id; ?>">
+					<?php if($cfg['homepage'] == $row->urlpage) { ; ?>
+						<input type="checkbox" checked="checked" disabled="disabled" />
+					<?php } else { ?>
+						<input type="checkbox" name="islink" id="<?php echo $row->page_id; ?>" class="islink" <?php echo($row->islink==="Y")?'checked="checked"':null;?> />
+					<?php } ?>
+				</td>
+				<td class="span-3">
+					<?php echo $row->urlpage; ?><em>(.html)</em>
+					<input type="hidden" name="pageid[]" value="<?php echo $row->page_id; ?>" id="pageid"/>
+				</td>
+			</tr>
+		<?php $i++; } ?>
+		</table>
+<?php } else {
+	echo '<p class="center" style="padding-top:5px;"><span class="ss_sprite ss_delete">'.$ccms['lang']['auth']['featnotallowed'].'</span></p>';
+	} 
+}
 
  /**
  *
@@ -548,7 +555,7 @@ if($do_action == "save-template" && $_SERVER['REQUEST_METHOD'] == "POST" && chec
 		    }
 		// Do on success
 		fclose($handle);
-		header("Location: ./modules/template-editor/backend.php?status=success&template=$filenoext");
+		header("Location: ./modules/template-editor/backend.php?status=notice&template=$filenoext");
 		exit();
 		
 		// Else throw relevant error(s)
@@ -570,10 +577,10 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	
 		$i=0;
 		foreach ($_POST as $key => $value) {
-			$count[] = (strlen($value)>=1?$i++:null);
+			$count[] = (strlen($value)>'2'?$i++:null);
 		}
 		if($i<=6) {
-			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_value']);
+			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_tooshort']);
 			exit();
 		}
 			
@@ -592,7 +599,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		
 		// Check for errors
 		if($result) {
-			header("Location: ./modules/user-management/backend.php?status=success&action=".$ccms['lang']['backend']['success']);
+			header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
 			exit();
 		} else $db->Kill();
 	} else die($ccms['lang']['auth']['featnotallowed']);
@@ -608,19 +615,26 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) {
 	
-		$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
-		$values["userFirst"]= MySQL::SQLValue($_POST['first'],MySQL::SQLVALUE_TEXT);
-		$values["userLast"]	= MySQL::SQLValue($_POST['last'],MySQL::SQLVALUE_TEXT);
-		$values["userEmail"]	= MySQL::SQLValue($_POST['email'],MySQL::SQLVALUE_TEXT);
+		// Check length of values
+		if(strlen($_POST['first'])>'2'&&strlen($_POST['last'])>'2'&&strlen($_POST['email'])>'6') {
 		
-		if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
+			$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
+			$values["userFirst"]= MySQL::SQLValue($_POST['first'],MySQL::SQLVALUE_TEXT);
+			$values["userLast"]	= MySQL::SQLValue($_POST['last'],MySQL::SQLVALUE_TEXT);
+			$values["userEmail"]	= MySQL::SQLValue($_POST['email'],MySQL::SQLVALUE_TEXT);
 			
-			if($userID==$_SESSION['ccms_userID']) {
-				$_SESSION['ccms_userFirst']	= htmlspecialchars($_POST['first']);
-				$_SESSION['ccms_userLast']	= htmlspecialchars($_POST['last']);
+			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
+				
+				if($userID==$_SESSION['ccms_userID']) {
+					$_SESSION['ccms_userFirst']	= htmlspecialchars($_POST['first']);
+					$_SESSION['ccms_userLast']	= htmlspecialchars($_POST['last']);
+				}
+				
+				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
+				exit();
 			}
-			
-			header("Location: ./modules/user-management/backend.php?status=success&action=".$ccms['lang']['backend']['success']);
+		} else {
+			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_tooshort']);
 			exit();
 		}
 	} else die($ccms['lang']['auth']['featnotallowed']);
@@ -637,17 +651,20 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) {
 	
-		if(md5($_POST['pass'])===md5($_POST['cpass'])) {
+		if(strlen($_POST['pass'])>'6'&&md5($_POST['pass'])===md5($_POST['cpass'])) {
 		
 			$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
 			$values["userPass"] = MySQL::SQLValue(md5($_POST['pass']),MySQL::SQLVALUE_TEXT);
 			
 			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
-				header("Location: ./modules/user-management/backend.php?status=success&action=".$ccms['lang']['backend']['success']);
+				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
 				exit();
 			}
+		} elseif(strlen($_POST['pass'])<='6') {
+			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passshort']);
+			exit();
 		} elseif(md5($_POST['pass'])!==md5($_POST['cpass'])) {
-			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=Passwords do not match");
+			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passnequal']);
 			exit();
 		}
 	} else die($ccms['lang']['auth']['featnotallowed']);
@@ -674,7 +691,7 @@ if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && ch
 					$_SESSION['ccms_userLevel']	= (is_numeric($_POST['userLevel'])?$_POST['userLevel']:$_SESSION['ccms_userLevel']);
 				}
 				
-				header("Location: ./modules/user-management/backend.php?status=success&action=".$ccms['lang']['backend']['success']);
+				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
 				exit();
 			}
 	
@@ -694,7 +711,7 @@ if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 		$total = count($_POST['userID']);
 		
 		if($total==0) {
-			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_value']);
+			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_selection']);
 			exit();
 		}
 		
@@ -707,7 +724,7 @@ if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 		}
 		// Check for errors
 		if($result&&$i==$total) {
-			header("Location: ./modules/user-management/backend.php?status=success&action=".$ccms['lang']['backend']['statusremoved']);
+			header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['fullremoved']);
 			exit();
 		} else $db->Kill();
 	} else die($ccms['lang']['auth']['featnotallowed']);

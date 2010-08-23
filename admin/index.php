@@ -80,73 +80,79 @@ require_once('./includes/process.inc.php');
 					<li><span class="ss_sprite ss_folder_user "><a id="sys-pow" href="./includes/modules/content-owners/content-owners.Manage.php" rel="Define content owners" class="tabs">Content owners</a></span></li>
 				<?php } if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageTemplate']) { ?>
 					<li><span class="ss_sprite ss_color_swatch"><a id="sys-tmp" href="./includes/modules/template-editor/backend.php" rel="Template editor" class="tabs">Template editor</a></span></li>
-				<?php } ?>
+				<?php } if($perm['manageUsers']>0) { ?>
 				<li><span class="ss_sprite ss_group"><a id="sys-usr" href="./includes/modules/user-management/backend.php" rel="User management" class="tabs">User management</a></span></li>
+				<?php } if($perm['manageModBackup']>0) { ?>
 				<li><span class="ss_sprite ss_drive_disk"><a id="sys-bck" href="./includes/modules/backup-restore/backend.php" rel="Backup management" class="tabs"><?php echo $ccms['lang']['backup']['createhd'];?></a></span></li>
+				<?php } ?>
 			</ul>
 		</div>
 	</div>
 
 	<?php // Start main management section ?>
 	<?php // Create new page ?>
+	<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['managePages']) { ?>
 	<div id="createnew" class="span-9">
 	<fieldset>
 		<legend><span class="ss_sprite ss_add">&#160;</span><a id="toggle-1" href="#"><?php echo $ccms['lang']['backend']['createpage']; ?></a></legend>
 		<div id="form_wrapper">
-		<p><?php echo $ccms['lang']['backend']['createtip']; ?></p>
 		<form method="post" id="addForm" action="<?php echo $_SERVER['PHP_SELF'] ?>">
-			<div id="fields">
-			<label for="urlpage"><?php echo $ccms['lang']['forms']['filename']; ?></label> 
-			<input class="text" type="text" id="urlpage" name="urlpage" />
-			<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['filename']; ?>"></span><br/>
-			
-			<label for="f_pt"><?php echo $ccms['lang']['forms']['pagetitle']; ?></label>
-			<input class="text" type="text" id="f_pt" name="pagetitle" />
-			<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['pagetitle']; ?>"></span><br/>
-			
-			<label for="f_sh"><?php echo $ccms['lang']['forms']['subheader']; ?></label> 
-			<input class="text" type="text" id="f_sh" name="subheader" />
-			<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['subheader']; ?>"></span><br/>
-			
-			<label for="f_de"><?php echo $ccms['lang']['forms']['description']; ?></label>
-			<textarea id="f_de" name="description" rows="4" cols="30"></textarea>
-			<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['description']; ?>"></span><br/>
-			
-			<?php if(getModule("count")>0) { ?>
-			<label for="f_mod"><?php echo $ccms['lang']['forms']['module']; ?></label>
-			<select class="text" name="module" id="f_mod" size="1">
-				<option value="editor"><?php echo $ccms['lang']['forms']['contentitem']; ?></option>
-				<optgroup label="<?php echo $ccms['lang']['forms']['additions']; ?>">
-				<?php foreach (getModule("list") as $value): ?>
-					<option value="<?php echo $value;?>"><?php echo $value;?></option>	
-				<?php endforeach ?>
-				</optgroup>
-			</select>&#160;<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['module']; ?>"></span><br/>
-			<?php } ?>
-			
-			<label><?php echo $ccms['lang']['forms']['printable']; ?>?</label> 
-				<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" id="f_pr1" checked="checked" name="printable" value="Y" />  
-				<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" id="f_pr2" name="printable" value="N" />
-				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['printable']; ?>"></span><br/>
-
-			<label style="clear:both; margin-top: 6px;"><?php echo $ccms['lang']['forms']['published']; ?>?</label> 
-				<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio"  id="f_pu1" checked="checked" name="published" value="Y" />  
-				<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" style="margin-top: 10px;" id="f_pu2" name="published" value="N" />
-				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['published']; ?>"></span><br/>
-
-			<label style="clear:both; margin-top: 3px;"><?php echo $ccms['lang']['forms']['iscoding']; ?>?</label> 
-				<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio"  id="f_cod" name="iscoding" value="Y" />  
-				<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" style="margin-top: 10px;" id="f_co2" checked="checked" name="iscoding" value="N" />
-				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['iscoding']; ?>"></span><br/>
-
-			<input type="hidden" name="form" value="create" />
-			<div class="right"><button type="submit" name="submit"><span class="ss_sprite ss_wand"><?php echo $ccms['lang']['forms']['createbutton']; ?></span></button></div>
-			</div>	
+				<p><?php echo $ccms['lang']['backend']['createtip']; ?></p>
+				<div id="fields">
+				<label for="urlpage"><?php echo $ccms['lang']['forms']['filename']; ?></label> 
+				<input class="text" type="text" id="urlpage" name="urlpage" />
+				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['filename']; ?>">&#160;</span><br/>
+				
+				<label for="f_pt"><?php echo $ccms['lang']['forms']['pagetitle']; ?></label>
+				<input class="text" type="text" id="f_pt" name="pagetitle" />
+				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['pagetitle']; ?>">&#160;</span><br/>
+				
+				<label for="f_sh"><?php echo $ccms['lang']['forms']['subheader']; ?></label> 
+				<input class="text" type="text" id="f_sh" name="subheader" />
+				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['subheader']; ?>">&#160;</span><br/>
+				
+				<label for="f_de"><?php echo $ccms['lang']['forms']['description']; ?></label>
+				<textarea id="f_de" name="description" rows="4" cols="30"></textarea>
+				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['description']; ?>">&#160;</span><br/>
+				
+				<?php if(getModule("count")>0) { ?>
+				<label for="f_mod"><?php echo $ccms['lang']['forms']['module']; ?></label>
+				<select class="text" name="module" id="f_mod" size="1">
+					<option value="editor"><?php echo $ccms['lang']['forms']['contentitem']; ?></option>
+					<optgroup label="<?php echo $ccms['lang']['forms']['additions']; ?>">
+					<?php foreach (getModule("list") as $value): ?>
+						<option value="<?php echo $value;?>"><?php echo $value;?></option>	
+					<?php endforeach ?>
+					</optgroup>
+				</select>&#160;<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['module']; ?>">&#160;</span><br/>
+				<?php } ?>
+				
+				<label><?php echo $ccms['lang']['forms']['printable']; ?>?</label> 
+					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" id="f_pr1" checked="checked" name="printable" value="Y" />  
+					<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" id="f_pr2" name="printable" value="N" />
+					<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['printable']; ?>">&#160;</span><br/>
+	
+				<label style="clear:both; margin-top: 6px;"><?php echo $ccms['lang']['forms']['published']; ?>?</label> 
+					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio"  id="f_pu1" checked="checked" name="published" value="Y" />  
+					<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" style="margin-top: 10px;" id="f_pu2" name="published" value="N" />
+					<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['published']; ?>">&#160;</span><br/>
+	
+				<label style="clear:both; margin-top: 3px;"><?php echo $ccms['lang']['forms']['iscoding']; ?>?</label> 
+					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio"  id="f_cod" name="iscoding" value="Y" />  
+					<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" style="margin-top: 10px;" id="f_co2" checked="checked" name="iscoding" value="N" />
+					<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['iscoding']; ?>">&#160;</span><br/>
+	
+				<input type="hidden" name="form" value="create" />
+				<div class="right"><button type="submit" name="submit"><span class="ss_sprite ss_wand"><?php echo $ccms['lang']['forms']['createbutton']; ?></span></button></div>
+				</div>
 		</form>	
 		</div>
 	</fieldset>
 	</div>
+	<?php } else echo '<div id="createnew"><span id="toggle-1"></span><div id="form_wrapper"><form id="addForm" action=""></form></div></div>'; ?>
+	
 	<?php // Manage menu depths & languages ?>
+	<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageMenu']) { ?>
 	<div id="menudepth" class="span-15">
 	<fieldset>
 		<legend><span class="ss_sprite ss_text_list_bullets">&#160;</span> <a id="toggle-3" href="#"><?php echo $ccms['lang']['backend']['managemenu']; ?></a></legend>
@@ -167,14 +173,17 @@ require_once('./includes/process.inc.php');
 				<!--spinner-->
 			</div>
 			<hr class="space"/>
+
 			<div class="right">
 				<input type="hidden" name="form" value="menuorder" />
 				<button type="submit" name="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['editor']['savebtn']; ?></span></button>
 			</div>
+
 		</form>	
 		</div>
 	</fieldset>
 	</div>
+	<?php } else echo '<div id="menu_wrapper"><span id="toggle-3"></span><div id="menuFields"><form id="menuForm" action=""></form></div></div>'; ?>
 	
 	<?php // Manage current files ?>
 	<div id="manage" class="span-25">
@@ -186,12 +195,20 @@ require_once('./includes/process.inc.php');
 		<table id="table_manage">
 			<tr>
 				<th style="padding-left: 5px;" class="span-1"></th>
-				<th class="span-3"><?php echo $ccms['lang']['forms']['filename']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['filename']; ?>"></span></th>
-				<th class="span-4"><?php echo $ccms['lang']['forms']['pagetitle']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['pagetitle']; ?>"></span></th>
-				<th class="span-6"><?php echo $ccms['lang']['forms']['subheader']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['subheader']; ?>"></span></th>
-				<th class="span-2-1"><?php echo $ccms['lang']['forms']['printable']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['printable']; ?>"></span></th>
-				<th class="span-2"><?php echo $ccms['lang']['forms']['published']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['published']; ?>"></span></th>
-				<th class="span-2"><?php echo $ccms['lang']['forms']['iscoding']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['iscoding']; ?>"></span></th>
+				<th class="span-3"><?php echo $ccms['lang']['forms']['filename']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['filename']; ?>">&#160;</span></th>
+				<th class="span-4"><?php echo $ccms['lang']['forms']['pagetitle']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['pagetitle']; ?>">&#160;</span></th>
+				<th class="span-6"><?php echo $ccms['lang']['forms']['subheader']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['subheader']; ?>">&#160;</span></th>
+				<th class="center span-2-1"><?php echo $ccms['lang']['forms']['printable']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['printable']; ?>">&#160;</span></th>
+				<th class="center span-2">
+					<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageActivity']) { ?>
+						<?php echo $ccms['lang']['forms']['published']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['published']; ?>">&#160;</span>
+					<?php } ?>
+				</th>
+				<th class="center span-2">
+					<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageVarCoding']) { ?>
+						<?php echo $ccms['lang']['forms']['iscoding']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['iscoding']; ?>">&#160;</span>
+					<?php } ?>
+				</th>
 				<th class="span-5" style="text-align: right;">&#160;</th>
 			</tr>
 		</table>
@@ -201,11 +218,13 @@ require_once('./includes/process.inc.php');
 		</div>
 		<table width="100%">
 			<tr>
+				<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['managePages']) { ?>
 				<th class="span-11" style="text-align: left;">
 					<input type="hidden" name="form" value="delete" />
 					<input type="hidden" id="ad_msg01" value="<?php echo $ccms['lang']['backend']['confirmdelete']; ?>" />
 					<button type="submit" name="btn_del"><span class="ss_sprite ss_bin_empty"><?php echo $ccms['lang']['backend']['delete']; ?></span></button>
 				</th>
+				<?php } else echo '<th class="span-11">&#160;</th>'; ?>
 				<th class="span-2"><div style="background-color: #CDE6B3; text-align: center;"><span class="ss_sprite ss_accept"><?php echo $ccms['lang']['backend']['active']; ?></span></div></th>
 				<th class="span-2"><div style="background-color: #F2D9DE; text-align: center;"><span class="ss_sprite ss_stop"><?php echo $ccms['lang']['backend']['disabled']; ?></span></div></th>
 			</tr>

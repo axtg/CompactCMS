@@ -59,7 +59,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST) && checkAuth($canaryca
 		
 		// Execute either INSERT or UPDATE
 		if($db->UpdateRows($cfg['db_prefix']."cfgpermissions", $_POST)) {
-			header("Location: permissions.Manage.php?status=success&msg=success");
+			header("Location: permissions.Manage.php?status=notice&msg=".$ccms['lang']['backend']['settingssaved']);
 			exit();
 		} else $db->Kill();
 		

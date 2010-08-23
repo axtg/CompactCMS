@@ -74,7 +74,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkA
 	
 		// Execute either INSERT or UPDATE based on $newsID
 		if($db->AutoInsertUpdate($cfg['db_prefix']."modnews", $values, array("newsID" => $newsID))) {
-			header("Location: news.Manage.php?status=success");
+			header("Location: news.Manage.php?status=notice&msg=".$ccms['lang']['backend']['itemcreated']);
 			exit();
 		} else $db->Kill();
 	} else die($ccms['lang']['auth']['featnotallowed']);
@@ -95,7 +95,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth($
 		
 		// If nothing selected, throw error
 		if($total==0) {
-			header("Location: news.Manage.php?status=error&action=".$ccms['lang']['system']['error_value']);
+			header("Location: news.Manage.php?status=error&msg=".$ccms['lang']['system']['error_selection']);
 			exit();
 		}
 		
@@ -109,7 +109,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth($
 	
 		// Check for errors
 		if($result&&$i==$total) {
-			header("Location: news.Manage.php?status=success&action=".$ccms['lang']['backend']['statusremoved']);
+			header("Location: news.Manage.php?status=notice&msg=".$ccms['lang']['backend']['statusremoved']);
 			exit();
 		} else $db->Kill();
 	} else die($ccms['lang']['auth']['featnotallowed']);
@@ -132,7 +132,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="cfg-news" && checkAuth($
 
 		// Execute the update where the ID is 1
 		if($db->UpdateRows($cfg['db_prefix']."cfgnews", $values)) {
-			header("Location: news.Manage.php?status=success&action=".$ccms['lang']['backend']['statusremoved']);
+			header("Location: news.Manage.php?status=notice&msg=".$ccms['lang']['backend']['settingssaved']);
 			exit();
 		} else $db->Kill();
 	} else die($ccms['lang']['auth']['featnotallowed']);

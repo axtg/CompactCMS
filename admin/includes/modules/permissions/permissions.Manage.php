@@ -59,7 +59,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	<div class="module">
 
 	<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
-		<? if(isset($_GET['msg'])&&$_GET['msg']=="success") { echo $ccms['lang']['backend']['success']; } ?>
+		<? if(isset($_GET['msg'])) { echo '<span class="ss_sprite ss_confirm">'.$_GET['msg'].'</span>'; } ?>
 	</div>
 
 <h2>Permission preferences</h2>

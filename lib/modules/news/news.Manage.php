@@ -49,11 +49,16 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<title>News module</title>
 		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,layout.css,sprite.css" />
 		<?php $cfg['language'] = (file_exists('../../../admin/includes/tiny_mce/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en';?>
+		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
 	</head>
 <body>
 	<div class="module">
 		
-		<div class="span-15 colborder">
+		<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
+			<? if(isset($_GET['msg'])&&strlen($_GET['msg'])>'2') { echo $_GET['msg']; } ?>
+		</div>
+		
+		<div class="span-14 colborder">
 			<h2>Manage current news items</h2>
 			<form action="news.Process.php?action=del-news" method="post" accept-charset="utf-8">
 				<table border="0" cellspacing="5" cellpadding="5">
@@ -98,7 +103,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 					} ?>
 				</table>
 				<hr />
-				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?><button type="submit" name="deleteNews"><span class="ss_sprite ss_newspaper_delete">Delete</span></button><?php } ?>
+				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?><button type="submit" onclick="return confirmation();" name="deleteNews"><span class="ss_sprite ss_newspaper_delete">Delete</span></button><?php } ?>
 			</form>
 		</div>
 		<div class="span-6">

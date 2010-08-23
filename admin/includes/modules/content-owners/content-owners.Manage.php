@@ -63,7 +63,7 @@ $users = $db->QueryArray("SELECT userID,userName,userFirst,userLast,userEmail,us
 	<div class="module">
 
 	<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
-		<? if(isset($_GET['action'])) { echo $_GET['action']; } ?>
+		<? if(isset($_GET['action'])) { echo '<span class="ss_sprite ss_confirm">'.$_GET['action'].'</span>'; } ?>
 	</div>
 	
 	<div>
@@ -91,12 +91,10 @@ $users = $db->QueryArray("SELECT userID,userName,userFirst,userLast,userEmail,us
 						<label for="<?php echo $i.$ar2;?>"><span>
 						<input type="checkbox" name="owner[]" 
 						<?php 
-						if($users[$ar2]['userLevel']>='4') {
-							echo 'checked disabled';
-						}
 						if(strstr($pages[$i]['user_ids'], $users[$ar2]['userID'])!==false) {
 							echo 'checked';
-						} ?> value="<?php echo $users[$ar2]['userID'].'||'.$pages[$i]['page_id'];?>" id="<?php echo $i.$ar2;?>" />
+						} 
+						?> value="<?php echo $users[$ar2]['userID'].'||'.$pages[$i]['page_id'];?>" id="<?php echo $i.$ar2;?>" />
 						</span></label>
 					</td>
 				<?php } ?>

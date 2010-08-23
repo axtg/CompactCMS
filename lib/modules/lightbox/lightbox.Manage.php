@@ -46,7 +46,7 @@ $index = 0;
 
 if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 	while (false !== ($file = readdir($handle))) {
-		if ($file != "." && $file != ".svn" && $file != ".." && is_dir(BASE_PATH.'/media/albums/'.$file)) {
+		if ($file != "." && $file != ".." && is_dir(BASE_PATH.'/media/albums/'.$file)) {
 			// Fill albums array
 			$albums[] = $file;
 			
@@ -79,20 +79,14 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader/Fx.ProgressBar.js"></script>
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/FancyUpload2.js"></script>
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/modLightbox.js"></script>
+		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
 	</head>
 	
 <body>
 	<div class="module">
 			
 		<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
-			<?
-			// Show relevant statuses
-			if(isset($_GET['msg'])) {
-				if($_GET['msg']=="writerr") { echo $ccms['lang']['system']['error_dirwrite']; }
-				elseif($_GET['msg']=="created"||$_GET['msg']=="success") { echo $ccms['lang']['backend']['success']; }
-				elseif($_GET['msg']=="duperr") { echo $ccms['lang']['system']['error_exists']; }
-				elseif($_GET['msg']=="invalid"||$_GET['msg']=="failed") { echo $ccms['lang']['system']['error_value']; }
-			} ?>
+			<? if(isset($_GET['msg'])&&strlen($_GET['msg'])>'2') { echo $_GET['msg']; } ?>
 		</div>
 		
 		<div class="span-12 colborder">
@@ -130,7 +124,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 	  				} ?>
 				</table>
 				<hr />
-				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) { ?><button type="submit" name="deleteAlbum"><span class="ss_sprite ss_bin_empty">Delete</span></button><?php } ?>
+				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) { ?><button type="submit" onclick="return confirmation();" name="deleteAlbum"><span class="ss_sprite ss_bin_empty">Delete</span></button><?php } ?>
 			</form>
 				
 		<?php } elseif($album_path!=null) { 
@@ -147,7 +141,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 			<h2>Album content</h2>
 				<?php foreach ($images as $key => $value) { ?>
 					<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {?>
-					<a href="lightbox.Process.php?album=<?php echo $_GET['album']; ?>&amp;image=<?php echo $key; ?>&amp;action=del-image">
+					<a onclick="return confirmation()" href="lightbox.Process.php?album=<?php echo $_GET['album']; ?>&amp;image=<?php echo $key; ?>&amp;action=del-image">
 					<?php } ?>
 						<img src="<?php echo $value; ?>" class="thumbview" alt="Thumbnail of <?php echo $key; ?>" />
 					<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {?>

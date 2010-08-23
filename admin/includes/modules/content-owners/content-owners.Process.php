@@ -63,7 +63,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) 
 			
 			// If all empty, we're done here
 			if(empty($_POST['owner'])) {
-				header("Location: ./content-owners.Manage.php?status=success&action=".$ccms['lang']['backend']['success']);
+				header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
 				exit();
 			}
 		
@@ -75,7 +75,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) 
 			
 				// Set variables
 				$pageID = (isset($explode['1'])&&is_numeric($explode['1'])?$explode['1']:null);
-				$values["user_ids"] = MySQL::SQLValue($explode['0'].'||',MySQL::SQLVALUE_TEXT);
+				$current = $db->QuerySingleValue("SELECT user_ids FROM ".$cfg['db_prefix']."pages WHERE page_id='".$pageID."'");
+				$users = $current.$explode['0'].'||';
+				$values["user_ids"] = MySQL::SQLValue($users,MySQL::SQLVALUE_TEXT);
 			
 				if($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => "\"$pageID\""))) {
 					$i++;

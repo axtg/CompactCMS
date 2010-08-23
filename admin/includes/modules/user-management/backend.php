@@ -50,6 +50,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>Manage users</title>
 		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,layout.css,sprite.css" />
+		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
 	</head>
 <body>
 	<div class="module">
@@ -110,7 +111,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 				<?php $i++; } ?>
 			</table>
 			<hr class="space"/>
-				<?php if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) { ?><button type="submit" name="deleteUser"><span class="ss_sprite ss_user_delete">Delete</span></button><?php } ?>
+				<?php if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) { ?><button type="submit" onclick="return confirmation();" name="deleteUser"><span class="ss_sprite ss_user_delete">Delete</span></button><?php } ?>
 			</form>
 			
 		</div>

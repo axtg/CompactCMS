@@ -65,18 +65,18 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "create-album" && check
 			$dest = BASE_PATH.'/media/albums/'.$album_name;
 			if(!is_dir($dest)) {
 				if(mkdir($dest)&&mkdir($dest.'/_thumbs')) {
-					header("Location: lightbox.Manage.php?status=success&msg=created&album=$album_name");
+					header("Location: lightbox.Manage.php?status=notice&msg=".$ccms['lang']['backend']['itemcreated']."&album=$album_name");
 					exit();
 				} else {
-					header("Location: lightbox.Manage.php?status=error&msg=writeerr");
+					header("Location: lightbox.Manage.php?status=error&msg=".$ccms['lang']['system']['error_dirwrite']);
 					exit();
 				}
 			} else {
-				header("Location: lightbox.Manage.php?status=error&msg=duperr");
+				header("Location: lightbox.Manage.php?status=error&msg=".$ccms['lang']['system']['error_exists']);
 				exit();
 			}
 		} else {
-			header("Location: lightbox.Manage.php?status=error&msg=invalid");
+			header("Location: lightbox.Manage.php?status=error&msg=".$ccms['lang']['system']['error_tooshort']);
 			exit();
 		}
 	} else die($ccms['lang']['auth']['featnotallowed']);
@@ -92,35 +92,41 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "del-album" && checkAut
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {
 
-		function rrmdir($dir) {
-			if (is_dir($dir)) {
-				$objects = scandir($dir);
-				
-				foreach ($objects as $object) {
-					if ($object != "." && $object != "..") {
-						if (filetype($dir."/".$object) == "dir") rrmdir($dir."/".$object); else unlink($dir."/".$object);
+		if(empty($_POST['albumID'])) {
+			header("Location: lightbox.Manage.php?status=error&msg=".$ccms['lang']['system']['error_selection']);
+			exit();
+		} else {
+
+			function rrmdir($dir) {
+				if (is_dir($dir)) {
+					$objects = scandir($dir);
+					
+					foreach ($objects as $object) {
+						if ($object != "." && $object != "..") {
+							if (filetype($dir."/".$object) == "dir") rrmdir($dir."/".$object); else unlink($dir."/".$object);
+						}
 					}
-				}
-				reset($objects);
-				rmdir($dir);
-			} return true;
-	 	}
-	
-		$total 	= count($_POST['albumID']);
-		$i		= 0;
-		foreach ($_POST['albumID'] as $key => $value) {
-			if(!empty($key)&&!empty($value)) {
-				$dest = BASE_PATH.'/media/albums/'.$value;
-				if(is_dir($dest)) {
-					if(rrmdir($dest)) {
-						$i++;
+					reset($objects);
+					rmdir($dir);
+				} return true;
+		 	}
+		
+			$total 	= count($_POST['albumID']);
+			$i		= 0;
+			foreach ($_POST['albumID'] as $key => $value) {
+				if(!empty($key)&&!empty($value)) {
+					$dest = BASE_PATH.'/media/albums/'.$value;
+					if(is_dir($dest)) {
+						if(rrmdir($dest)) {
+							$i++;
+						}
 					}
 				}
 			}
-		}
-		if($total==$i) {
-			header("Location: lightbox.Manage.php?status=success&msg=X");
-			exit();
+			if($total==$i) {
+				header("Location: lightbox.Manage.php?status=notice&msg=".$ccms['lang']['backend']['fullremoved']);
+				exit();
+			}
 		}
 	} else die($ccms['lang']['auth']['featnotallowed']);
 }
@@ -143,10 +149,10 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "del-image" && checkAuth
 			$thumb	= BASE_PATH.'/media/albums/'.$album.'/_thumbs/'.$image;
 			if(is_file($file)) {
 				if(unlink($file)&&unlink($thumb)) {
-					header("Location:lightbox.Manage.php?status=success&msg=success&album=$album");
+					header("Location:lightbox.Manage.php?status=notice&msg=".$ccms['lang']['backend']['fullremoved']."&album=$album");
 					exit();
 				} else {
-					header("Location:lightbox.Manage.php?status=error&msg=failed&album=$album");
+					header("Location:lightbox.Manage.php?status=error&msg=".$ccms['lang']['system']['error_delete']."&album=$album");
 					exit();
 				}
 			}

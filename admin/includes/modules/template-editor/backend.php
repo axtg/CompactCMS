@@ -81,11 +81,11 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<?php if(!strpos($_SERVER['SERVER_SOFTWARE'], "Win") && $chstatus==0) { ?>
 			<p class="error center">The current template is <strong>not</strong> writable</p>
 		<?php } ?>	
-		<div class="span-9">
+		<div class="span-13">
 			<h1 class="editor">Manage templates</h1>
 		</div>
 		
-		<div class="span-9">
+		<div class="span-8 right">
 			<form action="<?php echo $_SERVER['PHP_SELF']; ?>" id="changeTmp" method="get" class="right" accept-charset="utf-8">
 				<label for="template" style="display:inline;"><?php echo $ccms['lang']['backend']['template'];?></label>
 				<select class="text" onChange="document.getElementById('changeTmp').submit();" id="template" name="template">
@@ -115,8 +115,8 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		</div>
 		<hr class="space"/>
 		
-		<?php if(isset($_GET['status'])&&$_GET['status']=="success") { ?>
-			<div class="success"><?php echo $ccms['lang']['editor']['savesuccess'].strtolower($ccms['lang']['backend']['template']." ".$_GET['template']);?></div>
+		<?php if(isset($_GET['status'])) { ?>
+			<div class="notice center"><span class="ss_sprite ss_confirm"><?php echo $ccms['lang']['backend']['settingssaved'];?></span></div>
 		<?php } ?>
 		
 		<form action="../../process.inc.php?template=<?php echo $get_temp; ?>&amp;action=save-template" method="post" accept-charset="utf-8">
