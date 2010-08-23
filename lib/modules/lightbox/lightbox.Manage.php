@@ -159,7 +159,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 			<h2><?php echo $ccms['lang']['album']['newalbum']; ?></h2>
 			<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {?>
 			<form action="lightbox.Process.php?action=create-album" method="post" accept-charset="utf-8">
-				<label for="album"><?php $ccms['lang']['album']['album']; ?></label><input type="text" class="text" style="width:185px;" name="album" value="" id="album" />
+				<label for="album"><?php $ccms['lang']['album']['album']; ?></label><input type="text" class="text" style="width:160px;" name="album" value="" id="album" />
 				<button type="submit"><span class="ss_sprite ss_wand"><?php echo $ccms['lang']['forms']['createbutton']; ?></span></button>
 			</form>
 			<?php } else echo $ccms['lang']['auth']['featnotallowed']; ?>

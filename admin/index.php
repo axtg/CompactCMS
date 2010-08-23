@@ -73,7 +73,7 @@ require_once('./includes/process.inc.php');
 		<p><span class="ss_sprite ss_world"><?php echo $cfg['sitename']; ?></span></p>
 	</div>
 	<div id="notify" class="sprite notify span-12">
-		<p><?php if($cfg['protect']){?><span class="ss_sprite ss_door_open right"><a href="./includes/security.inc.php?do=logout">Log-out</a></span><?php } ?><span class="ss_sprite ss_clock"><a id="clockLink" style="cursor:hand;" class="clock">Clock</a></span></p>
+		<p><?php if($cfg['protect']){?><span class="ss_sprite ss_door_open right"><a href="./includes/security.inc.php?do=logout">Log-out</a></span><?php } ?><a id="clockLink" style="text-decoration:none;" class="clock"><span class="ss_sprite ss_clock">&#160;</span></a></p>
 		<div id="notify_res">&#160;
 			<?php if(!empty($version_recent) && !empty($v) && $cfg['version']===true) { ?>
 			<br/><?php echo $ccms['lang']['backend']['currentversion']." ".$v; ?>. <?php echo $ccms['lang']['backend']['mostrecent']." ".$version_recent; ?>.<br/><br/><div style="font-weight: bold; text-align: center;"> <?php echo $ccms['lang']['backend']['versionstatus']." ".$version; ?></div>
@@ -85,15 +85,15 @@ require_once('./includes/process.inc.php');
 		<div id="advanced_res">
 			<ul>
 				<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>='4') { ?>
-					<li><span class="ss_sprite ss_group_key"><a id="sys-perm" href="./includes/modules/permissions/permissions.Manage.php" rel="Overall CCMS permissions" class="tabs">Set CCMS permissions</a></span></li>
+					<li><span class="ss_sprite ss_group_key"><a id="sys-perm" href="./includes/modules/permissions/permissions.Manage.php" rel="<?php echo $ccms['lang']['backend']['permissions']; ?>" class="tabs"><?php echo $ccms['lang']['backend']['permissions']; ?></a></span></li>
 				<?php } if($perm['manageOwners']>0&&isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageOwners']) { ?>
-					<li><span class="ss_sprite ss_folder_user "><a id="sys-pow" href="./includes/modules/content-owners/content-owners.Manage.php" rel="Define content owners" class="tabs">Content owners</a></span></li>
+					<li><span class="ss_sprite ss_folder_user "><a id="sys-pow" href="./includes/modules/content-owners/content-owners.Manage.php" rel="<?php echo $ccms['lang']['backend']['contentowners']; ?>" class="tabs"><?php echo $ccms['lang']['backend']['contentowners']; ?></a></span></li>
 				<?php } if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageTemplate']) { ?>
-					<li><span class="ss_sprite ss_color_swatch"><a id="sys-tmp" href="./includes/modules/template-editor/backend.php" rel="Template editor" class="tabs">Template editor</a></span></li>
+					<li><span class="ss_sprite ss_color_swatch"><a id="sys-tmp" href="./includes/modules/template-editor/backend.php" rel="<?php echo $ccms['lang']['backend']['templateeditor']; ?>" class="tabs"><?php echo $ccms['lang']['backend']['templateeditor']; ?></a></span></li>
 				<?php } if($perm['manageUsers']>0) { ?>
-				<li><span class="ss_sprite ss_group"><a id="sys-usr" href="./includes/modules/user-management/backend.php" rel="User management" class="tabs">User management</a></span></li>
+				<li><span class="ss_sprite ss_group"><a id="sys-usr" href="./includes/modules/user-management/backend.php" rel="<?php echo $ccms['lang']['backend']['usermanagement']; ?>" class="tabs"><?php echo $ccms['lang']['backend']['usermanagement']; ?></a></span></li>
 				<?php } if($perm['manageModBackup']>0) { ?>
-				<li><span class="ss_sprite ss_drive_disk"><a id="sys-bck" href="./includes/modules/backup-restore/backend.php" rel="Backup management" class="tabs"><?php echo $ccms['lang']['backup']['createhd'];?></a></span></li>
+				<li><span class="ss_sprite ss_drive_disk"><a id="sys-bck" href="./includes/modules/backup-restore/backend.php" rel="<?php echo $ccms['lang']['backup']['createhd'];?>" class="tabs"><?php echo $ccms['lang']['backup']['createhd'];?></a></span></li>
 				<?php } ?>
 			</ul>
 		</div>

@@ -1,7 +1,7 @@
 <?php
 /* ************************************************************
-Copyright (C) 2008 - 2009 by Xander Groesbeek (CompactCMS.nl)
-Revision:	CompactCMS - v 1.4.0
+Copyright (C) 2008 - 2010 by Xander Groesbeek (CompactCMS.nl)
+Revision:	CompactCMS - v 1.4.1
 	
 This file is part of CompactCMS.
 
@@ -35,6 +35,7 @@ $ccms['lang']['system']['error_openfile'] 	= "Kon het aangegeven bestand niet op
 $ccms['lang']['system']['error_notemplate']	= "Er zijn momenteel geen templates beschikbaar. Voeg minstens 1 template toe in de ./lib/templates/ map.";
 $ccms['lang']['system']['error_templatedir'] = "Kon de template map niet vinden! Controleer of de map bestaat en voeg tenminste 1 template toe.";
 $ccms['lang']['system']['error_write'] 		= "Geen schrijfrechten tot het bestand";
+$ccms['lang']['system']['error_dirwrite']	= "Directory has no write access";
 $ccms['lang']['system']['error_chmod'] 		= "Het huidige bestand kon niet aangepast worden. Controleer de schrijfrechten op de bestanden in de /content map (666).";
 $ccms['lang']['system']['error_value'] 		= "Fout: waarde onjuist";
 $ccms['lang']['system']['error_default'] 	= "De standaardpagina kan niet verwijderd worden.";
@@ -57,6 +58,9 @@ $ccms['lang']['system']['error_deleted']	= "<h1>Het geselecteerd bestand lijkt a
 $ccms['lang']['system']['error_404title'] 	= "Bestand niet gevonden";
 $ccms['lang']['system']['error_404header'] 	= "Er deed zich een 404 fout voor, de pagina werd niet gevonden.";
 $ccms['lang']['system']['error_sitemap'] 	= "Een overzicht van alle pagina's";
+$ccms['lang']['system']['error_tooshort']	= "Een of meerdere waardes waren te kort of onjuist";
+$ccms['lang']['system']['error_passshort']	= "Een wachtwoord dient uit minstens 6 karakters te bestaan";
+$ccms['lang']['system']['error_passnequal']	= "De opgegeven wachtwoorden kwamen niet overeen";
 $ccms['lang']['system']['tooriginal']		= "Terug naar origineel";
 $ccms['lang']['system']['message_rights'] 	= "Alle rechten voorbehouden";
 $ccms['lang']['system']['message_compatible'] = "Succesvol getest op";
@@ -66,7 +70,15 @@ $ccms['lang']['backend']['gethelp'] 		= "Heb je suggesties, feedback of probleme
 $ccms['lang']['backend']['ordertip'] 		= "Gebruik de 'drop-downs' hieronder om de structuur van de pagina's in het menu te verwerken. Let op dat het systeem geen rekening houdt met gelijke top- en subniveau's combinaties.";
 $ccms['lang']['backend']['createtip'] 		= "Vul onderstaand formulier in om direct een nieuwe pagina aan te maken. Nadat het bestand is aangemaakt, kan deze direct eenvoudig bijgewerkt worden.";
 $ccms['lang']['backend']['currentfiles'] 	= "In de lijst hieronder staan alle huidige pagina's weergegeven. De standaard pagina kan niet worden verwijderd omdat dit de startpagina van de website is. Andere pagina's kunnen afgeschermde content hebben omdat alleen de beheerder het recht heeft deze bewerken.";
-$ccms['lang']['backend']['confirmdelete'] 	= "Bevestig het verwijderen van de aangegeven item(s) en de betreffende inhoud.";
+$ccms['lang']['backend']['confirmdelete'] 	= "Bevestig het verwijderen van de aangegeven item(s).";
+$ccms['lang']['backend']['settingssaved']	= "De gemaakte aanpassingen zijn opgeslagen.";
+$ccms['lang']['backend']['itemcreated']		= "Succesvolle verwerking van item(s).";
+$ccms['lang']['backend']['fullremoved']		= "Succesvolle verwijdering van geselecteerde item(s).";
+$ccms['lang']['backend']['tooverview']		= "Terug naar overzicht";
+$ccms['lang']['backend']['permissions']		= "Definieer CCMS rechten";
+$ccms['lang']['backend']['contentowners']	= "Bepaal content eigenaren";
+$ccms['lang']['backend']['templateeditor']	= "Template editor";
+$ccms['lang']['backend']['usermanagement']	= "Beheer gebruikers";
 $ccms['lang']['backend']['changevalue'] 	= "Klik om aan te passen";
 $ccms['lang']['backend']['previewpage'] 	= "Bekijk";
 $ccms['lang']['backend']['editpage'] 		= "Beheer";
@@ -126,7 +138,7 @@ $ccms['lang']['menu']['4']				= "Footer";
 $ccms['lang']['menu']['5']				= "Extra";
 
 // Administration form related texts
-$ccms['lang']['forms']['filename'] 		= "Bestandsnaam";
+$ccms['lang']['forms']['filename'] 		= "Bestand";
 $ccms['lang']['forms']['pagetitle'] 	= "Pagina titel";
 $ccms['lang']['forms']['subheader'] 	= "Sub-koptekst";
 $ccms['lang']['forms']['description'] 	= "Beschrijving";
@@ -135,9 +147,10 @@ $ccms['lang']['forms']['contentitem']	= "Content item (standaard)";
 $ccms['lang']['forms']['additions']		= "Extra modules";
 $ccms['lang']['forms']['printable'] 	= "Printbaar";
 $ccms['lang']['forms']['published'] 	= "Actief";
+$ccms['lang']['forms']['iscoding'] 		= "Code";
 $ccms['lang']['forms']['createbutton'] 	= "Aanmaken!";
+$ccms['lang']['forms']['modifybutton'] 	= "Aanpassen";
 $ccms['lang']['forms']['savebutton'] 	= "Opslaan";
-$ccms['lang']['forms']['iscoding'] 		= "Coding";
 
 // Administration hints for form fields
 $ccms['lang']['hints']['filename'] 		= "De bestandsnaam (home.html) :: De bestandsnaam waaronder deze pagina aan te roepen is (zonder .html)";
@@ -167,30 +180,90 @@ $ccms['lang']['editor']['backeditor'] 	= "Terug naar de editor";
 $ccms['lang']['editor']['closewindow'] 	= "Sluit venster";
 $ccms['lang']['editor']['keywords'] 	= "Keywords - <em>gescheiden door komma's, maximaal 250 karakters</em>";
 
+// Authorization messages
+$ccms['lang']['auth']['featnotallowed']	= "Het huidige accountlevel heeft geen toegang tot dit onderdeel.";
+
 ################### MODULES ###################
 
 // Back-up messages
-$ccms['lang']['backup']['createhd']		= "Cre&euml;r nieuwe back-up";
+$ccms['lang']['backup']['createhd']		= "Cre&euml;er nieuwe back-up";
 $ccms['lang']['backup']['explain']		= "Om mogelijk verlies van data door externe omstandigheden te voorkomen, is het verstandig om regelmatig back-ups te maken.";
 $ccms['lang']['backup']['currenthd']	= "Beschikbare back-ups";
 $ccms['lang']['backup']['timestamp']	= "Back-up bestandsnaam";
 $ccms['lang']['backup']['download']		= "Download archief";
 
+// User management messages
+$ccms['lang']['users']['createuser']	= "Gebruiker aanmaken";
+$ccms['lang']['users']['overviewusers']	= "Overzicht CCMS gebruikers";
+$ccms['lang']['users']['editdetails']	= "Persoonlijke gegevens aanpassen";
+$ccms['lang']['users']['editpassword']	= "Wachtwoord aanpassen";
+$ccms['lang']['users']['accountcfg']	= "Account instellingen";
+$ccms['lang']['users']['user']			= "Gebruiker";
+$ccms['lang']['users']['username']		= "Gebruikersnaam";
+$ccms['lang']['users']['name']			= "Naam";
+$ccms['lang']['users']['firstname']		= "Voornaam";
+$ccms['lang']['users']['lastname']		= "Achternaam";
+$ccms['lang']['users']['password']		= "Wachtwoord";
+$ccms['lang']['users']['cpassword']		= "Bevestig wachtwoord";
+$ccms['lang']['users']['email']			= "E-mail";
+$ccms['lang']['users']['active']		= "Actief";
+$ccms['lang']['users']['level']			= "Niveau";
+$ccms['lang']['users']['userlevel']		= "Gebruikersniveau";
+$ccms['lang']['users']['lastlog']		= "Laatste log";
+
+// Template editor
+$ccms['lang']['template']['manage']		= "Beheer templates";
+$ccms['lang']['template']['nowrite']	= "Het huidige template is <strong>niet</strong> beschrijfbaar";
+
+// Permissions
+$ccms['lang']['permission']['header']	= "Toegangsvoorkeuren";
+$ccms['lang']['permission']['explain']	= "Use ...";
+$ccms['lang']['permission']['target']	= "Doel";
+$ccms['lang']['permission']['level1']	= "Level 1 - User";
+$ccms['lang']['permission']['level2']	= "Level 2 - Editor";
+$ccms['lang']['permission']['level3']	= "Level 3 - Manager";
+$ccms['lang']['permission']['level4']	= "Level 4 - Admin";
+
+// Content owners
+$ccms['lang']['owners']['header']		= "Content eigenaren";
+$ccms['lang']['owners']['explain']		= "Use ...";
+$ccms['lang']['owners']['pages']		= "Pagina's";
+$ccms['lang']['owners']['users']		= "Gebruikers";
+
 // Album messages
 $ccms['lang']['album']['album']			= "Album";
-$ccms['lang']['album']['errordir']		= "De opgegeven albumnaam is te kort (min. 4).";
-$ccms['lang']['album']['newdircreated']	= "albummap is aangemaakt.";
-$ccms['lang']['album']['renamed']		= "is hernoemd naar";
-$ccms['lang']['album']['removed']		= "en alle bijhorende inhoud is verwijderd.";
-$ccms['lang']['album']['refresh']		= "Vernieuwen";
-$ccms['lang']['album']['manage']		= "Beheer albums";
-$ccms['lang']['album']['albumlist']		= "Album lijst";
-$ccms['lang']['album']['newalbum']		= "Nieuwe albumnaam";
+$ccms['lang']['album']['currentalbums']	= "Huidige albums";
+$ccms['lang']['album']['uploadcontent']	= "Upload content";
+$ccms['lang']['album']['toexisting']	= "Upload naar huidig album";
+$ccms['lang']['album']['upload']		= "Start upload";
+$ccms['lang']['album']['browse']		= "Kies foto's";
+$ccms['lang']['album']['clear']			= "Leeg lijst";
+$ccms['lang']['album']['singlefile']	= "<strong>Enkele file upload</strong><br/><p>De Flash lader kon niet laden. Zorg dat Javascript toegestaan is en Flash is geinstalleerd. Enkele uploads zijn mogelijk, maar niet geoptimaliseerd.</p>";
+$ccms['lang']['album']['manage']		= "Beheer album";
+$ccms['lang']['album']['albumlist']		= "Albumlijst";
+$ccms['lang']['album']['newalbum']		= "Cre&euml;er nieuw album";
 $ccms['lang']['album']['noalbums']		= "Er zijn nog geen albums aangemaakt!";
-$ccms['lang']['album']['directory']		= "Album (#)";
-$ccms['lang']['album']['rename']		= "Hernoem";
-$ccms['lang']['album']['tooverview']	= "Terug naar het overzicht";
-$ccms['lang']['album']['nodir']			= "Controleer of de map <strong>albums</strong> bestaat in de opgegeven afbeeldingen map";
+$ccms['lang']['album']['files']			= "Bestanden";
+$ccms['lang']['album']['nodir']			= "Bevestig dat de map <strong>albums</strong> bestaat in de ./media/ map";
+$ccms['lang']['album']['lastmod']		= "Laatste update";
+
+// News messages
+$ccms['lang']['news']['manage']			= "Beheer huidige nieuwsitems";
+$ccms['lang']['news']['addnews']		= "Voeg nieuws toe";
+$ccms['lang']['news']['addnewslink']	= "Schrijf nieuw artikel";
+$ccms['lang']['news']['settings']		= "Beheer instellingen";
+$ccms['lang']['news']['writenews']		= "Schrijf nieuws";
+$ccms['lang']['news']['numbermess']		= "# berichten op front-end";
+$ccms['lang']['news']['showauthor']		= "Toon auteur";
+$ccms['lang']['news']['showdate']		= "Toon publicatiedatum";
+$ccms['lang']['news']['showteaser']		= "Toon enkel ankeiler";
+$ccms['lang']['news']['title']			= "Titel";
+$ccms['lang']['news']['author']			= "Auteur";
+$ccms['lang']['news']['date']			= "Datum";
+$ccms['lang']['news']['published']		= "Publiceerd?";
+$ccms['lang']['news']['teaser']			= "Ankeiler";
+$ccms['lang']['news']['contents']		= "Inhoud artikel";
+$ccms['lang']['news']['viewarchive']	= "Bekijk archief";
 
 // Guestbook message
 $ccms['lang']['guestbook']['guestbook']	= "Gastenboek";

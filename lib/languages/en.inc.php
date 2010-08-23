@@ -75,6 +75,10 @@ $ccms['lang']['backend']['settingssaved']	= "Your changes have been successfully
 $ccms['lang']['backend']['itemcreated']		= "Successfully processed the submitted item(s).";
 $ccms['lang']['backend']['fullremoved']		= "Successfully deleted the selected item(s).";
 $ccms['lang']['backend']['tooverview']		= "Back to overview";
+$ccms['lang']['backend']['permissions']		= "Set CCMS permissions";
+$ccms['lang']['backend']['contentowners']	= "Define content owners";
+$ccms['lang']['backend']['templateeditor']	= "Template editor";
+$ccms['lang']['backend']['usermanagement']	= "User management";
 $ccms['lang']['backend']['changevalue']		= "Click to change";
 $ccms['lang']['backend']['previewpage']		= "Preview";
 $ccms['lang']['backend']['editpage']		= "Edit";
@@ -240,7 +244,7 @@ $ccms['lang']['album']['albumlist']		= "Album list";
 $ccms['lang']['album']['newalbum']		= "Create new album";
 $ccms['lang']['album']['noalbums']		= "No albums have been created yet!";
 $ccms['lang']['album']['files']			= "Files";
-$ccms['lang']['album']['nodir']			= "Please make sure the directory <strong>albums</strong> exists in your image directory";
+$ccms['lang']['album']['nodir']			= "Please make sure the directory <strong>albums</strong> exists in the ./media/ directory";
 $ccms['lang']['album']['lastmod']		= "Last modified";
 
 // News messages
