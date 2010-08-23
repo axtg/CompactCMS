@@ -124,7 +124,7 @@ function setLanguage($lang) {
 						}
 					}).send($('installFrm'));
 				});
-			});
+			});			
 		</script>
 	</head>
 <body>
