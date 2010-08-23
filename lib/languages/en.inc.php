@@ -181,6 +181,7 @@ $ccms['lang']['editor']['closewindow'] 	= "Close window";
 $ccms['lang']['editor']['keywords']		= "Keywords - <em>separated by commas, max 250 characters</em>";
 
 // Authorization messages
+$ccms['lang']['auth']['generatepass'] 	= "Auto generate a safe password";
 $ccms['lang']['auth']['featnotallowed']	= "Your current account level does not allow you to use this feature.";
 
 ################### MODULES ###################

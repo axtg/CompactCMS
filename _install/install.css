@@ -191,6 +191,15 @@ html, body {
 .safari{display:inline-block;width:80px;height:15px;background-position: 0 -60px;}
 .chrome{display:inline-block;width:80px;height:15px;background-position: 0 -80px;}
 
+/* PASSWORD === */
+#passwordStrength{height:10px;display:block;float:left;}
+.strength0{width:312px;background:#cccccc;}
+.strength1{width:64px;background:#ff0000;}
+.strength2{width:126px;background:#ff5f5f;}
+.strength3{width:188px;background:#56e500;}
+.strength4{background:#4dcd00;width:250px;}
+.strength5{background:#399800;width:312px;}
+
 /* TAGS === */
 fieldset { 
 	padding: 0 10px 10px 10px;

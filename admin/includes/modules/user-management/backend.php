@@ -52,6 +52,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<script type="text/javascript" charset="utf-8">window.addEvent('domready',function(){new FormValidator($('addUser'),{onFormValidate:function(passed,form,event){if(passed)form.submit();}});});</script>
 		<script type="text/javascript" charset="utf-8">
 		function passwordStrength(password){var score=0;if(password.length>5)score++;if((password.match(/[a-z]/))&&(password.match(/[A-Z]/)))score++;if(password.match(/\d+/))score++;if(password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/))score++;if(password.length>12)score++;document.getElementById("passwordStrength").className="strength"+score;}</script>
+		<script type="text/javascript" charset="utf-8">function randomPassword(length){chars="abcdefghijkmNPQRSTUVWXYZ123456789!@#$%";pass="";for(x=0;x<length;x++){i=Math.floor(Math.random()*38);pass+=chars.charAt(i);}passwordStrength(pass);return document.getElementById("userPass").value=pass;}</script>
 	</head>
 <body>
 	<div class="module">
@@ -100,7 +101,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 					</td>
 					<td>
 					<?php if($_SESSION['ccms_userID']==$row->userID||$_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) { ?>
-						<a href="user.Edit.php?userID=<?php echo $row->userID; ?>"><?php echo $row->userName; ?></a>
+						<span class="ss_sprite ss_user_edit"><a href="user.Edit.php?userID=<?php echo $row->userID; ?>"><?php echo $row->userName; ?></a></span>
 					<?php } else echo $row->userName; ?>
 					</td>
 					<td><?php echo substr($row->userFirst,0,1); ?>. <?php echo $row->userLast; ?></td>
@@ -123,7 +124,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			<?php if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) { ?>
 			<form action="../../process.inc.php?action=add-user" method="post" id="addUser" accept-charset="utf-8">
 				<label for="userName"><?php echo $ccms['lang']['users']['username']; ?></label><input type="text" class="minLength:3 text" name="user" value="" id="userName" />
-				<label for="userPass"><?php echo $ccms['lang']['users']['password']; ?></label><input type="text" onkeyup="passwordStrength(this.value)" class="minLength:6 text" name="pass" value="" id="userPass" />
+				<label for="userPass"><?php echo $ccms['lang']['users']['password']; ?><br/><a href="#" class="small ss_sprite ss_bullet_key" onclick="randomPassword(8);"><?php echo $ccms['lang']['auth']['generatepass']; ?></a></label><input type="text" onkeyup="passwordStrength(this.value)" class="minLength:6 text" name="pass" value="" id="userPass" />
 				<div class="clear center">
 					<div id="passwordStrength" class="strength0"></div><br/>
 				</div>

@@ -46,7 +46,7 @@ if(is_dir('../../_install/')) {
 // Do authentication
 if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST") {
 	$userName = mysql_real_escape_string($_POST['userName']);
-	$userPass = mysql_real_escape_string($_POST['userPass']);
+	$userPass = mysql_real_escape_string($_POST['userPass']).$cfg['authcode'];
 
 	if(empty($userName) && empty($userPass)){
 		$_SESSION['logmsg'] = $ccms['lang']['login']['nodetails'];
@@ -63,10 +63,9 @@ if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST") {
 			$_SESSION['logmsg'] = $ccms['lang']['login']['notactive'];
 		} else{
 			// Select statement
-			$sql = "SELECT * FROM `".$cfg['db_prefix']."users` WHERE userName = '".$userName."' AND userPass = '".md5($userPass)."' AND userActive = '1'";
-			$totalLogins = 3;
+			$sql 	= "SELECT * FROM `".$cfg['db_prefix']."users` WHERE userName = '".$userName."' AND userPass = '".md5($userPass)."' AND userActive = '1'";
 			$result	= mysql_query($sql);
-			$row = mysql_fetch_assoc($result);
+			$row 	= mysql_fetch_assoc($result);
 			
 			// If no match: count attempt and show error
 			if($userName != $row['userName'] && md5($userPass) != $row['userPass']){

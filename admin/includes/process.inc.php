@@ -495,11 +495,11 @@ if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] != "POST" && checkA
 	} else die($db->Error($ccms['lang']['system']['error_general']));
 }
 
-/*
-*
-* Check latest version
-*
-*/
+ /**
+ *
+ * Check latest version
+ *
+ */
 $version_recent = @file_get_contents("http://www.compactcms.nl/version/".$v.".txt");
 if(version_compare($version_recent, $v) != '1') { 
 	$version = $ccms['lang']['backend']['uptodate']; 
@@ -591,7 +591,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 			
 		// Set variables
 		$values['userName']		= MySQL::SQLValue(strtolower($_POST['user']),MySQL::SQLVALUE_TEXT);
-		$values['userPass']		= MySQL::SQLValue(md5($_POST['pass']),MySQL::SQLVALUE_TEXT);
+		$values['userPass']		= MySQL::SQLValue(md5($_POST['pass'].$cfg['authcode']),MySQL::SQLVALUE_TEXT);
 		$values['userFirst']	= MySQL::SQLValue($_POST['userFirstname'],MySQL::SQLVALUE_TEXT);
 		$values['userLast']		= MySQL::SQLValue($_POST['userLastname'],MySQL::SQLVALUE_TEXT);
 		$values['userEmail']	= MySQL::SQLValue($_POST['userEmail'],MySQL::SQLVALUE_TEXT);
@@ -626,7 +626,7 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 			$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
 			$values["userFirst"]= MySQL::SQLValue($_POST['first'],MySQL::SQLVALUE_TEXT);
 			$values["userLast"]	= MySQL::SQLValue($_POST['last'],MySQL::SQLVALUE_TEXT);
-			$values["userEmail"]	= MySQL::SQLValue($_POST['email'],MySQL::SQLVALUE_TEXT);
+			$values["userEmail"]= MySQL::SQLValue($_POST['email'],MySQL::SQLVALUE_TEXT);
 			
 			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
 				
@@ -659,7 +659,7 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 		if(strlen($_POST['pass'])>'6'&&md5($_POST['pass'])===md5($_POST['cpass'])) {
 		
 			$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
-			$values["userPass"] = MySQL::SQLValue(md5($_POST['pass']),MySQL::SQLVALUE_TEXT);
+			$values["userPass"] = MySQL::SQLValue(md5($_POST['pass'].$cfg['authcode']),MySQL::SQLVALUE_TEXT);
 			
 			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
 				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);

@@ -15,6 +15,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- Table structure for table `ccms_cfgnews`
 --
 
+DROP TABLE IF EXISTS `ccms_cfgnews`;
 CREATE TABLE IF NOT EXISTS `ccms_cfgnews` (
   `showMessage` int(5) NOT NULL DEFAULT '3',
   `showAuthor` enum('0','1') COLLATE utf8_unicode_ci NOT NULL DEFAULT '1',
@@ -35,6 +36,7 @@ INSERT INTO `ccms_cfgnews` (`showMessage`, `showAuthor`, `showDate`, `showTeaser
 -- Table structure for table `ccms_cfgpermissions`
 --
 
+DROP TABLE IF EXISTS `ccms_cfgpermissions`;
 CREATE TABLE IF NOT EXISTS `ccms_cfgpermissions` (
   `manageUsers` int(1) NOT NULL DEFAULT '3' COMMENT 'From what user level on can users manage user accounts (add, modify, delete)',
   `manageOwners` int(1) NOT NULL DEFAULT '3' COMMENT 'To allow to appoint certain users to a specific page',
@@ -62,6 +64,7 @@ INSERT INTO `ccms_cfgpermissions` (`manageUsers`, `manageOwners`, `managePages`,
 -- Table structure for table `ccms_modnews`
 --
 
+DROP TABLE IF EXISTS `ccms_modnews`;
 CREATE TABLE IF NOT EXISTS `ccms_modnews` (
   `newsID` int(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `userID` int(5) unsigned zerofill NOT NULL,
@@ -86,6 +89,7 @@ INSERT INTO `ccms_modnews` (`newsID`, `userID`, `newsTitle`, `newsTeaser`, `news
 -- Table structure for table `ccms_modules`
 --
 
+DROP TABLE IF EXISTS `ccms_modules`;
 CREATE TABLE IF NOT EXISTS `ccms_modules` (
   `modID` int(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `modName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
@@ -110,6 +114,7 @@ INSERT INTO `ccms_modules` (`modID`, `modName`, `modLocation`, `modVersion`, `mo
 -- Table structure for table `ccms_pages`
 --
 
+DROP TABLE IF EXISTS `ccms_pages`;
 CREATE TABLE IF NOT EXISTS `ccms_pages` (
   `page_id` int(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `user_ids` varchar(300) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0' COMMENT 'Separated by commas',
@@ -149,6 +154,7 @@ INSERT INTO `ccms_pages` (`page_id`, `user_ids`, `urlpage`, `module`, `toplevel`
 -- Table structure for table `ccms_users`
 --
 
+DROP TABLE IF EXISTS `ccms_users`;
 CREATE TABLE IF NOT EXISTS `ccms_users` (
   `userID` int(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `userName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
@@ -171,4 +177,3 @@ CREATE TABLE IF NOT EXISTS `ccms_users` (
 
 INSERT INTO `ccms_users` (`userID`, `userName`, `userPass`, `userFirst`, `userLast`, `userEmail`, `userActive`, `userLevel`, `userToken`, `userLastlog`, `userTimestamp`) VALUES
 (00001, 'admin', '1a1dc91c907325c69271ddf0c944bc72', 'Xander', 'CCMS', 'xander@compactcms.nl', 1, 4, '5168774687486', '2010-08-20 12:05:04', '2010-08-20 14:05:04'),
-(00002, 'user', 'ee11cbb19052e40b07aac0ca060c23ee', 'John', 'Doe', 'john@compactcms.nl', 1, 1, '5590832043058', '2010-08-19 12:36:26', '2010-08-19 14:36:26');

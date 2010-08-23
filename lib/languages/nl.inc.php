@@ -77,7 +77,7 @@ $ccms['lang']['backend']['fullremoved']		= "Succesvolle verwijdering van geselec
 $ccms['lang']['backend']['tooverview']		= "Terug naar overzicht";
 $ccms['lang']['backend']['permissions']		= "Definieer CCMS rechten";
 $ccms['lang']['backend']['contentowners']	= "Bepaal content eigenaren";
-$ccms['lang']['backend']['templateeditor']	= "Template editor";
+$ccms['lang']['backend']['templateeditor']	= "Bewerk templates";
 $ccms['lang']['backend']['usermanagement']	= "Beheer gebruikers";
 $ccms['lang']['backend']['changevalue'] 	= "Klik om aan te passen";
 $ccms['lang']['backend']['previewpage'] 	= "Bekijk";
@@ -181,6 +181,7 @@ $ccms['lang']['editor']['closewindow'] 	= "Sluit venster";
 $ccms['lang']['editor']['keywords'] 	= "Keywords - <em>gescheiden door komma's, maximaal 250 karakters</em>";
 
 // Authorization messages
+$ccms['lang']['auth']['generatepass'] 	= "Genereer een veilig wachtwoord";
 $ccms['lang']['auth']['featnotallowed']	= "Het huidige accountlevel heeft geen toegang tot dit onderdeel.";
 
 ################### MODULES ###################

@@ -53,27 +53,35 @@ if($nextstep == md5('2') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 	//  - Environmental variables
 	//
 	$rootdir	= array("rootdir" => (substr($_POST['rootdir'],-1)!=='/'?$_POST['rootdir'].'/':$_POST['rootdir']));
+	$sitename	= array("sitename" => $_POST['sitename']);
 	$homepage	= array("homepage" => $_POST['homepage']);
 	$language	= array("language" => $_POST['language']);
 	
 	// Add new data to variable session
-	$_SESSION['variables'] = array_merge($rootdir,$homepage,$language);
+	$_SESSION['variables'] = array_merge($rootdir,$sitename,$homepage,$language);
 ?>
+	<script type="text/javascript" charset="utf-8">function passwordStrength(password){var score=0;if(password.length>5)score++;if((password.match(/[a-z]/))&&(password.match(/[A-Z]/)))score++;if(password.match(/\d+/))score++;if(password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/))score++;if(password.length>12)score++;document.getElementById("passwordStrength").className="strength"+score;}</script>
+	<script type="text/javascript" charset="utf-8">function randomPassword(length){chars="abcdefghijkmNPQRSTUVWXYZ123456789!@#$%";pass="";for(x=0;x<length;x++){i=Math.floor(Math.random()*38);pass+=chars.charAt(i);}passwordStrength(pass);return document.getElementById("adminpass").value=pass;}</script>
 	<legend class="installMsg">Step 2 - Setting your preferences</legend>
-		<label for="sitename"><span class="ss_sprite ss_pencil">Site name</span></label><input type="text" class="alt title" name="sitename" style="width:300px;" value="<?php echo (!isset($_SESSION['variables']['sitename'])?ucfirst(preg_replace("/^www\./", "", $_SERVER['HTTP_HOST'])):$_SESSION['variables']['sitename']);?>" id="sitename" />
+
+		<label for="adminpass"><span class="ss_sprite ss_lock">Administrator password</span><br/><a href="#" class="small ss_sprite ss_arrow_refresh" onclick="randomPassword(8);">Auto generate a safe password</a></label>
+		<input type="text" class="alt title" name="adminpass" maxlenght="5" onkeyup="passwordStrength(this.value)" style="width:300px;" value="" id="adminpass" />
+		<div class="clear center">
+			<div id="passwordStrength" class="strength0"></div><br/>
+		</div>
+		<label for="authcode"><span class="ss_sprite ss_textfield_key">Authentication PIN</span></label>
+		<input type="text" class="alt title" name="authcode" maxlenght="5" style="width:300px;" value="<?php echo rand('12345','98765');?>" id="authcode" />
+		<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">Adding this PIN to the URL even shows unpublished pages</span>
+		<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">This code is used to encrypt passwords (salt)</span>
 		<br class="clear"/>
+		<label for="protect"><input type="checkbox" name="protect" value="true" checked id="protect" /> Password protect the administration</label>
 		<label for="version"><input type="checkbox" name="version" value="true" checked id="version" /> Show version information</label>
 		&#160;<span class="ss_sprite ss_bullet_star small quiet">Want to see the latest CCMS version at the dashboard?</span>
 		<label for="iframe"><input type="checkbox" name="iframe" value="true" id="iframe" /> Support &amp; allow iframes</label>
 		&#160;<span class="ss_sprite ss_bullet_star small quiet">Can iframes be managed from within the WYSIWYG editor?</span>
 		<label for="wysiwyg"><input type="checkbox" name="wysiwyg" value="true" checked id="wysiwyg" /> Enable the visual content editor</label>
 		&#160;<span class="ss_sprite ss_bullet_star small quiet">Uncheck if you want to disable the visual editor all together</span>
-		<label for="protect"><input type="checkbox" name="protect" value="true" checked id="protect" /> Password protect the administration</label>
-		<br class="clear"/>
-		<label for="authcode"><span class="ss_sprite ss_textfield_key">Authentication PIN</span></label>
-		<input type="text" class="alt title" name="authcode" maxlenght="5" style="width:300px;" value="<?php echo rand('12345','98765');?>" id="authcode" />
-		<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">Adding this PIN to the URL even shows unpublished pages</span>
-		
+
 		<p class="span-8 right">
 			<button name="submit" type="submit"><span class="ss_sprite ss_lock_go">Proceed</span></button>
 			<a href="index.php" title="Back to step first step">Cancel</a>
@@ -89,15 +97,16 @@ if($nextstep == md5('3') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 	// Installation actions
 	//  - Saving preferences
 	//
-	$sitename	= array("sitename" => $_POST['sitename']);
+
 	$version	= array("version" => (isset($_POST['version'])&&$_POST['version']=='true'?'true':'false'));
 	$iframe		= array("iframe" => (isset($_POST['iframe'])&&$_POST['iframe']=='true'?'true':'false'));
 	$wysiwyg	= array("wysiwyg" => (isset($_POST['wysiwyg'])&&$_POST['wysiwyg']=='true'?'true':'false'));
 	$protect	= array("protect" => (isset($_POST['protect'])&&$_POST['protect']=='true'?'true':'false'));
+	$adminpass	= array("adminpass" => $_POST['adminpass']);
 	$authcode	= array("authcode" => $_POST['authcode']);
 	
 	// Add new data to variable session
-	$_SESSION['variables'] = array_merge($_SESSION['variables'],$sitename,$version,$iframe,$wysiwyg,$protect,$authcode);
+	$_SESSION['variables'] = array_merge($_SESSION['variables'],$version,$iframe,$wysiwyg,$protect,$adminpass,$authcode);
 ?>
 	<legend class="installMsg">Step 3 - Collecting your database details</legend>
 		<label for="db_host"><span class="ss_sprite ss_server_database">Database host</span></label><input type="text" class="alt title" name="db_host" style="width:300px;" value="localhost" id="db_host" />
@@ -170,14 +179,18 @@ if($nextstep == md5('4') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 		<span class="ss_sprite ss_computer">&#160;</span><h2 style="display:inline;">Environment</h2>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr style="background-color: <?php echo $alt_row; ?>;">
-				<th width="45%" scope="row">Root directory</th>
-				<td><?php echo $_SESSION['variables']['rootdir'];?></td>
+				<th width="55%" scope="row">Sitename</th>
+				<td><?php echo $_SESSION['variables']['sitename'];?></td>
 			</tr>
 			<tr>
+				<th scope="row">Root directory</th>
+				<td><?php echo $_SESSION['variables']['rootdir'];?></td>
+			</tr>
+			<tr style="background-color: <?php echo $alt_row; ?>;">
 				<th scope="row">Homepage</th>
 				<td><?php echo $_SESSION['variables']['homepage'];?></td>
 			</tr>
-			<tr style="background-color: <?php echo $alt_row; ?>;">
+			<tr>
 				<th scope="row">Language</th>
 				<td><?php echo $_SESSION['variables']['language'];?></td>
 			</tr>
@@ -185,12 +198,8 @@ if($nextstep == md5('4') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 		<br class="clear"/>
 		<span class="ss_sprite ss_cog">&#160;</span><h2 style="display:inline;">Preferences</h2>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-				<th width="45%" scope="row">Sitename</th>
-				<td><?php echo $_SESSION['variables']['sitename'];?></td>
-			</tr>
 			<tr style="background-color: <?php echo $alt_row; ?>;">
-				<th scope="row">Version</th>
+				<th width="55%" scope="row">Version</th>
 				<td><?php echo $_SESSION['variables']['version'];?></td>
 			</tr>
 			<tr>
@@ -206,6 +215,10 @@ if($nextstep == md5('4') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 				<td><?php echo $_SESSION['variables']['protect'];?></td>
 			</tr>
 			<tr style="background-color: <?php echo $alt_row; ?>;">
+				<th scope="row">Administrator password</th>
+				<td> *** </td>
+			</tr>
+			<tr>
 				<th scope="row">Authentication PIN</th>
 				<td><?php echo $_SESSION['variables']['authcode'];?></td>
 			</tr>
@@ -213,23 +226,23 @@ if($nextstep == md5('4') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 		<br class="clear"/>
 		<span class="ss_sprite ss_database">&#160;</span><h2 style="display:inline;">Database details</h2>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-				<th width="45%" scope="row">Database host</th>
+			<tr style="background-color: <?php echo $alt_row; ?>;">
+				<th width="55%" scope="row">Database host</th>
 				<td><?php echo $_SESSION['variables']['db_host'];?></td>
 			</tr>
-			<tr style="background-color: <?php echo $alt_row; ?>;">
+			<tr>
 				<th scope="row">Database username</th>
 				<td><?php echo $_SESSION['variables']['db_user'];?></td>
 			</tr>
-			<tr>
+			<tr style="background-color: <?php echo $alt_row; ?>;">
 				<th scope="row">Database password</th>
 				<td> *** </td>
 			</tr>
-			<tr style="background-color: <?php echo $alt_row; ?>;">
+			<tr>
 				<th scope="row">Database name</th>
 				<td><?php echo $_SESSION['variables']['db_name'];?></td>
 			</tr>
-			<tr>
+			<tr style="background-color: <?php echo $alt_row; ?>;">
 				<th scope="row">Database table prefix</th>
 				<td><?php echo $_SESSION['variables']['db_prefix'];?></td>
 			</tr>
@@ -288,6 +301,7 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 	if($err==0) {
 		$sql = file_get_contents(BASE_PATH.'/_docs/structure.sql');
 		$sql = preg_replace('/ccms_/', $_SESSION['variables']['db_prefix'], $sql);
+		$sql = preg_replace('/1a1dc91c907325c69271ddf0c944bc72/', md5($_SESSION['variables']['adminpass'].$_SESSION['variables']['authcode']), $sql);
 		
 		// Execute per sql piece
 		$tok = strtok($sql, ";");
@@ -484,7 +498,7 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 ?>	
 	<legend class="installMsg">Final - Finishing the installation</legend>
 		<?php if(isset($log)) { 
-			//unset($_SESSION['variables']); ?>
+			unset($_SESSION['variables']); ?>
 		<h2>Process results</h2>
 		<p>
 			<?php 
@@ -505,7 +519,7 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 		<p>The installation has been successful! You should now follow the steps below, to get you started.</p>
 		<ol>
 			<li>Delete the <em>./_install</em> directory</li>
-			<li><a href="../admin/">Login</a> using details <span class="ss_sprite ss_user_red"><strong>admin</strong></span> and <span class="ss_sprite ss_key"><strong>pass</strong></span></li>
+			<li><a href="../admin/">Login</a> using username <span class="ss_sprite ss_user_red"><strong>admin</strong></span></li>
 			<li>Change your password through the back-end</li>
 			<li><a href="http://www.compactcms.nl/contact.html" target="_blank">Let me know</a> how you like CompactCMS!</li>
 		</ol>

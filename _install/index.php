@@ -155,6 +155,8 @@ function setLanguage($lang) {
 				<?php if(!isset($_GET['do'])&&empty($_GET['do'])) { ?>
 				<p>The details below have been filled-out based on information readily available. Please confirm these settings, select your language and click proceed.</p>
 				
+				<label for="sitename"><span class="ss_sprite ss_pencil">Site name</span></label><input type="text" class="alt title" name="sitename" style="width:300px;" value="<?php echo (!isset($_SESSION['variables']['sitename'])?ucfirst(preg_replace("/^www\./", "", $_SERVER['HTTP_HOST'])):$_SESSION['variables']['sitename']);?>" id="sitename" />
+				
 				<label for="rootdir"><span class="ss_sprite ss_application_osx_terminal">Web root directory</span></label>
 				<input type="text" class="alt title" name="rootdir" style="width:300px;" autofocus value="<?php echo $rootdir;?>" id="rootdir" />
 				<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">When www.domain.ext/ccms/, <strong>/ccms/</strong> is your web root</span>

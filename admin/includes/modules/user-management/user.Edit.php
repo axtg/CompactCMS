@@ -65,6 +65,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	</script>
 	<script type="text/javascript" charset="utf-8">
 	function passwordStrength(password){var score=0;if(password.length>5)score++;if((password.match(/[a-z]/))&&(password.match(/[A-Z]/)))score++;if(password.match(/\d+/))score++;if(password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/))score++;if(password.length>12)score++;document.getElementById("passwordStrength").className="strength"+score;}</script>
+	<script type="text/javascript" charset="utf-8">function randomPassword(length){var target=document.getElementById("pass");chars="abcdefghijkmNPQRSTUVWXYZ123456789=*^?!@#$%";pass="";for(x=0;x<length;x++){i=Math.floor(Math.random()*38);pass+=chars.charAt(i);}passwordStrength(pass);return target.value=pass;}</script>
 </head>
 
 <body>
@@ -101,7 +102,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			<h2><?php echo $ccms['lang']['users']['editpassword']; ?></h2>
 			<div class="prepend-1">
 				<form action="../../process.inc.php?action=edit-user-password" id="userPass" method="post" accept-charset="utf-8">
-					<label for="pass"><?php echo $ccms['lang']['users']['password']; ?></label><input type="password" onkeyup="passwordStrength(this.value)" style="width:200px;" class="required minLength:6 text" name="pass" value="" id="pass" />
+					<label for="pass"><?php echo $ccms['lang']['users']['password']; ?><br/><a href="#" class="small ss_sprite ss_bullet_key" onclick="randomPassword(8);"><?php echo $ccms['lang']['auth']['generatepass']; ?></a></label><input type="text" onkeyup="passwordStrength(this.value)" style="width:200px;" class="required minLength:6 text" name="pass" value="" id="pass" />
 					<div class="clear center">
 						<div id="passwordStrength" class="strength0"></div><br/>
 					</div>
