@@ -306,41 +306,36 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 			$errors[] = 'Warning: safe mode is enabled, skipping chmod()';
 		}
 		
-		// Don't do chmod() check for Windows server
-		if(!strpos($_SERVER['SERVER_SOFTWARE'], "Win")) {
-			
-			// Set default value
-			$chmod = 0;
+		// Set default values
+		$chmod = 0;
+		$errfile=0;
 		
-			// Chmod check and set function
-			function setChmod($path, $value) {
-				// Check current chmod() status
-				if(substr(sprintf('%o', fileperms(BASE_PATH.$path)), -4)!=$value) {
-					// If not set, set
-					if(@chmod(BASE_PATH.$path, $value)) { 
-						return true;
-					} 
-				} else {
+		// Chmod check and set function
+		function setChmod($path, $value) {
+			// Check current chmod() status
+			if(substr(sprintf('%o', fileperms(BASE_PATH.$path)), -4)!=$value) {
+				// If not set, set
+				if(@chmod(BASE_PATH.$path, $value)) { 
 					return true;
-				}
+				} 
+			} else {
+				return true;
 			}
-			
-			// Do chmod() per necessary folder and set status
-			if(setChmod('/.htaccess','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /.htaccess/';
-			if(setChmod('/lib/config.inc.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/config.inc.php';
-			if(setChmod('/content/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/';
-			if(setChmod('/content/home.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/home.php';
-			if(setChmod('/content/installation.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/installation.php';
-			if(setChmod('/content/contact.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/contact.php';
-			if(setChmod('/lib/includes/cache/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/includes/cache/';
-			if(setChmod('/lib/templates/ccms.tpl.html','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/templates/ccms.tpl.html';
-			if(setChmod('/admin/includes/modules/backup-restore/files/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /admin/includes/modules/backup-restore/files/';
-			if(setChmod('/media/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /media/';
-			if(setChmod('/media/albums/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /media/albums/';
-			
-		// End Windows server check
 		}
 		
+		// Do chmod() per necessary folder and set status
+		if(setChmod('/.htaccess','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /.htaccess/';
+		if(setChmod('/lib/config.inc.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/config.inc.php';
+		if(setChmod('/content/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/';
+		if(setChmod('/content/home.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/home.php';
+		if(setChmod('/content/installation.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/installation.php';
+		if(setChmod('/content/contact.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/contact.php';
+		if(setChmod('/lib/includes/cache/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/includes/cache/';
+		if(setChmod('/lib/templates/ccms.tpl.html','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/templates/ccms.tpl.html';
+		if(setChmod('/admin/includes/modules/backup-restore/files/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /admin/includes/modules/backup-restore/files/';
+		if(setChmod('/media/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /media/';
+		if(setChmod('/media/albums/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /media/albums/';
+					
 		if($chmod>0) { 
 			$log[] = '<abbr title=".htaccess, config.inc.php, ./content/, ./lib/includes/cache/, back-up folder &amp; 2 media folders">Confirmed correct chmod() on '.$chmod.' files</abbr>';
 		} 
