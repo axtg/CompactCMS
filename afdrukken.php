@@ -45,7 +45,7 @@ require_once(dirname(__FILE__) . '/lib/sitemap.php');
 
 <p style="text-align: center;">
 	<a name="top"></a>
-	<strong><a href="../<?php echo ($_GET['page']!=$cfg['homepage'])?$_GET['page'].'.html':null; ?>"><?php echo $ccms['lang']['system']['tooriginal']; ?></a></strong>
+	<strong><a href="<?php echo $ccms['rootdir'];?><?php echo ($_GET['page']!=$cfg['homepage'])?$_GET['page'].'.html':null; ?>"><?php echo $ccms['lang']['system']['tooriginal']; ?></a></strong>
 </p>
 <hr />
 

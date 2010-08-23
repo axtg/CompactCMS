@@ -271,6 +271,15 @@ div.module{font:'Palatino Linotype',Palatino, Baskerville, 'Book Antiqua', Georg
 .hover{height:32px;border:1px solid #EFEFEF;}
 .hover:hover{border:solid 2px #618CBD;background-color:#E2EAF3;}
 
+/* === USER MANAGEMENT === */
+#passwordStrength{height:10px;display:block;float:left;}
+.strength0{width:212px;background:#cccccc;}
+.strength1{width:40px;background:#ff0000;}
+.strength2{width:80px;background:#ff5f5f;}
+.strength3{width:123px;background:#56e500;}
+.strength4{background:#4dcd00;width:166px;}
+.strength5{background:#399800;width:212px;}
+
 /* === 2. MODULE === */
 /* === LIGHTBOX === */
 .thumbview {

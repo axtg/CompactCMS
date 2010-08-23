@@ -37,9 +37,6 @@ $canarycage	= md5(session_id());
 $currenthost= md5($_SERVER['HTTP_HOST']);
 $do 		= (isset($_GET['do'])?$_GET['do']:null);
 
-// Include functions
-include_once('functions.php');
-
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 ?>
@@ -53,6 +50,8 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<script type="text/javascript" src="../../../../lib/includes/js/mootools.js" charset="utf-8"></script>
 		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
 		<script type="text/javascript" charset="utf-8">window.addEvent('domready',function(){new FormValidator($('addUser'),{onFormValidate:function(passed,form,event){if(passed)form.submit();}});});</script>
+		<script type="text/javascript" charset="utf-8">
+		function passwordStrength(password){var score=0;if(password.length>5)score++;if((password.match(/[a-z]/))&&(password.match(/[A-Z]/)))score++;if(password.match(/\d+/))score++;if(password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/))score++;if(password.length>12)score++;document.getElementById("passwordStrength").className="strength"+score;}</script>
 	</head>
 <body>
 	<div class="module">
@@ -124,7 +123,10 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			<?php if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) { ?>
 			<form action="../../process.inc.php?action=add-user" method="post" id="addUser" accept-charset="utf-8">
 				<label for="userName"><?php echo $ccms['lang']['users']['username']; ?></label><input type="text" class="minLength:3 text" name="user" value="" id="userName" />
-				<label for="userPass"><?php echo $ccms['lang']['users']['password']; ?></label><input type="text" class="minLength:6 text" name="pass" value="<?php echo createPassword(); ?>" id="userPass" />
+				<label for="userPass"><?php echo $ccms['lang']['users']['password']; ?></label><input type="text" onkeyup="passwordStrength(this.value)" class="minLength:6 text" name="pass" value="" id="userPass" />
+				<div class="clear center">
+					<div id="passwordStrength" class="strength0"></div><br/>
+				</div>
 				<label for="userFirstname"><?php echo $ccms['lang']['users']['firstname']; ?></label><input type="text" class="required text" name="userFirstname" value="" id="userFirstname" />
 				<label for="userLastname"><?php echo $ccms['lang']['users']['lastname']; ?></label><input type="text" class="required text" name="userLastname" value="" id="userLastname" />
 				<label for="userEmail"><?php echo $ccms['lang']['users']['email']; ?></label><input type="text" class="required validate-email text" name="userEmail" value="" id="userEmail" />

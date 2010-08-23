@@ -36,7 +36,7 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 
 // Standard configuration
 $cfg['sitename']	= "CompactCMS";	// Your site name - this will show in the front-end.
-$cfg['language']	= "nl"; 		// Select the language of your (front-end) website - en, nl, de, es.
+$cfg['language']	= "en"; 		// Select the language of your (front-end) website - en, nl, de, es.
 $cfg['homepage']	= "home";		// Select your default page that should appear on opening (your homepage).
 $cfg['rootdir']		= "/";			// The root directory where CCMS is installed under, must include trailing slash ('/').
 $cfg['authcode']	= "12345";		// Add ?preview=X (where X is your authcode) to your address bar to preview unpublished items.

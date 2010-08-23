@@ -112,7 +112,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	} ?>
 </table>
 <hr />
-	<p class="right"><button type="submit"><span class="ss_sprite ss_disk">Save</span></button> <span class="ss_sprite ss_cross"><a href="#" onClick="confirmation();" title="<?php echo $ccms['lang']['editor']['cancelbtn']; ?>"><?php echo $ccms['lang']['editor']['cancelbtn']; ?></a></span></p>
+	<p class="right"><button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton'];?></span></button> <span class="ss_sprite ss_cross"><a href="#" onClick="confirmation();" title="<?php echo $ccms['lang']['editor']['cancelbtn']; ?>"><?php echo $ccms['lang']['editor']['cancelbtn']; ?></a></span></p>
 </form>
 
 	</div>
