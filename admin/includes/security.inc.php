@@ -32,6 +32,12 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 // Include general configuration
 require_once(dirname(dirname(dirname(__FILE__))).'/lib/sitemap.php');
 
+// Disable common hacking functions
+ini_set('base64_decode', 'Off');
+ini_set('exec', 'Off');
+ini_set('allow_url_fopen', 'Off');
+ini_set('allow_url_include', 'Off');
+
 // Set appropriate auth.inc.php file location
 $loc = "";
 if(is_file('../lib/includes/auth.inc.php')) 			{ $loc = "../lib/includes/auth.inc.php"; } 

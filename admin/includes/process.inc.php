@@ -516,10 +516,10 @@ if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	
 	if(!empty($_POST['content']) && strlen($_POST['content'])>=3 && strlen($_POST['content'])<=240) {
 		if (!get_magic_quotes_gpc()) {
-    		$content = addslashes($_POST['content']);
+    		$content = htmlspecialchars(addslashes($_POST['content']), ENT_COMPAT, 'UTF-8');
     		$content = str_replace("'", "&#039;", $content); 
 		} else {
-    		$content = $_POST['content'];
+    		$content = htmlspecialchars($_POST['content'], ENT_COMPAT, 'UTF-8');
     	}
 	} else die($ccms['lang']['system']['error_value']);
 	

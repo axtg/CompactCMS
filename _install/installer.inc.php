@@ -65,7 +65,7 @@ if($nextstep == md5('2') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 	<legend class="installMsg">Step 2 - Setting your preferences</legend>
 
 		<label for="adminpass"><span class="ss_sprite ss_lock">Administrator password</span><br/><a href="#" class="small ss_sprite ss_arrow_refresh" onclick="randomPassword(8);">Auto generate a safe password</a></label>
-		<input type="text" class="minLength:6 alt title" name="adminpass" maxlenght="5" onkeyup="passwordStrength(this.value)" style="width:300px;" value="" id="adminpass" />
+		<input type="text" class="alt title" name="adminpass" maxlenght="5" onkeyup="passwordStrength(this.value)" style="width:300px;" value="" id="adminpass" />
 		<div class="clear center">
 			<div id="passwordStrength" class="strength0"></div>
 		</div>
@@ -154,15 +154,16 @@ if($nextstep == md5('4') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 	if(!strpos($_SERVER['SERVER_SOFTWARE'], "Win")) {
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/.htaccess')),-4)!='0666') { $chfile[] = '.htaccess (0666)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/lib/config.inc.php')),-4)!='0666') { $chfile[] = '/lib/config.inc.php (0666)'; }
-		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/')),-4)!='0777') { $chfile[] = '/content/ (0777)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/home.php')),-4)!='0666') { $chfile[] = '/content/home.php (0666)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/installation.php')),-4)!='0666') { $chfile[] = '/content/installation.php (0666)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/contact.php')),-4)!='0666') { $chfile[] = '/content/contact.php (0666)'; }
-		if(substr(sprintf('%o', fileperms(BASE_PATH.'/lib/includes/cache/')),-4)!='0777') { $chfile[] = '/lib/includes/cache/ (0777)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/lib/templates/ccms.tpl.html')),-4)!='0666') { $chfile[] = '/lib/templates/ccms.tpl.html (0666)'; }
-		if(substr(sprintf('%o', fileperms(BASE_PATH.'/admin/includes/modules/backup-restore/files/')),-4)!='0777') { $chfile[] = '/admin/includes/modules/backup-restore/files/ (0777)'; }
+		// Directories under risk due to chmod(0777)
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/')),-4)!='0777') { $chfile[] = '/content/ (0777)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/media/')),-4)!='0777') { $chfile[] = '/media/ (0777)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/media/albums/')),-4)!='0777') { $chfile[] = '/media/albums/ (0777)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/media/files/')),-4)!='0777') { $chfile[] = '/media/files/ (0777)'; }
+		if(substr(sprintf('%o', fileperms(BASE_PATH.'/lib/includes/cache/')),-4)!='0777') { $chfile[] = '/lib/includes/cache/ (0777)'; }
 	}
 ?>	
 	<legend class="installMsg">Step 4 - Review your input</legend>
@@ -341,15 +342,17 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 		// Do chmod() per necessary folder and set status
 		if(setChmod('/.htaccess','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /.htaccess/';
 		if(setChmod('/lib/config.inc.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/config.inc.php';
-		if(setChmod('/content/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/';
 		if(setChmod('/content/home.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/home.php';
 		if(setChmod('/content/installation.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/installation.php';
 		if(setChmod('/content/contact.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/contact.php';
-		if(setChmod('/lib/includes/cache/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/includes/cache/';
 		if(setChmod('/lib/templates/ccms.tpl.html','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/templates/ccms.tpl.html';
-		if(setChmod('/admin/includes/modules/backup-restore/files/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /admin/includes/modules/backup-restore/files/';
+		
+		// Directories under risk due to chmod(0777)
+		if(setChmod('/content/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/';
 		if(setChmod('/media/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /media/';
 		if(setChmod('/media/albums/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /media/albums/';
+		if(setChmod('/media/files/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /media/files/';
+		if(setChmod('/lib/includes/cache/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/includes/cache/';
 					
 		if($chmod>0) { 
 			$log[] = '<abbr title=".htaccess, config.inc.php, ./content/, ./lib/includes/cache/, back-up folder &amp; 2 media folders">Confirmed correct chmod() on '.$chmod.' files</abbr>';
@@ -405,15 +408,16 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 		// Perform the ftp_chmod command
 		if(@ftp_chmod($conn_id, 0666, "./.htaccess")) { $ftp_chmod++; }
 		if(@ftp_chmod($conn_id, 0666, "./lib/config.inc.php")) { $ftp_chmod++; }
-		if(@ftp_chmod($conn_id, 0777, "./content/")) { $ftp_chmod++; }
 		if(@ftp_chmod($conn_id, 0666, "./content/home.php")) { $ftp_chmod++; }
 		if(@ftp_chmod($conn_id, 0666, "./content/installation.php")) { $ftp_chmod++; }
 		if(@ftp_chmod($conn_id, 0666, "./content/contact.php")) { $ftp_chmod++; }
-		if(@ftp_chmod($conn_id, 0777, "./lib/includes/cache/")) { $ftp_chmod++; }
 		if(@ftp_chmod($conn_id, 0666, "./lib/templates/ccms.tpl.html")) { $ftp_chmod++; }
-		if(@ftp_chmod($conn_id, 0777, "./admin/includes/modules/backup-restore/files/")) { $ftp_chmod++; }
+		// Directories under risk due to chmod(0777)
+		if(@ftp_chmod($conn_id, 0777, "./content/")) { $ftp_chmod++; }
 		if(@ftp_chmod($conn_id, 0777, "./media/")) { $ftp_chmod++; }
 		if(@ftp_chmod($conn_id, 0777, "./media/albums")) { $ftp_chmod++; }
+		if(@ftp_chmod($conn_id, 0777, "./media/files/")) { $ftp_chmod++; }
+		if(@ftp_chmod($conn_id, 0777, "./lib/includes/cache/")) { $ftp_chmod++; }
 	
 		if($ftp_chmod>0) { 
 			$log[] = '<abbr title=".htaccess, config.inc.php, ./content/, ./lib/includes/cache/, back-up folder &amp; 2 media folders">Successful chmod() on '.$chmod.' files using FTP.</abbr>';

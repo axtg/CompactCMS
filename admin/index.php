@@ -50,7 +50,7 @@ require_once('./includes/process.inc.php');
 	<meta name="description" content="CompactCMS administration. CompactCMS is a light-weight and SEO friendly Content Management System for developers and novice programmers alike." />
 	<link rel="icon" type="image/ico" href="../media/favicon.ico" />
 	<link rel="stylesheet" type="text/css" href="img/styles/base.css,layout.css,editor.css,sprite.css" />
-	<!--[if IE]><script type="text/javascript" src="../lib/includes/js/excanvas.js"></script><![endif]-->
+	<!--[if IE]><script type="text/javascript" src="../lib/includes/js/excanvas.js" charset="utf-8"></script><![endif]-->
 	<script type="text/javascript" src="../lib/includes/js/mootools.js,common.js,mocha.js" charset="utf-8"></script>
 	<script type="text/javascript" charset="utf-8">
 	window.addEvent('domready',function(){

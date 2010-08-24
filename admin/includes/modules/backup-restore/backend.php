@@ -53,7 +53,7 @@ if(!empty($do) && $_GET['do']=="backup" && isset($_POST['btn_backup']) && $_POST
 	include_once('functions.php');
 	
 	$configBackup 		= array('../../../../content/','../../../../lib/templates/');
-	$configBackupDir 	= 'files/';
+	$configBackupDir 	= '../../../../media/files/';
 	$backupName 		= date('Ymd_His').'-data.zip';
 	
 	$createZip = new createZip;
@@ -116,7 +116,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 	
 		echo "<div class=\"module notice center\">";
 		foreach ($_POST['file'] as $key => $value) {
-			unlink('./files/'.$value);
+			unlink('../../../../media/files/'.$value);
 			echo ucfirst($value)." ".$ccms['lang']['backend']['statusremoved'].".<br/>";
 		}
 		echo "</div>";
@@ -138,7 +138,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 <body>
 	<div class="module">
 		<?php if(!empty($backupName)) { 
-			echo "<p class=\"success center\">".$ccms['lang']['backend']['newfilecreated'].", <a href=\"./files/$backupName\">".strtolower($ccms['lang']['backup']['download'])."</a>.</p>"; 
+			echo "<p class=\"success center\">".$ccms['lang']['backend']['newfilecreated'].", <a href=\"../../../../media/files/$backupName\">".strtolower($ccms['lang']['backup']['download'])."</a>.</p>"; 
 		} ?>
 	
 		<div class="span-7 colborder">
@@ -159,7 +159,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 						<th>&#160;</th>
 					</tr>
 					<?php 
-					if ($handle = opendir('./files/')) {
+					if ($handle = opendir('../../../../media/files/')) {
 						$i=0;
 						while (false !== ($file = readdir($handle))) {
 					        if ($file != "." && $file != ".." && strpos($file, ".zip")) {
@@ -169,7 +169,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 						        	echo '<td><input type="checkbox" name="file[]" value="'.$file.'" id="'.$i.'"></td>';
 						        }
 						        echo '<td>'.$file.'</td>';
-						        echo '<td><span class="ss_sprite ss_package_green"><a href="./files/'.$file.'" title="'.ucfirst($file).'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
+						        echo '<td><span class="ss_sprite ss_package_green"><a href="../../../../media/files/'.$file.'" title="'.ucfirst($file).'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
 						        echo '</tr>';
 					        } 
 					    $i++; }

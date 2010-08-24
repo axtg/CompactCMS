@@ -43,6 +43,20 @@ RewriteRule ^admin/img/styles/(.+\.css)$ 	lib/includes/combine.inc.php?type=css&
 RewriteRule ^sitemap\.xml$ 					lib/sitemap.php [L]
 
 ##
+# Security measures
+##
+RewriteCond %{QUERY_STRING} (.*)(http|https|ftp):\/\/(.*)
+RewriteRule ^(.+)$ - [F]
+
+<IfModule mod_security.c>
+	SecFilterEngine On
+	SecFilterDefaultAction "deny,log,status:403"
+	SecFilterScanPOST On
+	SecFilterCheckURLEncoding On
+	SecFilterCheckUnicodeEncoding Off
+</IfModule>
+
+##
 # The lines below improve loading times for the administration, following the best practice
 # rules from: http://developer.yahoo.com/performance/rules.html. Note that both the Apache
 # modules mod_deflate and mod_headers are required for this to work. Falls back nicely if 
