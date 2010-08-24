@@ -1,5 +1,5 @@
 
-/lib/modules/contact.mail
-/lib/modules/contact.sms
-/lib/modules/horeca.menu
-/lib/modules/horeca.resv
+/lib/modules/cmail
+/lib/modules/ctext
+/lib/modules/hmenu
+/lib/modules/hresv
