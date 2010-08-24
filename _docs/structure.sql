@@ -176,4 +176,4 @@ CREATE TABLE IF NOT EXISTS `ccms_users` (
 --
 
 INSERT INTO `ccms_users` (`userID`, `userName`, `userPass`, `userFirst`, `userLast`, `userEmail`, `userActive`, `userLevel`, `userToken`, `userLastlog`, `userTimestamp`) VALUES
-(00001, 'admin', '1a1dc91c907325c69271ddf0c944bc72', 'Xander', 'CCMS', 'xander@compactcms.nl', 1, 4, '5168774687486', '2010-08-20 12:05:04', '2010-08-20 14:05:04'),
+(00001, 'admin', '1a1dc91c907325c69271ddf0c944bc72', 'Admin', 'CCMS', 'xander@compactcms.nl', 1, 4, '5168774687486', '2010-08-20 12:05:04', '2010-08-20 14:05:04');
