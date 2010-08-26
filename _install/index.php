@@ -150,7 +150,7 @@ function setLanguage($lang) {
 		<div class="span-9">
 		<form action="./installer.inc.php" method="post" id="installFrm">
 			<fieldset id="install" style="border:none;" class="none">
-			<legend class="installMsg"><?php echo (!isset($_GET['do'])&&empty($_GET['do'])?'Step 1 - Getting to know the environment':'FTP - Setting the permissions right');?></legend>
+			<legend class="installMsg"><?php echo (!isset($_GET['do'])&&empty($_GET['do'])?'Step 1 - Knowing the environment':'FTP - Setting permissions right');?></legend>
 			
 				<?php if(!isset($_GET['do'])&&empty($_GET['do'])) { ?>
 				<p>The details below have been filled-out based on information readily available. Please confirm these settings, select your language and click proceed.</p>

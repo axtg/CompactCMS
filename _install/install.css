@@ -141,7 +141,7 @@ hr.space {background:#fff;color:#fff;}
 label{font-weight:bold;}
 #contact label{font-weight:bold;float:left;width:90px;text-align: right;margin-right:5px;padding-top:7px;}
 fieldset {padding:1.4em;margin:0 0 1.5em 0;border:1px solid #ccc;}
-legend {font-weight:bold;font-size:1.2em;}
+legend {font-weight:bold;font-size:1.1em;}
 input.text, input.title, textarea, select {margin:0.2em 0;border:1px solid #bbb;}
 input.text:focus, input.title:focus, textarea:focus, select:focus {border:1px solid #666;}
 input.text, input.title {width:300px;padding:5px;}
