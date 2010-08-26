@@ -125,14 +125,17 @@ require_once('./includes/process.inc.php');
 				<textarea class="required minLength:3" id="f_de" name="description" rows="4" cols="30"></textarea>
 				<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['description']; ?>">&#160;</span><br/>
 				
-				<?php if(getModule("count")>0) { ?>
+				<?php 
+				// Modules
+				if(count($modules)>0) { ?>
 				<label for="f_mod"><?php echo $ccms['lang']['forms']['module']; ?></label>
 				<select class="text" name="module" id="f_mod" size="1">
 					<option value="editor"><?php echo $ccms['lang']['forms']['contentitem']; ?></option>
 					<optgroup label="<?php echo $ccms['lang']['forms']['additions']; ?>">
-					<?php foreach (getModule("list") as $value): ?>
-						<option value="<?php echo $value;?>"><?php echo $value;?></option>	
-					<?php endforeach ?>
+						<?php //
+						for ($i=0; $i<count($modules); $i++) { ?>
+							<option value="<?php echo $modules[$i]['modName'];?>"><?php echo $modules[$i]['modTitle']; ?></option>
+						<?php } ?>
 					</optgroup>
 				</select>&#160;<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['module']; ?>">&#160;</span><br/>
 				<?php } ?>

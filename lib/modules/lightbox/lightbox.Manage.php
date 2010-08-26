@@ -98,30 +98,33 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 			<form action="lightbox.Process.php?action=del-album" method="post" accept-charset="utf-8">
 			<h2><?php echo $ccms['lang']['album']['currentalbums']; ?></h2>
 				<table border="0" cellspacing="5" cellpadding="5">
+					<?php if(!empty($albums)) { ?>
+					<tr>
 						<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) { ?><th class="span-1">&#160;</th><?php } ?>
 						<th class="span-5"><?php echo $ccms['lang']['album']['album']; ?></th>
 						<th class="span-2"><?php echo $ccms['lang']['album']['files']; ?></th>
 						<th class="span-4"><?php echo $ccms['lang']['album']['lastmod']; ?></th>
-					</tr>
-					<?php 
-					$i = 0;
-					foreach ($albums as $value) {
-						// Alternate rows
-				    	if($i%2 != '1') {
-							echo '<tr style="background-color: #E6F2D9;">';
-						} else { 
-							echo '<tr>';
-						} ?>
-							<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) { ?>
-								<td><input type="checkbox" name="albumID[<?php echo $i+1;?>]" value="<?php echo $value; ?>" id="newsID"></td>
-							<?php } ?>
-							<td><span class="ss_sprite ss_folder_picture"><a href="lightbox.Manage.php?album=<?php echo $value;?>"><?php echo $value;?></a></span></td>
-							<td><span class="ss_sprite ss_pictures"><?php echo ($count[$i]>0?$count[$i]:'0'); ?></span></td>
-							<td><span class="ss_sprite ss_calendar"><?php echo date("Y-m-d G:i:s", filemtime(BASE_PATH.'/media/albums/'.$value)); ?></td>
 						</tr>
-					<?php
-			  			$i++;
-	  				} ?>
+						<?php 
+						$i = 0;
+						foreach ($albums as $value) {
+							// Alternate rows
+					    	if($i%2 != '1') {
+								echo '<tr style="background-color: #E6F2D9;">';
+							} else { 
+								echo '<tr>';
+							} ?>
+								<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) { ?>
+									<td><input type="checkbox" name="albumID[<?php echo $i+1;?>]" value="<?php echo $value; ?>" id="newsID"></td>
+								<?php } ?>
+								<td><span class="ss_sprite ss_folder_picture"><a href="lightbox.Manage.php?album=<?php echo $value;?>"><?php echo $value;?></a></span></td>
+								<td><span class="ss_sprite ss_pictures"><?php echo ($count[$i]>0?$count[$i]:'0'); ?></span></td>
+								<td><span class="ss_sprite ss_calendar"><?php echo date("Y-m-d G:i:s", filemtime(BASE_PATH.'/media/albums/'.$value)); ?></td>
+							</tr>
+						<?php
+				  			$i++;
+		  				}
+	  				} else echo $ccms['lang']['system']['noresults']; ?>
 				</table>
 				<hr />
 				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) { ?><button type="submit" onclick="return confirmation();" name="deleteAlbum"><span class="ss_sprite ss_bin_empty"><?php echo $ccms['lang']['backend']['delete']; ?></span></button><?php } ?>

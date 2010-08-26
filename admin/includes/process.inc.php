@@ -54,6 +54,9 @@ if(!isset($_SESSION['rc1']) || !isset($_SESSION['rc2'])) {
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
+// Fill active module array
+$modules = $db->QueryArray("SELECT * FROM `".$cfg['db_prefix']."modules` WHERE modActive='1'");
+
 // Open recordset for sites' pages
 $db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` ORDER BY `published`, `menu_id`, `toplevel` ASC, `sublevel` ASC");
 
@@ -68,41 +71,6 @@ $do_action = (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:nu
 
 // Set the target for PHP processing
 $target_form = (!empty($_POST['form'])?$_POST['form']:null);
-
-// Read modules function
-function getModule($task) {
-	// Generate array of module directories with module.txt files
-	$modules = array();
-	if ($handle = opendir(BASE_PATH.'/lib/modules')) {
-    while (false !== ($file = readdir($handle))) {
-    	
-    	// Filter out upper dirs and default index.html file
-        if ($file != "." && $file != ".." && $file != "index.html") {
-            if ($handle1 = opendir(BASE_PATH.'/lib/modules/'.$file)) {
-    		while (false !== ($file1 = readdir($handle1))) {
-		
-    			// Check whether the module.txt file exists
-    			if($file1 == "module.txt" && file_exists(BASE_PATH."/lib/modules/$file/module.txt")) {
-					$modname = file(BASE_PATH."/lib/modules/$file/module.txt");
-					
-					// Add found module to the array
-					array_push($modules, $modname['1']);
-				}
-			}
-			closedir($handle1);
-			}
-        }
-    }
-    closedir($handle);
-	}
-	
-	// Function getModule() tasks
-	if($task=="count") {
-		return count($modules);
-	} elseif($task="list") {
-		return $modules;
-	}
-}
 
  /**
  *
@@ -142,9 +110,9 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
 				echo '<tr style="background-color: #EBC6CD;">';
 			} else echo '<tr>'; } ?>
 			<td style="padding-left:2px;" class="span-1">
-			<?php if($_SESSION['ccms_userLevel']<$perm['managePages'] || $cfg['homepage'] == $row->urlpage || in_array($row->urlpage, $cfg['restrict'])) { ?>
+			<?php if($_SESSION['ccms_userLevel']<$perm['managePages'] || $row->urlpage == "home" || in_array($row->urlpage, $cfg['restrict'])) { ?>
 				<span class="ss_sprite ss_bullet_red" title="<?php echo $ccms['lang']['auth']['featnotallowed']; ?>"></span>
-			<?php } elseif($_SESSION['ccms_userLevel']>=$perm['managePages'] && $cfg['homepage'] != $row->urlpage || !in_array($row->urlpage, $cfg['restrict'])) { ?>
+			<?php } elseif($_SESSION['ccms_userLevel']>=$perm['managePages'] && $row->urlpage != "home" || !in_array($row->urlpage, $cfg['restrict'])) { ?>
 				<input type="checkbox" id="page_id_<?php echo $i;?>" name="page_id[]" value="<?php echo $_SESSION['rc1'].$_SESSION['rc2'].$row->page_id; ?>" />
 			<?php } ?>
 			</td>
@@ -175,7 +143,7 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
 			<?php // Check for restrictions
 			if(!in_array($row->urlpage, $cfg['restrict'])||!in_array($row->page_id, $owners)) { ?>
 				<td class="span-5" style="text-align: right;">
-					<a id="<?php echo $row->urlpage;?>" href="<?php echo $module; ?>?file=<?php echo $row->urlpage; ?>&amp;action=edit&amp;restrict=<?php echo $row->iscoding; ?>&amp;active=<?php echo $row->published;?>" rel="Edit <?php echo $row->urlpage.'.html';?>" class="tabs sprite edit"><?php echo $ccms['lang']['backend']['editpage']; ?></a> | <a href="../<?php echo ($row->urlpage!=$cfg['homepage'])?$row->urlpage.'.html?preview='.$cfg['authcode']:'?preview='.$cfg['authcode']; ?>" class="external"><?php echo $ccms['lang']['backend']['previewpage']; ?></a>&#160;
+					<a id="<?php echo $row->urlpage;?>" href="<?php echo $module; ?>?file=<?php echo $row->urlpage; ?>&amp;action=edit&amp;restrict=<?php echo $row->iscoding; ?>&amp;active=<?php echo $row->published;?>" rel="Edit <?php echo $row->urlpage.'.html';?>" class="tabs sprite edit"><?php echo $ccms['lang']['backend']['editpage']; ?></a> | <a href="../<?php echo ($row->urlpage!="home")?$row->urlpage.'.html?preview='.$cfg['authcode']:'?preview='.$cfg['authcode']; ?>" class="external"><?php echo $ccms['lang']['backend']['previewpage']; ?></a>&#160;
 				</td>
 			<?php } else { ?>
 				<td class=\"span-3\" style=\"text-align: right;\">
@@ -268,7 +236,7 @@ if($do_action == "renderlist" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAu
 					</select>
 				</td>
 				<td class="span-1-1" id="td-islink-<?php echo $row->page_id; ?>">
-					<?php if($cfg['homepage'] == $row->urlpage) { ; ?>
+					<?php if($row->urlpage == "home") { ; ?>
 						<input type="checkbox" checked="checked" disabled="disabled" />
 					<?php } else { ?>
 						<input type="checkbox" name="islink" id="<?php echo $row->page_id; ?>" class="islink" <?php echo($row->islink==="Y")?'checked="checked"':null;?> />
@@ -302,7 +270,7 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	$post_urlpage = str_replace(' ','-',$post_urlpage);
 	
 	// Check for non-empty module variable
-	$post_module = (isset($_POST['module'])&&!empty($_POST['module'])?$_POST['module']:"editor");
+	$post_module = (isset($_POST['module'])&&!empty($_POST['module'])?strtolower($_POST['module']):"editor");
 	
 	// Filter $_GET for bad hack coding
 	isset($_GET['page']) ? mysql_real_escape_string($_GET['page']) : null;

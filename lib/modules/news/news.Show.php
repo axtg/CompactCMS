@@ -3,7 +3,13 @@
 global $db,$cfg,$ccms;
 
 // Load news preferences
-$rsCfg = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgnews`");
+$pageID	= (isset($_GET['page'])?$_GET['page']:null);
+$rsCfg	= $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgnews` WHERE pageID='$pageID'");
+$numCfg	= $db->RowCount();
+$locale = ($numCfg>0?$rsCfg->showLocale:'eng');
+
+// Set front-end language
+setlocale(LC_ALL, $locale);
 
 // Limited characters
 $special_chars = array("#","$","%","@","^","&","*","!","~","‘","\"","’","'","=","?","/","[","]","(",")","|","<",">",";","\\",",");
@@ -11,7 +17,7 @@ $special_chars = array("#","$","%","@","^","&","*","!","~","‘","\"","’","'",
 // Do actions for overview
 if(!isset($_GET['id'])||empty($_GET['id'])) {
 	// Load recordset for all news
-	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsPublished>'0' ORDER BY newsModified DESC");
+	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsPublished>'0' AND pageID='$pageID' ORDER BY newsModified DESC");
 } 
 // Do actions for specific news
 elseif(isset($_GET['id'])&&!empty($_GET['id'])) {
@@ -19,7 +25,7 @@ elseif(isset($_GET['id'])&&!empty($_GET['id'])) {
 	$newsID = explode("-",$_GET['id']);
 	
 	// Load recordset for newsID
-	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsID=".$newsID[0]." AND newsPublished>'0'");
+	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsID=".$newsID[0]." AND newsPublished>'0' AND pageID='$pageID'");
 }
 
 ?>
@@ -33,13 +39,23 @@ elseif(isset($_GET['id'])&&!empty($_GET['id'])) {
 if($db->HasRecords()) {
 
 	if(!isset($_GET['do'])) {
-		$max = ($rsCfg->showMessage>$db->RowCount()?$db->RowCount():$rsCfg->showMessage);
-		for ($i=0; $i<$max; $i++) { 
+		if($numCfg>0) {
+			$listMax 	= ($rsCfg->showMessage>$db->RowCount()?$db->RowCount():$rsCfg->showMessage);
+			$showTeaser	= $rsCfg->showTeaser;
+			$showAuthor	= $rsCfg->showAuthor;
+			$showDate	= $rsCfg->showDate;
+		} else {
+			$listMax = $db->RowCount();
+			$showTeaser	= '1';
+			$showAuthor	= '1';
+			$showDate	= '1';
+		}
+		for ($i=0; $i<$listMax; $i++) { 
 		    $rsNews = $db->Row();
 ?>
 <div>
-	<?php if($rsCfg->showDate==1) { ?>
-		<strong class="date"><?php echo strftime('%B',strtotime($rsNews->newsModified)); ?><span><?php echo date('j',strtotime($rsNews->newsModified)); ?></span></strong>
+	<?php if($showDate==1) { ?>
+		<strong class="date"><?php echo htmlentities(strftime('%B',strtotime($rsNews->newsModified))); ?><span><?php echo date('j',strtotime($rsNews->newsModified)); ?></span></strong>
 	<?php } ?>
 	
 	<?php if(!isset($_GET['id'])||empty($_GET['id'])) { 
@@ -51,11 +67,11 @@ if($db->HasRecords()) {
 		?>
 		<h2><a href="<?php echo $cfg['rootdir'].$_GET['page'].'/'.$rsNews->newsID.'-'.$newsTitle; ?>.html"><?php echo $rsNews->newsTitle; ?></a></h2>
 		<p><strong><?php echo $rsNews->newsTeaser; ?></strong></p>
-		<?php if($rsCfg->showTeaser==0) { ?><p><?php echo $rsNews->newsContent; ?></p><?php } ?>
+		<?php if($showTeaser==0) { ?><p><?php echo $rsNews->newsContent; ?></p><?php } ?>
 		
-		<?php if($rsCfg->showAuthor==1||$rsCfg->showDate==1) { ?>
+		<?php if($showAuthor==1||$showDate==1) { ?>
 			<p style="text-align:right;">
-				<?php if($rsCfg->showAuthor==1) { echo '<strong>&ndash; '.$rsNews->userFirst.' '.$rsNews->userLast.'</strong>'; } ?>
+				<?php if($showAuthor==1) { echo '<strong>&ndash; '.$rsNews->userFirst.' '.$rsNews->userLast.'</strong>'; } ?>
 			</p>
 		<?php } ?>
 	<?php } elseif(isset($_GET['id'])&&!empty($_GET['id'])) { ?>
@@ -63,9 +79,9 @@ if($db->HasRecords()) {
 		<p><strong><?php echo $rsNews->newsTeaser; ?></strong></p>
 		<p><?php echo $rsNews->newsContent; ?></p>
 		
-		<?php if($rsCfg->showAuthor==1||$rsCfg->showDate==1) { ?>
+		<?php if($showAuthor==1||$showDate==1) { ?>
 		<p style="text-align:right;">
-			<?php if($rsCfg->showAuthor==1) { echo '<strong>&ndash; '.$rsNews->userFirst.' '.$rsNews->userLast.'</strong>'; } ?>
+			<?php if($showAuthor==1) { echo '<strong>&ndash; '.$rsNews->userFirst.' '.$rsNews->userLast.'</strong>'; } ?>
 		</p>
 		<?php } ?>
 		<p>&laquo; <a href="<?php echo $cfg['rootdir'].$_GET['page']; ?>.html?do=all"><?php echo $ccms['lang']['news']['viewarchive']; ?></a> | <a href="<?php echo $cfg['rootdir'].$_GET['page']; ?>.html"><?php echo $db->QuerySingleValue("SELECT `pagetitle` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '".$_GET['page']."'"); ?></a></p>

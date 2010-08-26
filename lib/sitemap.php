@@ -56,11 +56,23 @@ if(file_exists($langfile)) {
 } else {
 	require_once(BASE_PATH . '/lib/languages/en.inc.php');
 }
+// Translate 2 character code to setlocale compliant code
+switch ($cfg['language']) {
+	case 'en':$locale = 'eng';break;
+	case 'de':$locale = 'deu';break;
+	case 'it':$locale = 'ita';break;
+	case 'nl':$locale = 'nld';break;
+	case 'ru':$locale = 'rus';break;
+	case 'sv':$locale = 'sve';break;
+	case 'fr':$locale = 'fra';break;
+	case 'es':$locale = 'esp';break;
+	case 'pr':$locale = 'por';break;
+	case 'tr':$locale = 'tur';break;	
+	case 'ch':$locale = 'chs';break;	
+	default:$locale = 'eng';break;
+}
 // Set local for time, currency, etc
-setlocale(LC_ALL, $cfg['language']);
-
-// Set default charset
-ini_set('default_charset', "UTF-8");
+setlocale(LC_ALL, $locale);
 
 // SECURITY ==
 // Include security file only for administration directory
@@ -153,7 +165,7 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 	if(!empty($pagereq)) {
 		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '$curr_page'")) $db->Kill();
 	} else {
-		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '".$cfg['homepage']."'")) $db->Kill();
+		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = 'home'")) $db->Kill();
 	}
 
 	// Start switch for pages, select all the right details
@@ -197,10 +209,10 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 	$ccms['breadcrumb'] = null;
 	
 	// Create breadcrumb for the current page
-	if($row->urlpage==$cfg['homepage']) {
-		$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir']."\" title=\"".ucfirst($cfg['sitename'])." ".$cfg['homepage']."\">".ucfirst($cfg['homepage'])."</a>";
+	if($row->urlpage=="home") {
+		$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir']."\" title=\"".ucfirst($cfg['sitename'])." Home\">Home</a>";
 	}
-	if($row->urlpage!=$cfg['homepage'] && $row->sublevel=='0') {
+	if($row->urlpage!="home" && $row->sublevel=='0') {
 		$ccms['breadcrumb'] .= " &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
 	}
 	if($row->sublevel>'0') {
@@ -220,7 +232,7 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 		$ccms['content']	= file_get_contents(BASE_PATH. "/content/404.php");
 		$ccms['printable']	= "N";
 		$ccms['published']	= "Y";
-		$ccms['breadcrumb']	= "<span class=\"breadcrumb\">&raquo; <a href=\"./\" title=\"".ucfirst($cfg['sitename'])." ".$cfg['homepage']."\">".ucfirst($cfg['homepage'])."</a> &raquo ".$ccms['lang']['system']['error_404title'];
+		$ccms['breadcrumb']	= "<span class=\"breadcrumb\">&raquo; <a href=\"./\" title=\"".ucfirst($cfg['sitename'])." Home\">Home</a> &raquo ".$ccms['lang']['system']['error_404title'];
 		
 		if(count($template)>"0") {
 			$ccms['template'] = $template['0'];
@@ -264,7 +276,7 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 		    			$current_class 	= ($row->urlpage==$curr_page)?'class="current"':null;
 		    			$current_link	= ($row->islink=="N"?'#':null);
 		    			$current_link 	= (empty($current_link)&&regexUrl($row->description)?$row->description:$current_link);
-		    			$current_link	= (empty($current_link)&&$row->urlpage==$cfg['homepage']?$cfg['rootdir']:$current_link);
+		    			$current_link	= (empty($current_link)&&$row->urlpage=="home"?$cfg['rootdir']:$current_link);
 		    			$current_link	= (empty($current_link)?$cfg['rootdir'].$row->urlpage.'.html':$current_link);
 		    			
 		    			// What text to show for the links
@@ -319,7 +331,7 @@ elseif($current == "sitemap.php" || $current == "sitemap.xml") {
 		// Do not include external links in sitemap
 		if(!regexUrl($row->description)) {
 			echo "<url>\n";
-				if($row->urlpage == $cfg['homepage']) { 
+				if($row->urlpage == "home") { 
 					echo "<loc>http://".$_SERVER['SERVER_NAME']."".$dir."</loc>\n";
 					echo "<priority>0.80</priority>\n";
 				} else {

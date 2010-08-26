@@ -63,19 +63,19 @@ function setLanguage($lang) {
 			return "Deutsch";
 			break;
 		case 'it':
-			return "Italiano";
+			return "italiano";
 			break;
 		case 'ru':
 			return "русский";
 			break;
 		case 'sv':
-			return "Swedisch";
+			return "svenska";
 			break;
 		case 'fr':
-			return "Français";
+			return "français";
 			break;
 		case 'es':
-			return "Español (castellano)";
+			return "español (castellano)";
 			break;
 		case 'pr':
 			return "Português";
@@ -162,16 +162,13 @@ function setLanguage($lang) {
 				<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">When www.domain.ext/ccms/, <strong>/ccms/</strong> is your web root</span>
 				<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">Must include trailing slash!</span>
 				
-				<label for="homepage"><span class="ss_sprite ss_house">Default homepage</span></label>
-				<input type="text" class="alt title" name="homepage" style="width:300px;" value="home" id="homepage" />
-				
 				<label for="language"><span class="ss_sprite ss_comments">CCMS backend language</span></label>
 				<select name="language" class="title" style="padding:5px 10px;width:300px;" id="language" size="1">
 					<?php // Get current languages
 					if ($handle = opendir('../lib/languages')) {
 						while (false !== ($file = readdir($handle))) {
 							// Filter out irrelevant files && dirs
-						    if ($file != "." && $file != ".." && $file != ".svn" && $file != "index.html") {
+						    if ($file != "." && $file != ".." && $file != "index.html") {
 						    	$f = substr($file,0,2);
 						    	$s = (isset($_SESSION['variables']['language'])?$_SESSION['variables']['language']:'en');
 						    	$c = ($f==$s?'selected="SELECTED"':null);

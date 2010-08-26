@@ -38,9 +38,10 @@ $do 		= (isset($_GET['do'])?$_GET['do']:null);
 
 // Open recordset for specified user
 $newsID = (isset($_GET['newsID']) && is_numeric($_GET['newsID'])?$_GET['newsID']:null);
+$pageID = (isset($_GET['pageID'])?$_GET['pageID']:null);
 
 if($newsID!=null) {
-	$news = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."modnews` m LEFT JOIN `".$cfg['db_prefix']."users` u ON m.userID=u.userID WHERE newsID = $newsID");
+	$news = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."modnews` m LEFT JOIN `".$cfg['db_prefix']."users` u ON m.userID=u.userID WHERE newsID = $newsID AND pageID='$pageID'");
 }
 
 // Get permissions
@@ -134,6 +135,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 				<hr class="space"/>
 				<p>
 					<input type="hidden" name="newsID" value="<?php echo $newsID; ?>" id="newsID" />
+					<input type="hidden" name="pageID" value="<?php echo $pageID; ?>" id="pageID" />
 					<button type="submit" name="submitNews" value="<?php echo $newsID; ?>">
 						<?php if(empty($newsID)) { ?><span class="ss_sprite ss_newspaper_add"><?php echo $ccms['lang']['forms']['createbutton']; ?></span></button><?php } ?>
 						<?php if(!empty($newsID)) { ?><span class="ss_sprite ss_newspaper_go"><?php echo $ccms['lang']['forms']['modifybutton']; ?></span></button><?php } ?>

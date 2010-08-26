@@ -61,6 +61,7 @@ $ccms['lang']['system']['error_sitemap'] 	= "An overview of all pages";
 $ccms['lang']['system']['error_tooshort']	= "One or multiple submitted values were either too short or incorrect";
 $ccms['lang']['system']['error_passshort']	= "A password should contain more than 6 characters";
 $ccms['lang']['system']['error_passnequal']	= "The entered passwords did not match";
+$ccms['lang']['system']['noresults']		= "No results";
 $ccms['lang']['system']['tooriginal']		= "Back to original";
 $ccms['lang']['system']['message_rights'] 	= "All rights reserved";
 $ccms['lang']['system']['message_compatible'] = "Successfully tested on";

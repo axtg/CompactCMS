@@ -61,6 +61,7 @@ $ccms['lang']['system']['error_sitemap'] 	= "Een overzicht van alle pagina's";
 $ccms['lang']['system']['error_tooshort']	= "Een of meerdere waardes waren te kort of onjuist";
 $ccms['lang']['system']['error_passshort']	= "Een wachtwoord dient uit minstens 6 karakters te bestaan";
 $ccms['lang']['system']['error_passnequal']	= "De opgegeven wachtwoorden kwamen niet overeen";
+$ccms['lang']['system']['noresults']		= "Geen resultaten";
 $ccms['lang']['system']['tooriginal']		= "Terug naar origineel";
 $ccms['lang']['system']['message_rights'] 	= "Alle rechten voorbehouden";
 $ccms['lang']['system']['message_compatible'] = "Succesvol getest op";

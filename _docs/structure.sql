@@ -17,18 +17,14 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 DROP TABLE IF EXISTS `ccms_cfgnews`;
 CREATE TABLE IF NOT EXISTS `ccms_cfgnews` (
+  `cfgID` int(5) NOT NULL AUTO_INCREMENT,
+  `pageID` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `showMessage` int(5) NOT NULL DEFAULT '3',
   `showAuthor` enum('0','1') COLLATE utf8_unicode_ci NOT NULL DEFAULT '1',
   `showDate` enum('0','1') COLLATE utf8_unicode_ci NOT NULL DEFAULT '1',
-  `showTeaser` enum('0','1') COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Configuration variables for modNews';
-
---
--- Dumping data for table `ccms_cfgnews`
---
-
-INSERT INTO `ccms_cfgnews` (`showMessage`, `showAuthor`, `showDate`, `showTeaser`) VALUES
-(3, '1', '1', '1');
+  `showTeaser` enum('0','1') COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+  PRIMARY KEY (`cfgID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Configuration variables for modNews' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 

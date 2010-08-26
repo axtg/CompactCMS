@@ -54,11 +54,10 @@ if($nextstep == md5('2') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 	//
 	$rootdir	= array("rootdir" => (substr($_POST['rootdir'],-1)!=='/'?$_POST['rootdir'].'/':$_POST['rootdir']));
 	$sitename	= array("sitename" => $_POST['sitename']);
-	$homepage	= array("homepage" => $_POST['homepage']);
 	$language	= array("language" => $_POST['language']);
 	
 	// Add new data to variable session
-	$_SESSION['variables'] = array_merge($rootdir,$sitename,$homepage,$language);
+	$_SESSION['variables'] = array_merge($rootdir,$sitename,$language);
 ?>
 	<script type="text/javascript" charset="utf-8">function passwordStrength(password){var score=0;if(password.length>5)score++;if((password.match(/[a-z]/))&&(password.match(/[A-Z]/)))score++;if(password.match(/\d+/))score++;if(password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/))score++;if(password.length>12)score++;document.getElementById("passwordStrength").className="strength"+score;}</script>
 	<script type="text/javascript" charset="utf-8">function randomPassword(length){chars="abcdefghijkmNPQRSTUVWXYZ123456789!@#$%";pass="";for(x=0;x<length;x++){i=Math.floor(Math.random()*38);pass+=chars.charAt(i);}passwordStrength(pass);return document.getElementById("adminpass").value=pass;}</script>
@@ -189,10 +188,6 @@ if($nextstep == md5('4') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 				<td><?php echo $_SESSION['variables']['rootdir'];?></td>
 			</tr>
 			<tr style="background-color: <?php echo $alt_row; ?>;">
-				<th scope="row">Homepage</th>
-				<td><?php echo $_SESSION['variables']['homepage'];?></td>
-			</tr>
-			<tr>
 				<th scope="row">Language</th>
 				<td><?php echo $_SESSION['variables']['language'];?></td>
 			</tr>

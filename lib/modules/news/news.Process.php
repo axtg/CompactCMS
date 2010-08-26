@@ -49,6 +49,8 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 
 // Set default variables
 $newsID 	= (isset($_POST['newsID'])&&!empty($_POST['newsID'])&&is_numeric($_POST['newsID'])?$_POST['newsID']:'0');
+$pageID		= (isset($_POST['pageID'])&&!empty($_POST['pageID'])?$_POST['pageID']:'0');
+$cfgID		= (isset($_POST['cfgID'])&&!empty($_POST['cfgID'])?$_POST['cfgID']:'0');
 $do_action 	= (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:null);
 
  /**
@@ -66,6 +68,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkA
 		
 		// Set all the submitted variables
 		$values["userID"] = MySQL::SQLValue($_POST['newsAuthor'], MySQL::SQLVALUE_NUMBER);
+		$values["pageID"] = MySQL::SQLValue($_POST['pageID'], MySQL::SQLVALUE_TEXT);
 		$values["newsTitle"]  = MySQL::SQLValue($_POST['newsTitle'], MySQL::SQLVALUE_TEXT);
 		$values["newsTeaser"]  = MySQL::SQLValue($_POST['newsTeaser'], MySQL::SQLVALUE_TEXT);
 		$values["newsContent"]  = MySQL::SQLValue($_POST['newsContent'], MySQL::SQLVALUE_TEXT);
@@ -74,7 +77,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkA
 	
 		// Execute either INSERT or UPDATE based on $newsID
 		if($db->AutoInsertUpdate($cfg['db_prefix']."modnews", $values, array("newsID" => $newsID))) {
-			header("Location: news.Manage.php?status=notice&msg=".$ccms['lang']['backend']['itemcreated']);
+			header("Location: news.Manage.php?file=$pageID&status=notice&msg=".$ccms['lang']['backend']['itemcreated']);
 			exit();
 		} else $db->Kill();
 	} else die($ccms['lang']['auth']['featnotallowed']);
@@ -95,7 +98,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth($
 		
 		// If nothing selected, throw error
 		if($total==0) {
-			header("Location: news.Manage.php?status=error&msg=".$ccms['lang']['system']['error_selection']);
+			header("Location: news.Manage.php?file=$pageID&status=error&msg=".$ccms['lang']['system']['error_selection']);
 			exit();
 		}
 		
@@ -109,7 +112,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth($
 	
 		// Check for errors
 		if($result&&$i==$total) {
-			header("Location: news.Manage.php?status=notice&msg=".$ccms['lang']['backend']['fullremoved']);
+			header("Location: news.Manage.php?file=$pageID&status=notice&msg=".$ccms['lang']['backend']['fullremoved']);
 			exit();
 		} else $db->Kill();
 	} else die($ccms['lang']['auth']['featnotallowed']);
@@ -125,14 +128,16 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="cfg-news" && checkAuth($
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) {
 		
+		$values["pageID"]		= MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
+		$values["showLocale"]	= MySQL::SQLValue($_POST['locale']);
 		$values["showMessage"]	= MySQL::SQLValue($_POST['messages']);
 		$values["showAuthor"]	= MySQL::SQLValue($_POST['author']);
 		$values["showDate"]		= MySQL::SQLValue($_POST['show_modified']);
 		$values["showTeaser"] 	= MySQL::SQLValue($_POST['show_teaser']);
 
-		// Execute the update where the ID is 1
-		if($db->UpdateRows($cfg['db_prefix']."cfgnews", $values)) {
-			header("Location: news.Manage.php?status=notice&msg=".$ccms['lang']['backend']['settingssaved']);
+		// Execute the insert or update for current page
+		if($db->AutoInsertUpdate($cfg['db_prefix']."cfgnews", $values, array("cfgID" => $cfgID))) {
+			header("Location: news.Manage.php?file=$pageID&status=notice&msg=".$ccms['lang']['backend']['settingssaved']);
 			exit();
 		} else $db->Kill();
 	} else die($ccms['lang']['auth']['featnotallowed']);
