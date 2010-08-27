@@ -64,7 +64,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "create-album" && check
 		if($album_name!=null) {
 			$dest = BASE_PATH.'/media/albums/'.$album_name;
 			if(!is_dir($dest)) {
-				if(mkdir($dest)&&mkdir($dest.'/_thumbs')) {
+				if(mkdir($dest)&&mkdir($dest.'/_thumbs')&&fopen($dest.'/info.txt', "w")) {
 					header("Location: lightbox.Manage.php?status=notice&msg=".$ccms['lang']['backend']['itemcreated']."&album=$album_name");
 					exit();
 				} else {
@@ -156,6 +156,38 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "del-image" && checkAuth
 					exit();
 				}
 			}
+		}
+	} else die($ccms['lang']['auth']['featnotallowed']);
+}
+
+ /**
+ *
+ * Apply album to page
+ *
+ */
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "apply-album" && checkAuth($canarycage,$currenthost)) {
+
+	// Only if current user has the rights
+	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {
+		
+		if($album_name!=null) {
+			// Posted variables
+			$topage = (!empty($_POST['albumtopage'])?$_POST['albumtopage']:' ');
+			$description = (!empty($_POST['description'])?trim($_POST['description']):trim(' '));
+			$infofile = BASE_PATH."/media/albums/$album_name/info.txt";
+			
+			if ($handle = fopen($infofile, 'w+')) {
+			    if (fwrite($handle, $topage)&&fwrite($handle,"\r\n".$description)) {
+					header("Location: lightbox.Manage.php?album=$album_name&status=notice&msg=".$ccms['lang']['backend']['settingssaved']);
+					exit();
+			    }
+			} else {
+				header("Location: lightbox.Manage.php?status=error&msg=".$ccms['lang']['system']['error_write']);
+				exit();
+			}
+		} else {
+			header("Location: lightbox.Manage.php?status=error&msg=".$ccms['lang']['system']['error_tooshort']);
+			exit();
 		}
 	} else die($ccms['lang']['auth']['featnotallowed']);
 }

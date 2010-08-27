@@ -168,6 +168,29 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 			<?php } else echo $ccms['lang']['auth']['featnotallowed']; ?>
 		
 		<hr class="space" />
+		<?php } elseif(isset($_GET['album'])&&!empty($_GET['album'])) { 
+			$lines = @file(BASE_PATH.'/media/albums/'.$_GET['album'].'/info.txt'); ?>
+			<h2>Album settings</h2>
+			<form action="lightbox.Process.php?action=apply-album" method="post" accept-charset="utf-8">
+				<label for="albumtopage">Specifically apply this album to</label>
+				<select class="text" name="albumtopage" id="albumtopage" size="1">
+					<option value=""><?php echo $ccms['lang']['backend']['none']; ?></option>
+					<?php $lightboxes = $db->QueryArray("SELECT * FROM ".$cfg['db_prefix']."pages WHERE module='lightbox'"); 
+					for ($i=0; $i < count($lightboxes); $i++) { ?>
+						<option <?php echo (!empty($lines[0])&&trim($lines[0])==$lightboxes[$i]['urlpage']?'selected':null); ?> value="<?php echo $lightboxes[$i]['urlpage'];?>"><?php echo $lightboxes[$i]['urlpage'];?>.html</option>
+					<?php } ?>
+				</select>
+				<?php
+					$desc = null;
+					for ($x=1; $x<count($lines); $x++) {
+    					$desc = trim($desc.' '.htmlspecialchars($lines[$x]));
+					}
+				?>
+				<label for="description">Album description</label>
+				<textarea name="description" rows="4" cols="40" style="height:90px;width:290px;" id="description"><?php echo trim($desc);?></textarea>
+				<input type="hidden" name="album" value="<?php echo $_GET['album']; ?>" id="album" />
+				<p class="prepend-5"><button type="submit"><span class="ss_sprite ss_disk">Save</span></button></p>
+			</form>
 		<?php } ?>
 		
 		<h2><?php echo $ccms['lang']['album']['uploadcontent']; ?></h2>

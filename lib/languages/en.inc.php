@@ -115,6 +115,7 @@ $ccms['lang']['backend']['notinmenu']		= "Item not in a menu";
 $ccms['lang']['backend']['menutitle']		= "Menu";
 $ccms['lang']['backend']['linktitle']		= "Link";
 $ccms['lang']['backend']['item']			= "Item";
+$ccms['lang']['backend']['none']			= "None";
 $ccms['lang']['backend']['yes']				= "Yes";
 $ccms['lang']['backend']['no']				= "No";
 
