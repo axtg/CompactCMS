@@ -155,7 +155,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 				<table border="0" cellspacing="5" cellpadding="5">
 					<tr>
 						<?php if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) { ?><th class="span-1">&#160;</th><?php } ?>
-						<th class="span-5"><?php echo $ccms['lang']['backup']['timestamp'];?></th>
+						<th class="span-10"><?php echo $ccms['lang']['backup']['timestamp'];?></th>
 						<th>&#160;</th>
 					</tr>
 					<?php 
@@ -163,24 +163,29 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 						$i=0;
 						while (false !== ($file = readdir($handle))) {
 					        if ($file != "." && $file != ".." && strpos($file, ".zip")) {
-						        $isEven = !($i % 2);
-						        echo ($isEven=='1')?'<tr style="background-color: #E6F2D9;">':'<tr>';
+						        // Alternate rows
+			    				if($i%2 != '1') {
+									echo '<tr style="background-color: #E6F2D9;">';
+								} else { 
+									echo '<tr>';
+								} 
 						        if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) {
 						        	echo '<td><input type="checkbox" name="file[]" value="'.$file.'" id="'.$i.'"></td>';
 						        }
 						        echo '<td>'.$file.'</td>';
 						        echo '<td><span class="ss_sprite ss_package_green"><a href="../../../../media/files/'.$file.'" title="'.ucfirst($file).'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
 						        echo '</tr>';
-					        } 
-					    $i++; }
+					        $i++;} 
+					    }
 					    closedir($handle);
 					}
 					?>
 				</table>
-			<?php if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) { ?>
-				<hr />
-				<p><br/><button type="submit" onclick="return confirmation();" name="btn_delete" value="dodelete"><span class="ss_sprite ss_package_delete"><?php echo $ccms['lang']['backend']['delete'];?></span></button></p>
-			<?php } ?>
+			<?php if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) {
+					if($i>0) { ?>
+				<p><button type="submit" onclick="return confirmation();" name="btn_delete" value="dodelete"><span class="ss_sprite ss_package_delete"><?php echo $ccms['lang']['backend']['delete'];?></span></button></p>
+			<?php 	} else echo $ccms['lang']['system']['noresults'];
+				} else echo $ccms['lang']['auth']['featnotallowed'];?>
 			</form>
 		</div>
 		
