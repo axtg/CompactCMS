@@ -801,9 +801,7 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($ca
 		<p><?php echo $ccms['lang']['editor']['instruction']; ?></p>
 		
 		<form action="./process.inc.php?page=<?php echo $name; ?>&amp;restrict=<?php echo $iscoding; ?>&amp;active=<?php echo $active; ?>" method="post" name="save">
-			<textarea id="content" name="content" style="height:345px;width:100%;color:#000;">
-				<?php echo htmlspecialchars($contents); ?>
-			</textarea>
+			<textarea id="content" name="content" style="height:345px;width:100%;color:#000;"><?php echo htmlspecialchars(trim($contents)); ?></textarea>
 			<br/>
 				<label for="keywords"><?php echo $ccms['lang']['editor']['keywords']; ?></label>
 				<input type="input" class="text" style="height:30px; width:98%;" maxlength="250" name="keywords" value="<?php echo $keywords; ?>" id="keywords">
