@@ -382,12 +382,20 @@ if($target_form == "delete" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		foreach ($_POST['page_id'] as $index) {
 		$value = explode($_SESSION['rc2'], $index);
 			if(is_numeric($value['1'])) {	
-				// Select file name with given page_id
+				// Select file name and module with given page_id
 				$correct_filename = $db->QuerySingleValue("SELECT `urlpage` FROM `".$cfg['db_prefix']."pages` WHERE `page_id` = ".$value['1']);
+				$module = $db->QuerySingleValue("SELECT `module` FROM `".$cfg['db_prefix']."pages` WHERE `page_id` = ".$value['1']);
 				
 				// Delete details from the database
 				$values["page_id"] = MySQL::SQLValue($value['1'],MySQL::SQLVALUE_NUMBER);
 				$result = $db->DeleteRows($cfg['db_prefix']."pages", $values);
+				
+				// Delete linked rows from module tables
+				if($module!="editor") {
+					$filter["pageID"] = MySQL::SQLValue($correct_filename,MySQL::SQLVALUE_TEXT);
+					$delmod = $db->DeleteRows($cfg['db_prefix']."mod".$module, $filter);
+					$delcfg = $db->DeleteRows($cfg['db_prefix']."cfg".$module, $filter);
+				}
 				
 				if ($result) {
 					// Delete the actual file

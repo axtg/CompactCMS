@@ -1,1 +1,0 @@
-<?php include('./lib/modules/lightbox/lightbox.Show.php'); ?>

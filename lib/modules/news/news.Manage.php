@@ -117,8 +117,8 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 				<label for="messages"><?php echo $ccms['lang']['news']['numbermess']; ?></label>
 				<input type="text" class="text" name="messages" value="<?php echo ($db->HasRecords()?$rsCfg->showMessage:null); ?>" id="messages" />
 				
-				<label for="locale"><?php echo "Front-end language"; ?></label>
-				<select name="locale" id="locale" size="1">
+				<label for="locale"><?php echo $ccms['lang']['forms']['setlocale']; ?></label>
+				<select name="locale" class="text" id="locale" size="1">
 					<option value="eng" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='eng'?"selected":null); ?>>English</option>
 					<option value="esp" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='esp'?"selected":null); ?>>español</option>
 					<option value="fra" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='fra'?"selected":null); ?>>français</option>

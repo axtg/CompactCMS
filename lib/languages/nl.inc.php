@@ -153,6 +153,7 @@ $ccms['lang']['forms']['iscoding'] 		= "Code";
 $ccms['lang']['forms']['createbutton'] 	= "Aanmaken!";
 $ccms['lang']['forms']['modifybutton'] 	= "Aanpassen";
 $ccms['lang']['forms']['savebutton'] 	= "Opslaan";
+$ccms['lang']['forms']['setlocale']		= "Front-end taalvoorkeur";
 
 // Administration hints for form fields
 $ccms['lang']['hints']['filename'] 		= "De bestandsnaam (home.html) :: De bestandsnaam waaronder deze pagina aan te roepen is (zonder .html)";
@@ -269,7 +270,6 @@ $ccms['lang']['news']['contents']		= "Inhoud artikel";
 $ccms['lang']['news']['viewarchive']	= "Bekijk archief";
 
 // Guestbook message
-$ccms['lang']['guestbook']['guestbook']	= "Gastenboek";
 $ccms['lang']['guestbook']['noposts']	= "Er zijn nog geen reacties geplaatst!";
 $ccms['lang']['guestbook']['verinstr']	= "Herhaal de volgende getallen ter controle van automatische reacties";
 $ccms['lang']['guestbook']['reaction']	= "Reactie";

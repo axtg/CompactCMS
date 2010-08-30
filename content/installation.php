@@ -1,3 +1,0 @@
-<p>Now that you appear to have CompactCMS installed successfully, you should start creating a completely new template <em>or</em> adjust your current one to work with CompactCMS.</p>
-<p>In a nutshell this won't be anything else than to develop a one page lay-out and add variables like {%subheader%}, {%content%} and {%mainmenu%} to where ever you want their contents to appear dynamically. Take a look at the source of the included template files as examples of how to design your own template. <strong>Did you know that CCMS even works flawlessly with HTML5 templates and CSS3?</strong></p>
-<p>If you need more help or inspiration, you might want to take a look at the forum for tips&amp;tricks.</p>

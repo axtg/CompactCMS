@@ -153,6 +153,7 @@ $ccms['lang']['forms']['iscoding'] 		= "Coding";
 $ccms['lang']['forms']['createbutton'] 	= "Create!";
 $ccms['lang']['forms']['modifybutton'] 	= "Modify";
 $ccms['lang']['forms']['savebutton'] 	= "Save";
+$ccms['lang']['forms']['setlocale']		= "Front-end language";
 
 // Administration hints for form fields
 $ccms['lang']['hints']['filename']		= "The page url (home.html) :: The file name which this page is called upon (without .html)";
@@ -269,7 +270,6 @@ $ccms['lang']['news']['contents']		= "Article contents";
 $ccms['lang']['news']['viewarchive']	= "View archive";
 
 // Guestbook message
-$ccms['lang']['guestbook']['guestbook']	= "Guestbook";
 $ccms['lang']['guestbook']['noposts']	= "No reactions have been posted yet!";
 $ccms['lang']['guestbook']['verinstr']	= "To check that this message isn't automated, please re-enter";
 $ccms['lang']['guestbook']['reaction']	= "Reaction";
