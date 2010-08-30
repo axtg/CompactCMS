@@ -46,7 +46,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>Manage users</title>
-		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,layout.css,sprite.css" />
+		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
 		<script type="text/javascript" src="../../../../lib/includes/js/mootools.js" charset="utf-8"></script>
 		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
 		<script type="text/javascript" charset="utf-8">window.addEvent('domready',function(){new FormValidator($('addUser'),{onFormValidate:function(passed,form,event){if(passed)form.submit();}});});</script>
@@ -61,7 +61,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			<div class="<?php echo $_GET['status'];?> center"><strong><?php echo ucfirst($_GET['action']);?></strong></div>
 		<?php } ?>
 		
-		<div class="span-15 colborder">
+		<div class="span-16 colborder">
 			<h2><?php echo $ccms['lang']['users']['overviewusers']; ?></h2>
 			<form action="../../process.inc.php?action=delete-user" method="post" accept-charset="utf-8">
 			
@@ -118,7 +118,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			
 		</div>
 		
-		<div class="span-5">
+		<div class="span-6">
 			
 			<h2><?php echo $ccms['lang']['users']['createuser']; ?></h2>
 			<?php if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) { ?>

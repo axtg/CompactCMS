@@ -72,7 +72,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader.js"></script>
 		<script type="text/javascript">FileManager.TinyMCE=function(options){return function(field,url,type,win){var manager=new FileManager($extend({onComplete:function(path){if(!win.document)return;win.document.getElementById(field).value='<?php echo $cfg['rootdir']; ?>'+path;if(win.ImageDialog)win.ImageDialog.showPreviewImage('<?php echo $cfg['rootdir']; ?>'+path,1);this.container.destroy();}},options(type)));manager.dragZIndex=400002;manager.SwiffZIndex=400003;manager.el.setStyle('zIndex',400001);manager.overlay.el.setStyle('zIndex',400000);document.id(manager.tips).setStyle('zIndex',400010);manager.show();return manager;};};FileManager.implement('SwiffZIndex',400003);var Dialog=new Class({Extends:Dialog,initialize:function(text,options){this.parent(text,options);this.el.setStyle('zIndex',400010);this.overlay.el.setStyle('zIndex',400009);}});</script>
 		
-		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,layout.css,sprite.css" />
+		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,liquid.css,layout.css,sprite.css" />
 		
 		<!-- TinyMCE -->
 		<?php $cfg['language'] = (file_exists('../../../admin/includes/tiny_mce/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en';?>
@@ -103,12 +103,12 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		</div>
 			
 		<h2><?php echo $ccms['lang']['news']['writenews']; ?></h2>
-		<div class="span-21">
+		<div class="span-24">
 			<form action="./news.Process.php?action=add-edit-news" id="newsForm" method="post" accept-charset="utf-8">
-				<div class="span-6">
+				<div class="span-7">
 					<label for="newsTitle"><?php echo $ccms['lang']['news']['title']; ?></label><input type="text" class="minLength:3 text" name="newsTitle" value="<?php echo (isset($news)?$news->newsTitle:null);?>" id="newsTitle"/>
 				</div>
-				<div class="span-6">
+				<div class="span-7">
 					<label for="newsAuthor"><?php echo $ccms['lang']['news']['author']; ?></label>
 					<select name="newsAuthor" class="required text" id="newsAuthor" size="1">
 						<?php 

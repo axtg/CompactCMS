@@ -132,7 +132,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>Back-up &amp; Restore module</title>
-		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,layout.css,sprite.css" />
+		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
 		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
 	</head>
 <body>
@@ -141,7 +141,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 			echo "<p class=\"success center\">".$ccms['lang']['backend']['newfilecreated'].", <a href=\"../../../../media/files/$backupName\">".strtolower($ccms['lang']['backup']['download'])."</a>.</p>"; 
 		} ?>
 	
-		<div class="span-7 colborder">
+		<div class="span-6 colborder">
 		<h2><?php echo $ccms['lang']['backup']['createhd']; ?></h2>
 			<p><?php echo $ccms['lang']['backup']['explain'];?></p>
 			<form action="<?php echo $_SERVER['PHP_SELF'];?>?do=backup" method="post" accept-charset="utf-8">
@@ -149,7 +149,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 			</form>
 		</div>
 		
-		<div class="span-11 last">
+		<div class="span-16 last">
 		<h2><?php echo $ccms['lang']['backup']['currenthd'];?></h2>
 			<form action="<?php echo $_SERVER['PHP_SELF'];?>?do=delete" method="post" accept-charset="utf-8">
 				<table border="0" cellspacing="5" cellpadding="5">

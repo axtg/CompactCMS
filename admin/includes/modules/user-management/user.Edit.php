@@ -53,7 +53,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<title>Edit users</title>
-	<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,layout.css,sprite.css" />
+	<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
 	<script type="text/javascript" src="../../../../lib/includes/js/mootools.js" charset="utf-8"></script>
 	<!-- Check form and post -->
 	<script type="text/javascript" charset="utf-8">
@@ -83,7 +83,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			}
 		} ?>
 		
-		<div class="span-10 colborder">
+		<div class="span-13 colborder">
 			<h2><?php echo $ccms['lang']['users']['editdetails']; ?></h2>
 			<form action="../../process.inc.php?action=edit-user-details" id="userDetail" method="post" accept-charset="utf-8">
 				<label><?php echo $ccms['lang']['users']['username']; ?></label><span style="display:block;height:30px;"><?php echo $row->userName; ?></span>
@@ -97,7 +97,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			
 		</div>
 		
-		<div class="span-8">
+		<div class="span-9">
 			<?php if($_SESSION['ccms_userID']==$row->userID||$_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) { ?>
 			<h2><?php echo $ccms['lang']['users']['editpassword']; ?></h2>
 			<div class="prepend-1">

@@ -49,7 +49,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>News module</title>
-		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,layout.css,sprite.css" />
+		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,liquid.css,layout.css,sprite.css" />
 		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
 	</head>
 <body>
@@ -59,7 +59,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			<? if(isset($_GET['msg'])&&strlen($_GET['msg'])>'2') { echo $_GET['msg']; } ?>
 		</div>
 			
-		<div class="span-16">
+		<div class="span-16 colborder">
 		<h2><?php echo $ccms['lang']['guestbook']['manage']; ?></h2>
 		<?php // Load recordset
 		$db->Query("SELECT * FROM `".$cfg['db_prefix']."modComment` WHERE pageID='$pageID' ORDER BY `commentID` DESC");
@@ -90,7 +90,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		} else echo $ccms['lang']['guestbook']['noposts']; ?>
 		</div>
 	
-		<div class="span-5">
+		<div class="span-6">
 			<h2>Configuration</h2>
 			<?php if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) { ?>
 			<?php $rsCfg = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgcomment` WHERE pageID='$pageID'"); ?>

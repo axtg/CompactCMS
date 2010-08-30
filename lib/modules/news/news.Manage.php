@@ -48,7 +48,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>News module</title>
-		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,layout.css,sprite.css" />
+		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,liquid.css,layout.css,sprite.css" />
 		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
 	</head>
 <body>
@@ -58,7 +58,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			<? if(isset($_GET['msg'])&&strlen($_GET['msg'])>'2') { echo $_GET['msg']; } ?>
 		</div>
 		
-		<div class="span-14 colborder">
+		<div class="span-16 colborder">
 			<h2><?php echo $ccms['lang']['news']['manage']; ?></h2>
 			<form action="news.Process.php?action=del-news" method="post" accept-charset="utf-8">
 				<table border="0" cellspacing="5" cellpadding="5">

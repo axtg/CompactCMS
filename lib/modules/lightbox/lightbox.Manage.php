@@ -73,7 +73,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>Lightbox module</title>
-		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,layout.css,sprite.css,uploader.css" />
+		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,liquid.css,layout.css,sprite.css,uploader.css" />
 		<script type="text/javascript" src="../../includes/js/mootools.js" charset="utf-8"></script>
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader/Swiff.Uploader.js"></script>
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader/Fx.ProgressBar.js"></script>
@@ -89,7 +89,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 			<? if(isset($_GET['msg'])&&strlen($_GET['msg'])>'2') { echo $_GET['msg']; } ?>
 		</div>
 		
-		<div class="span-12 colborder">
+		<div class="span-14 colborder">
 		<?php 
 		// 
 		$album_path = (isset($_GET['album'])&&!empty($_GET['album'])?BASE_PATH.'/media/albums/'.$_GET['album']:null);

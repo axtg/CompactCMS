@@ -50,7 +50,7 @@ if(!empty($do) && $_GET['do']=="backup" && $_POST['btn_backup']=="dobackup" && m
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>Back-up &amp; Restore module</title>
-		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,layout.css,sprite.css" />
+		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
 	</head>
 <body class="module">
 		

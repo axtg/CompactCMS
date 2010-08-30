@@ -52,7 +52,7 @@ $users = $db->QueryArray("SELECT userID,userName,userFirst,userLast,userEmail,us
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>Page-owners</title>
-		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,layout.css,sprite.css" />
+		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
 	
 		<!-- Confirm close -->
 		<script type="text/javascript">
