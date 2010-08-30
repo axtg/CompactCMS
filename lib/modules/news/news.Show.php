@@ -141,5 +141,5 @@ if($db->HasRecords()) {
 		<?php
 		}
 	}
-}
+} else echo $ccms['lang']['system']['noresults'];
 ?>

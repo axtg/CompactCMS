@@ -127,7 +127,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 	  				} else echo $ccms['lang']['system']['noresults']; ?>
 				</table>
 				<hr />
-				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) { ?><button type="submit" onclick="return confirmation();" name="deleteAlbum"><span class="ss_sprite ss_bin_empty"><?php echo $ccms['lang']['backend']['delete']; ?></span></button><?php } ?>
+				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']&&count($albums)>0) { ?><button type="submit" onclick="return confirmation();" name="deleteAlbum"><span class="ss_sprite ss_bin_empty"><?php echo $ccms['lang']['backend']['delete']; ?></span></button><?php } ?>
 			</form>
 				
 		<?php } elseif($album_path!=null) { 
@@ -191,8 +191,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 				<input type="hidden" name="album" value="<?php echo $_GET['album']; ?>" id="album" />
 				<p class="prepend-5"><button type="submit"><span class="ss_sprite ss_disk">Save</span></button></p>
 			</form>
-		<?php } ?>
-		
+		<?php } if(count($albums)>0) { ?>
 		<h2><?php echo $ccms['lang']['album']['uploadcontent']; ?></h2>
 		<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {?>
 		<form action="./lightbox.Process.php?action=save-files" method="post" enctype="multipart/form-data" id="lightboxForm">
@@ -233,7 +232,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 		</form>	
 		<?php } else echo $ccms['lang']['auth']['featnotallowed']; ?>
 		</div>
-		
+		<?php } ?>
 	</div>
 </body>
 </html>

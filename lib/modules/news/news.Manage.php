@@ -72,8 +72,8 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 					<tr>
 						<?php if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?><th class="span-1">&#160;</th><?php } ?>
 						<th class="span-1">&#160;</th>
-						<th class="span-5"><?php echo $ccms['lang']['news']['title']; ?></th>
-						<th class="span-4"><?php echo $ccms['lang']['news']['author']; ?></th>
+						<th class="span-7"><?php echo $ccms['lang']['news']['title']; ?></th>
+						<th class="span-5"><?php echo $ccms['lang']['news']['author']; ?></th>
 						<th class="span-4"><?php echo $ccms['lang']['news']['date']; ?></th>
 					</tr>
 					<?php
@@ -103,7 +103,9 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 					} else echo $ccms['lang']['system']['noresults']; ?>
 				</table>
 				<hr />
-				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?><button type="submit" onclick="return confirmation();" name="deleteNews"><span class="ss_sprite ss_newspaper_delete"><?php echo $ccms['lang']['backend']['delete']; ?></span></button><?php } ?>
+				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModNews']&&$db->HasRecords()) { ?>
+					<input type="hidden" name="pageID" value="<?php echo $pageID; ?>" id="pageID">
+					<button type="submit" onclick="return confirmation();" name="deleteNews"><span class="ss_sprite ss_newspaper_delete"><?php echo $ccms['lang']['backend']['delete']; ?></span></button><?php } ?>
 			</form>
 		</div>
 		<div class="span-6">
@@ -130,8 +132,6 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 					<option value="nor" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='nor'?"selected":null); ?>>norsk</option>
 					<option value="rus" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='rus'?"selected":null); ?>>русский</option>
 					<option value="sve" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='sve'?"selected":null); ?>>svenska</option>
-					<option value="por" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='por'?"selected":null); ?>>Português</option>
-					<option value="tur" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='tur'?"selected":null); ?>>Türk</option>
 					<option value="ind" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='ind'?"selected":null); ?>>Bahasa Indonesia</option>
 				</select>
 				
@@ -161,7 +161,6 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 				<br/><br/>			
 				<p class="prepend-3">
 					<?php echo ($db->HasRecords()?'<input type="hidden" name="cfgID" value="'.$rsCfg->cfgID.'" id="cfgID" />':null); ?>
-					<input type="hidden" name="pageID" value="<?php echo $pageID; ?>" id="pageID" />
 					<button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button>
 				</p>
 			</form>

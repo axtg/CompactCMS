@@ -69,10 +69,10 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			while (!$db->EndOfSeek()) {
 	    	$rsComment = $db->Row(); ?>
 			
-			<div class="span-3">
+			<div class="span-5">
 				<img src="http://www.gravatar.com/avatar.php?gravatar_id=<?php echo md5($rsComment->commentEmail); ?>&amp;size=80&amp;rating=G" style="margin:4px;border:2px solid #000;" alt="<?php echo $ccms['lang']['guestbook']['avatar'];?>"/><br/><img src="./resources/<?php echo $rsComment->commentRate;?>-star.gif" alt="<?php echo $ccms['lang']['guestbook']['rating']." ".$rsComment->commentRate;?>"/>
 			</div>
-			<div class="span-12">
+			<div class="span-17">
 				<strong><?php echo (!empty($rsComment->commentUrl)?'<a href="'.$rsComment->commentUrl.'" target="_blank">'.$rsComment->commentName.'</a>':$rsComment->commentName); echo ' '.$ccms['lang']['guestbook']['wrote']; ?>:</strong>
 				<p><?php echo nl2br($rsComment->commentContent);?></p>
 				<p>
@@ -112,8 +112,6 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 					<option value="nor" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='nor'?"selected":null); ?>>norsk</option>
 					<option value="rus" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='rus'?"selected":null); ?>>русский</option>
 					<option value="sve" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='sve'?"selected":null); ?>>svenska</option>
-					<option value="por" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='por'?"selected":null); ?>>Português</option>
-					<option value="tur" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='tur'?"selected":null); ?>>Türk</option>
 					<option value="ind" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='ind'?"selected":null); ?>>Bahasa Indonesia</option>
 				</select>
 				
