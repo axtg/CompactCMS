@@ -52,16 +52,7 @@ require_once('./includes/process.inc.php');
 	<link rel="stylesheet" type="text/css" href="img/styles/base.css,layout.css,editor.css,sprite.css" />
 	<!--[if IE]><script type="text/javascript" src="../lib/includes/js/excanvas.js" charset="utf-8"></script><![endif]-->
 	<script type="text/javascript" src="../lib/includes/js/mootools.js,common.js,mocha.js" charset="utf-8"></script>
-	<script type="text/javascript" charset="utf-8">
-	window.addEvent('domready',function(){
-		new FormValidator($('addForm'),{
-			onFormValidate:function(passed,form,event){
-				event.stop();
-				if(passed)form.submit();
-			}
-		});
-	});
-	</script>
+	<script type="text/javascript" charset="utf-8">window.addEvent('domready',function(){ new FormValidator($('addForm')); });</script>
 </head>
 
 <body id="desktop">	

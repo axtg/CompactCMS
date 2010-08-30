@@ -43,36 +43,7 @@ $pageID	= (isset($_GET['page'])?$_GET['page']:null);
 <link rel="stylesheet" href="<?php echo $cfg['rootdir']; ?>lib/modules/comment/resources/style.css" type="text/css" media="screen" title="comments" charset="utf-8" />
 <script type="text/javascript" src="<?php echo $cfg['rootdir']; ?>lib/modules/comment/resources/script.js" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
-window.addEvent('domready',function(){
-	var req = new Request.HTML({
-		useSpinner:true,
-		method: 'get',
-		url: './lib/modules/comment/comment.Process.php?action=show-comments&page=<?php echo $_GET['page']; ?>',
-		update: $('comments'),
-		onRequest: function() {},
-		onSuccess: function() {ajaxLinks();}	
-	}).send();
-		
-		function ajaxLinks(){
-			$$('.pagination a').each(function(ele){
-				ele.addEvent('click',function(e){
-					e=new Event(e).stop();
-					var alink=ele.getProperty('href');
-					var url='./lib/modules/comment/comment.Process.php'+alink+'&action=show-comments&page=<?php echo $_GET['page'];?>';
-					var ajaxLink=new Request.HTML({
-						useSpinner:true,
-						onRequest:function(){},
-						onSuccess:function(){
-							new Fx.Scroll(document.body,{'duration':'long'}).toElement('comments');
-							ajaxLinks();
-						},
-						onFailure:function(){},
-						update:$('comments')
-					}).get(url);
-				});
-			});
-		}
-	});</script>
+window.addEvent('domready',function(){var req=new Request.HTML({useSpinner:true,method:'get',url:'./lib/modules/comment/comment.Process.php?action=show-comments&page=<?php echo $_GET['page']; ?>',update:$('comments'),onRequest:function(){},onSuccess:function(){ajaxLinks();}}).send();function ajaxLinks(){$$('.pagination a').each(function(ele){ele.addEvent('click',function(e){e=new Event(e).stop();var alink=ele.getProperty('href');var url='./lib/modules/comment/comment.Process.php'+alink+'&action=show-comments&page=<?php echo $_GET['page'];?>';var ajaxLink=new Request.HTML({useSpinner:true,onRequest:function(){},onSuccess:function(){new Fx.Scroll(document.body,{'duration':'long'}).toElement('comments');ajaxLinks();},onFailure:function(){},update:$('comments')}).get(url);});});}});</script>
 
 <div id="comments">
 	<!--spinner-->

@@ -114,13 +114,15 @@ if(isset($albums)&&count($albums)>0) {
 	if($handle = @opendir($album_path.'/'.$album)) {
 		while (false !== ($content = readdir($handle))) {
 			if ($content != "." && $content != ".." && $content != "_thumbs" && $content != "info.txt") {
+				$caption = substr($content, 0, strrpos($content, '.')); 
+				$caption = ucfirst(str_replace('_', ' ', $caption));
 				if(file_exists($album_path.'/'.$album.'/_thumbs/'.$content)) {
 					echo "<div class=\"album-item\">";
-					echo "<a rel=\"imagezoom[$album]\" href=\"$album_url/$album/$content\" title=\"$content\"><img src=\"$album_url/$album/_thumbs/$content\" height=\"80\" width=\"80\" alt=\"\" /></a>";
+					echo "<a rel=\"imagezoom[$album]\" href=\"$album_url/$album/$content\" title=\"$caption\"><img src=\"$album_url/$album/_thumbs/$content\" height=\"80\" width=\"80\" alt=\"\" /></a>";
 					echo "</div>";
 				} else {
 					echo "<div class=\"album-item\">";
-					echo "<a rel=\"imagezoom[$album]\" href=\"$album_url/$album/$content\" title=\"$content\"><img src=\"$album_url/$album/$content\" height=\"80\" width=\"80\" alt=\"\" /></a>";
+					echo "<a rel=\"imagezoom[$album]\" href=\"$album_url/$album/$content\" title=\"$caption\"><img src=\"$album_url/$album/$content\" height=\"80\" width=\"80\" alt=\"\" /></a>";
 					echo "</div>";
 				}
 			}
