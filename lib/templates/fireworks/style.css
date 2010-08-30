@@ -24,7 +24,7 @@ textarea {width:300px;height:250px;padding:5px;}
 /* contact form */
 .validation-failed {background:#FBE3E4;color:#8a1f11;border-color:#FBC2C4;}
 .validation-passed {background:#E6EFC2;color:#264409;border-color:#C6D880;}
-.validation-advice {background: transparent url('http://www.compactcms.nl/includes/css/icons/arrow_up.gif') no-repeat 0 4px;font-style:italic;color:#CC0000;margin-left:150px;padding-left:17px;font-size:0.825em;}
+.validation-advice {font-style:italic;color:#CC0000;margin-left:150px;padding-left:17px;font-size:0.825em;}
 label{float:left;margin-top:10px;width:150px;}
 .success{padding:.8em;margin-bottom:1em;border:2px solid #C6D880;background:#E6EFC2;color:#264409;}
 

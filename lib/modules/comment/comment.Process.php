@@ -66,7 +66,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 	$rsLoc	= $db->QuerySingleValue("SELECT showLocale FROM `".$cfg['db_prefix']."cfgcomment` WHERE pageID='$pageID'");
 	$max 	= (!empty($rsCfg)?$rsCfg:'10');
 	$limit 	= (isset($_GET['offset'])&&$_GET['offset']>0?($_GET['offset']*$max).','.$max:"0,$max");
-	$total	= count($db->QueryArray("SELECT commentID FROM `".$cfg['db_prefix']."modComment` WHERE pageID='$pageID'"));
+	$total	= count($db->QueryArray("SELECT commentID FROM `".$cfg['db_prefix']."modcomment` WHERE pageID='$pageID'"));
 	
 	$locale = (!empty($rsLoc)?$rsLoc:'eng');
 
@@ -74,7 +74,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 	setlocale(LC_ALL, $locale);
 	
 	// Load recordset
-	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modComment` WHERE pageID='$pageID' ORDER BY `commentID` DESC LIMIT $limit");
+	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modcomment` WHERE pageID='$pageID' ORDER BY `commentID` DESC LIMIT $limit");
 	
 	// Start switch for comments, select all the right details
 	if($db->HasRecords()) {
