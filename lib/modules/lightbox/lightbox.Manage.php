@@ -197,7 +197,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 		<form action="./lightbox.Process.php?action=save-files" method="post" enctype="multipart/form-data" id="lightboxForm">
 	
 			<label for="album" style="margin-right:5px;display:inline;"><?php echo $ccms['lang']['album']['toexisting']; ?></label>
-			<select name="album" id="album" class="span-4" size="1">
+			<select name="album" id="album" class="text" style="width:130px;" size="1">
 				<?php foreach ($albums as $value) { ?>
 					<option <?php echo (isset($_GET['album'])&&$_GET['album']===$value?"selected":null); ?> value="<?php echo $value; ?>"><?php echo $value; ?></option>
 				<?php } ?>
