@@ -187,7 +187,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 					}
 				?>
 				<label for="description">Album description</label>
-				<textarea name="description" rows="4" cols="40" style="height:90px;width:290px;" id="description"><?php echo trim($desc);?></textarea>
+				<textarea name="description" rows="3" cols="40" style="height:50px;width:290px;" id="description"><?php echo trim($desc);?></textarea>
 				<input type="hidden" name="album" value="<?php echo $_GET['album']; ?>" id="album" />
 				<p class="prepend-5"><button type="submit"><span class="ss_sprite ss_disk">Save</span></button></p>
 			</form>

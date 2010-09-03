@@ -134,21 +134,17 @@ require_once('./includes/process.inc.php');
 				</select>&#160;<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['module']; ?>">&#160;</span><br/>
 				<?php } ?>
 				
-				<div>
+				<div id="editor-options">
 				<label><?php echo $ccms['lang']['forms']['printable']; ?>?</label> 
-					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" class="validate-one-required" id="f_pr1" checked="checked" name="printable" value="Y" />  
+					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" id="f_pr1" checked="checked" name="printable" value="Y" />  
 					<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" id="f_pr2" name="printable" value="N" />
 					<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['printable']; ?>">&#160;</span><br/>
-				</div>
-				<div>
 				<label style="clear:both; margin-top: 6px;"><?php echo $ccms['lang']['forms']['published']; ?>?</label> 
-					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" class="validate-one-required" id="f_pu1" checked="checked" name="published" value="Y" />  
+					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" id="f_pu1" checked="checked" name="published" value="Y" />  
 					<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" style="margin-top: 10px;" id="f_pu2" name="published" value="N" />
 					<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['published']; ?>">&#160;</span><br/>
-				</div>
-				<div>
 				<label style="clear:both; margin-top: 3px;"><?php echo $ccms['lang']['forms']['iscoding']; ?>?</label> 
-					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" class="validate-one-required" id="f_cod" name="iscoding" value="Y" />  
+					<?php echo $ccms['lang']['backend']['yes']; ?>: <input type="radio" id="f_cod" name="iscoding" value="Y" />  
 					<?php echo $ccms['lang']['backend']['no']; ?>: <input type="radio" style="margin-top: 10px;" id="f_co2" checked="checked" name="iscoding" value="N" />
 					<span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['iscoding']; ?>">&#160;</span><br/>
 				</div>
