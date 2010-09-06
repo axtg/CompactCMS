@@ -298,7 +298,7 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 	if($err==0) {
 		$sql = file_get_contents(BASE_PATH.'/_docs/structure.sql');
 		$sql = preg_replace('/ccms_/', $_SESSION['variables']['db_prefix'], $sql);
-		$sql = preg_replace('/1a1dc91c907325c69271ddf0c944bc72/', md5($_SESSION['variables']['adminpass'].$_SESSION['variables']['authcode']), $sql);
+		$sql = preg_replace('/52dcb810931e20f7aa2f49b3510d3805/', md5($_SESSION['variables']['adminpass'].$_SESSION['variables']['authcode']), $sql);
 		
 		// Execute per sql piece
 		$tok = strtok($sql, ";");
