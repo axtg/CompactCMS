@@ -32,9 +32,6 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 // Include general configuration
 require_once('../../sitemap.php');
 
-// Include sanitize function
-require_once('../../includes/sanitize.inc.php');
-
 $canarycage	= md5(session_id());
 $currenthost= md5($_SERVER['HTTP_HOST']);
 $do 		= (isset($_GET['do'])?$_GET['do']:null);

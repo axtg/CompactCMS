@@ -121,9 +121,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		
 		<form action="../../process.inc.php?template=<?php echo $get_temp; ?>&amp;action=save-template" method="post" accept-charset="utf-8">
 		
-			<textarea id="content" name="content" style="height:400px;width:100%;color:#000;">
-				<?php echo htmlspecialchars($contents); ?>
-			</textarea>
+			<textarea id="content" name="content" style="height:400px;width:100%;color:#000;"><?php echo htmlspecialchars(trim($contents)); ?></textarea>
 			
 			<p>
 				<input type="hidden" name="template" value="<?php echo $get_temp; ?>" id="template" />

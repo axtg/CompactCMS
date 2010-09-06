@@ -105,7 +105,6 @@ div.last {margin-right:0;}
 .span-12 {width:470px;}
 .span-13 {width:510px;}
 .span-14 {width:550px;}
-.span-14-1 {width:556px;}
 .span-15 {width:590px;}
 .span-16 {width:630px;}
 .span-17 {width:670px;}
@@ -178,11 +177,14 @@ div.colborder {padding-right:24px;margin-right:25px;border-right:1px solid #eee;
 hr {background:#ddd;color:#ddd;clear:both;float:none;width:100%;height:.1em;margin:0 0 1.45em;border:none;}
 hr.space {background:#fff;color:#fff;}
 .block {border:3px solid #B3E813; padding: 10px;}
+.page-break {page-break-before:always;}
 .clearfix:after, .container:after {content:".";display:block;height:0;clear:both;visibility:hidden;}
 .clearfix, .container {display:inline-block;}
 * html .clearfix, * html .container {height:1%;}
 .clearfix, .container {display:block;}
 .clear {clear:both;}
+::selection{background:#c3effd;color:#000;}
+::-moz-selection{background:#c3effd;color:#000;}
 
 /* forms.css */
 label{font-weight:bold;}
@@ -205,6 +207,7 @@ textarea {width:390px;height:150px;padding:5px;}
 a.button, button {margin: 0.7em 0.5em 0.7em 0;padding:5px 10px 5px 7px;border:1px solid #dedede;border-top:1px solid #eee;border-left:1px solid #eee;background-color:#f5f5f5;font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;font-size:100%;line-height:130%;text-decoration:none;font-weight:bold;color:#565656;cursor:pointer;}
 button {width:auto;overflow:visible;padding:4px 10px 3px 7px;}
 button[type] {padding:4px 10px 4px 7px;line-height:17px;}
+label,select,.pointer {cursor:pointer;}
 *:first-child+html button[type] {padding:4px 10px 3px 7px;}
 button img, a.button img{margin:0 3px -3px 0 !important;padding:0;border:none;width:16px;height:16px;float:none;}
 button:hover, a.button:hover{background-color:#dff4ff;border:1px solid #c2e1ef;color:#336699;}

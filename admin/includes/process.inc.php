@@ -186,7 +186,7 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
  */
 if($do_action == "renderlist" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($canarycage,$currenthost)) {
 	if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageMenu']) {
-		echo "<table class=\"span-14-1\" cellpadding=\"0\" cellspacing=\"0\">";
+		echo "<table class=\"span-15\" cellpadding=\"0\" cellspacing=\"0\">";
 		$i = 0;
 		// Get previously opened DB stream
 		while (!$db->EndOfSeek()) {
@@ -242,7 +242,7 @@ if($do_action == "renderlist" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAu
 						<input type="checkbox" name="islink" id="<?php echo $row->page_id; ?>" class="islink" <?php echo($row->islink==="Y")?'checked="checked"':null;?> />
 					<?php } ?>
 				</td>
-				<td class="span-3">
+				<td class="span-4">
 					<?php echo $row->urlpage; ?><em>(.html)</em>
 					<input type="hidden" name="pageid[]" value="<?php echo $row->page_id; ?>" id="pageid"/>
 				</td>

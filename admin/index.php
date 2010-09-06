@@ -98,7 +98,7 @@ require_once('./includes/process.inc.php');
 	<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['managePages']) { ?>
 	<div id="createnew" class="span-9">
 	<fieldset>
-		<legend><span class="ss_sprite ss_add">&#160;</span><a id="toggle-1" href="#"><?php echo $ccms['lang']['backend']['createpage']; ?></a></legend>
+		<legend><span class="ss_sprite ss_add">&#160;</span><a class="toggle" rel="form_wrapper" href="#"><?php echo $ccms['lang']['backend']['createpage']; ?></a></legend>
 		<div id="form_wrapper">
 		<form method="post" id="addForm" action="<?php echo $_SERVER['PHP_SELF'] ?>">
 				<p><?php echo $ccms['lang']['backend']['createtip']; ?></p>
@@ -155,24 +155,24 @@ require_once('./includes/process.inc.php');
 		</div>
 	</fieldset>
 	</div>
-	<?php } else echo '<div id="createnew"><span id="toggle-1"></span><div id="form_wrapper"><form id="addForm" action=""></form></div></div>'; ?>
+	<?php } else echo '<div id="createnew"><span class="toggle"></span><div id="form_wrapper"><form id="addForm" action=""></form></div></div>'; ?>
 	
 	<?php // Manage menu depths & languages ?>
 	<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageMenu']) { ?>
-	<div id="menudepth" class="span-15">
+	<div id="menudepth" class="span-16">
 	<fieldset>
-		<legend><span class="ss_sprite ss_text_list_bullets">&#160;</span> <a id="toggle-3" href="#"><?php echo $ccms['lang']['backend']['managemenu']; ?></a></legend>
+		<legend><span class="ss_sprite ss_text_list_bullets">&#160;</span> <a class="toggle" rel="menu_wrapper" href="#"><?php echo $ccms['lang']['backend']['managemenu']; ?></a></legend>
 		<div id="menu_wrapper">
 		<p><?php echo $ccms['lang']['backend']['ordertip']; ?></p>
 		<form method="post" id="menuForm" action="<?php echo $_SERVER['PHP_SELF'] ?>">
-			<table class="span-14-1" id="table_menu">
+			<table class="span-15" id="table_menu">
 			<tr>
 				<th class="span-2"><?php echo $ccms['lang']['backend']['menutitle']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['menuid']; ?>"></span></th>
 				<th class="span-2"><?php echo $ccms['lang']['backend']['template']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['template']; ?>"></span></th>
 				<th class="span-2"><?php echo $ccms['lang']['backend']['toplevel']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['toplevel']; ?>"></span></th>
 				<th class="span-2"><?php echo $ccms['lang']['backend']['sublevel']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['sublevel']; ?>"></span></th>
 				<th class="span-1-1"><?php echo $ccms['lang']['backend']['linktitle']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['activelink']; ?>"></span></th>
-				<th class="span-3"><?php echo $ccms['lang']['forms']['pagetitle']; ?></th>
+				<th class="span-4"><?php echo $ccms['lang']['forms']['pagetitle']; ?></th>
 			</tr>
 			</table>
 			<div id="menuFields">
@@ -189,12 +189,12 @@ require_once('./includes/process.inc.php');
 		</div>
 	</fieldset>
 	</div>
-	<?php } else echo '<div id="menu_wrapper"><span id="toggle-3"></span><div id="menuFields"><form id="menuForm" action=""></form></div></div>'; ?>
+	<?php } else echo '<div id="menu_wrapper"><span class="toggle"></span><div id="menuFields"><form id="menuForm" action=""></form></div></div>'; ?>
 	
 	<?php // Manage current files ?>
 	<div id="manage" class="span-25">
 	<fieldset>
-		<legend><span class="ss_sprite ss_folder_database">&#160;</span><?php echo $ccms['lang']['backend']['managefiles']; ?></legend>
+		<legend><span class="ss_sprite ss_folder_database">&#160;</span><a class="toggle" rel="filelist_wrapper" href="#"><?php echo $ccms['lang']['backend']['managefiles']; ?></a></legend>
 		<div id="filelist_wrapper">
 		<p><?php echo $ccms['lang']['backend']['currentfiles']; ?></p>
 		<form action="index.php" id="delete">

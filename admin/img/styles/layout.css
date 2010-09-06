@@ -41,6 +41,7 @@ a.external {
 /* === LAY-OUT === */
 #wrapper {padding: 20px 0;}
 #footer {text-align: right;margin-bottom:20px;}
+#menudepth {margin-right:0;}
 #createnew, #menudepth {margin-top:10px;}
 .ff{display:inline-block;width:80px;height:15px;background-position: 0 0;}
 .ie{display:inline-block;width:80px;height:15px;background-position: 0 -20px;}
