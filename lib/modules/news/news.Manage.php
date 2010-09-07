@@ -161,6 +161,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 				<br/><br/>			
 				<p class="prepend-3">
 					<?php echo ($db->HasRecords()?'<input type="hidden" name="cfgID" value="'.$rsCfg->cfgID.'" id="cfgID" />':null); ?>
+					<input type="hidden" name="pageID" value="<?php echo (isset($pageID)?$pageID:null); ?>" id="pageID" />
 					<button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button>
 				</p>
 			</form>

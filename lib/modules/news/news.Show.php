@@ -34,9 +34,12 @@ global $db,$cfg,$ccms;
 
 // Load news preferences
 $pageID	= (isset($_GET['page'])?$_GET['page']:null);
-$rsCfg	= $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgnews` WHERE pageID='$pageID'");
-$numCfg	= $db->RowCount();
-$locale = ($numCfg>0?$rsCfg->showLocale:'eng');
+if(isset($pageID)&&$pageID>0) {
+	$rsCfg	= $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgnews` WHERE pageID='$pageID'");
+	$numCfg	= $db->RowCount();
+}
+$locale 	= (isset($numCfg)&&$numCfg>0?$rsCfg->showLocale:'eng');
+$newspages	= $db->QueryArray("SELECT urlpage FROM `".$cfg['db_prefix']."pages` WHERE module='news'");
 
 // Set front-end language
 setlocale(LC_ALL, $locale);
@@ -46,8 +49,13 @@ $special_chars = array("#","$","%","@","^","&","*","!","~","‘","\"","’","'",
 
 // Do actions for overview
 if(!isset($_GET['id'])||empty($_GET['id'])) {
-	// Load recordset for all news
-	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsPublished>'0' AND pageID='$pageID' ORDER BY newsModified DESC");
+	if(in_array($pageID, $newspages[0])) {
+		// Load recordset for all news on specific news page
+		$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsPublished>'0' AND pageID='$pageID' ORDER BY newsModified DESC");
+	} elseif(!in_array($pageID, $newspages[0])) {
+		// Load recordset for all news on any page
+		$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsPublished>'0' ORDER BY newsModified DESC");
+	}
 } 
 // Do actions for specific news
 elseif(isset($_GET['id'])&&!empty($_GET['id'])) {
@@ -69,7 +77,7 @@ elseif(isset($_GET['id'])&&!empty($_GET['id'])) {
 if($db->HasRecords()) {
 
 	if(!isset($_GET['do'])) {
-		if($numCfg>0) {
+		if(isset($numCfg)&&$numCfg>0) {
 			$listMax 	= ($rsCfg->showMessage>$db->RowCount()?$db->RowCount():$rsCfg->showMessage);
 			$showTeaser	= $rsCfg->showTeaser;
 			$showAuthor	= $rsCfg->showAuthor;
@@ -95,7 +103,7 @@ if($db->HasRecords()) {
 		$newsTitle = str_replace(' ','-',$newsTitle);
 		
 		?>
-		<h2><a href="<?php echo $cfg['rootdir'].$_GET['page'].'/'.$rsNews->newsID.'-'.$newsTitle; ?>.html"><?php echo $rsNews->newsTitle; ?></a></h2>
+		<h2><a href="<?php echo $cfg['rootdir'].$rsNews->pageID.'/'.$rsNews->newsID.'-'.$newsTitle; ?>.html"><?php echo $rsNews->newsTitle; ?></a></h2>
 		<p><strong><?php echo $rsNews->newsTeaser; ?></strong></p>
 		<?php if($showTeaser==0) { ?><p><?php echo $rsNews->newsContent; ?></p><?php } ?>
 		
@@ -114,7 +122,7 @@ if($db->HasRecords()) {
 			<?php if($showAuthor==1) { echo '<strong>&ndash; '.$rsNews->userFirst.' '.$rsNews->userLast.'</strong>'; } ?>
 		</p>
 		<?php } ?>
-		<p>&laquo; <a href="<?php echo $cfg['rootdir'].$_GET['page']; ?>.html?do=all"><?php echo $ccms['lang']['news']['viewarchive']; ?></a> | <a href="<?php echo $cfg['rootdir'].$_GET['page']; ?>.html"><?php echo $db->QuerySingleValue("SELECT `pagetitle` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '".$_GET['page']."'"); ?></a></p>
+		<p>&laquo; <a href="<?php echo $cfg['rootdir'].$rsNews->pageID; ?>.html?do=all"><?php echo $ccms['lang']['news']['viewarchive']; ?></a> | <a href="<?php echo $cfg['rootdir'].$rsNews->pageID; ?>.html"><?php echo $db->QuerySingleValue("SELECT `pagetitle` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '".$rsNews->pageID."'"); ?></a></p>
 	<?php } ?>
 	
 </div>
@@ -135,7 +143,7 @@ if($db->HasRecords()) {
   			$newsTitle = str_replace($special_chars, "", $newsTitle); 
 			$newsTitle = str_replace(' ','-',$newsTitle); ?>
 	    	
-			<h3>&#8594; <a href="<?php echo $cfg['rootdir'].$_GET['page'].'/'.$rsNews->newsID.'-'.$newsTitle; ?>.html"><?php echo $rsNews->newsTitle; ?></a></h3>
+			<h3>&#8594; <a href="<?php echo $cfg['rootdir'].$rsNews->pageID.'/'.$rsNews->newsID.'-'.$newsTitle; ?>.html"><?php echo $rsNews->newsTitle; ?></a></h3>
 			<span style="font-size:0.8em;font-style:italic;"><?php echo strftime('%Y-%m-%d',strtotime($rsNews->newsModified));?> &ndash; <?php echo $rsNews->userFirst.' '.$rsNews->userLast; ?></span>
 	    	<p><?php echo $rsNews->newsTeaser; ?></p>
 		<?php
