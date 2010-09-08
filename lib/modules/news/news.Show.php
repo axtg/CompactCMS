@@ -130,7 +130,7 @@ if($db->HasRecords()) {
 <?php
 		}
 		if(!isset($_GET['id'])||empty($_GET['id'])&&$db->RowCount()>$rsCfg->showMessage) { ?>
-			<hr/><p style="text-align:center;"><a href="?do=all"><?php echo $ccms['lang']['news']['viewarchive']; ?></a></p>
+			<hr/><p style="text-align:center;"><a href="<?php echo $cfg['rootdir'].$rsNews->pageID; ?>.html?do=all"><?php echo $ccms['lang']['news']['viewarchive']; ?></a></p>
 		<?php 
 		}
 	}

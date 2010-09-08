@@ -311,7 +311,7 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 	//
 	// Set chmod on config.inc.php, .htaccess, content, cache and albums
 	//
-	if($err==0 && !isset($_POST['ftp_host']) && empty($_POST['ftp_host'])) {
+	if($err==0 && !isset($_POST['ftp_host']) && empty($_POST['ftp_host']) && !strpos($_SERVER['SERVER_SOFTWARE'], "Win")) {
 		// Set warning when safe mode is enabled
 		if(ini_get('safe_mode')) {
 			$errors[] = 'Warning: safe mode is enabled, skipping chmod()';
