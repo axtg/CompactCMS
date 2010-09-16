@@ -88,7 +88,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 				<div id="s-name">
 					<?php echo (!empty($rsComment->commentUrl)?'<a href="'.$rsComment->commentUrl.'" rel="nofollow" target="_blank">'.$rsComment->commentName.'</a>':$rsComment->commentName).' '.$ccms['lang']['guestbook']['wrote']; ?>:
 				</div>
-				<div id="s-comment"><p><?php echo nl2br($rsComment->commentContent); ?></p></div>
+				<div id="s-comment"><p><?php echo nl2br(strip_tags($rsComment->commentContent)); ?></p></div>
 				<div id="s-rating">
 					<p>
 						<img src="<?php echo $cfg['rootdir']; ?>lib/modules/comment/resources/<?php echo $rsComment->commentRate;?>-star.gif" alt="<?php echo $ccms['lang']['guestbook']['rating']." ".$rsComment->commentRate; ?>" /><br/>
@@ -144,7 +144,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAut
 	$values['commentEmail']	= MySQL::SQLValue($_POST['email'], MySQL::SQLVALUE_TEXT);
 	$values['commentUrl']	= MySQL::SQLValue($_POST['website'], MySQL::SQLVALUE_TEXT);
 	$values['commentRate']	= MySQL::SQLValue($_POST['rating'], MySQL::SQLVALUE_NUMBER);
-	$values['commentContent'] = MySQL::SQLValue($_POST['comment'], MySQL::SQLVALUE_TEXT);
+	$values['commentContent'] = MySQL::SQLValue(strip_tags($_POST['comment']), MySQL::SQLVALUE_TEXT);
 	$values['commentHost']	= MySQL::SQLValue($_SERVER['REMOTE_ADDR'], MySQL::SQLVALUE_TEXT);
 	
 	// Insert new page into database

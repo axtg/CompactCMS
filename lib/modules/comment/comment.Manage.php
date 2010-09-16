@@ -71,7 +71,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			</div>
 			<div class="span-17">
 				<strong><?php echo (!empty($rsComment->commentUrl)?'<a href="'.$rsComment->commentUrl.'" target="_blank">'.$rsComment->commentName.'</a>':$rsComment->commentName); echo ' '.$ccms['lang']['guestbook']['wrote']; ?>:</strong>
-				<p><?php echo nl2br($rsComment->commentContent);?></p>
+				<p><?php echo nl2br(strip_tags($rsComment->commentContent));?></p>
 				<p>
 				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) { ?>
 					<span class="ss_sprite ss_cross small"><a onclick="return confirmation()" href="comment.Process.php?pageID=<?php echo $_GET['file'];?>&amp;commentID=<?php echo $rsComment->commentID;?>&amp;action=del-comment"><?php echo $ccms['lang']['guestbook']['delentry'];?></a></span>
