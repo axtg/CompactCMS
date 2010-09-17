@@ -10,8 +10,7 @@ source and released under the GNU GENERAL PUBLIC LICENSE v3 (see license.txt).
 - Call the root of the installation (mysite.com/ or mysite.com/test/ccms/)
 - Carefully follow the installer instructions
 - Delete the ./_install directory once finished
-- Login at 'yoursite.com/admin/' using default details "admin" and "pass"
-- Change your password through the back-end
+- Login at 'yoursite.com/admin/' using username "admin" and your selected password
 
 ---
 If you're running into chmod() trouble, you'll need to at least chmod() both 
@@ -29,10 +28,15 @@ installation.
 The list below includes a list of changes for version 1.4.1.
 
 * New user management (database driven)
+* User levels allow for restrictions to features
 * Inclusion of database class
+* Enhanced security
 * Added a database table prefix variable
 * Included an installer
 * Optimized variable defining
+* Open multiple windows from dashboard at once
+* Optimized news, comment and lightbox modules
+* Edit templates from within the back-end
 * Scores 99 on Yahoo's YSlow 2.0 guidelines when using CDN
 
 === 1.4.0 CHANGES ===
