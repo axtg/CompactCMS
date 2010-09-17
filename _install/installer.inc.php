@@ -154,7 +154,6 @@ if($nextstep == md5('4') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/.htaccess')),-4)!='0666') { $chfile[] = '.htaccess (0666)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/lib/config.inc.php')),-4)!='0666') { $chfile[] = '/lib/config.inc.php (0666)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/home.php')),-4)!='0666') { $chfile[] = '/content/home.php (0666)'; }
-		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/installation.php')),-4)!='0666') { $chfile[] = '/content/installation.php (0666)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/contact.php')),-4)!='0666') { $chfile[] = '/content/contact.php (0666)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/lib/templates/ccms.tpl.html')),-4)!='0666') { $chfile[] = '/lib/templates/ccms.tpl.html (0666)'; }
 		// Directories under risk due to chmod(0777)
@@ -338,7 +337,6 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 		if(setChmod('/.htaccess','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /.htaccess/';
 		if(setChmod('/lib/config.inc.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/config.inc.php';
 		if(setChmod('/content/home.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/home.php';
-		if(setChmod('/content/installation.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/installation.php';
 		if(setChmod('/content/contact.php','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /content/contact.php';
 		if(setChmod('/lib/templates/ccms.tpl.html','0666')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/templates/ccms.tpl.html';
 		
@@ -404,7 +402,6 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 		if(@ftp_chmod($conn_id, 0666, "./.htaccess")) { $ftp_chmod++; }
 		if(@ftp_chmod($conn_id, 0666, "./lib/config.inc.php")) { $ftp_chmod++; }
 		if(@ftp_chmod($conn_id, 0666, "./content/home.php")) { $ftp_chmod++; }
-		if(@ftp_chmod($conn_id, 0666, "./content/installation.php")) { $ftp_chmod++; }
 		if(@ftp_chmod($conn_id, 0666, "./content/contact.php")) { $ftp_chmod++; }
 		if(@ftp_chmod($conn_id, 0666, "./lib/templates/ccms.tpl.html")) { $ftp_chmod++; }
 		// Directories under risk due to chmod(0777)
