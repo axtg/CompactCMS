@@ -221,7 +221,7 @@ $ccms['lang']['template']['nowrite']	= "The current template is <strong>not</str
 
 // Permissions
 $ccms['lang']['permission']['header']	= "Permission preferences";
-$ccms['lang']['permission']['explain']	= "Use ...";
+$ccms['lang']['permission']['explain']	= "Use the table below to specify what minimum user level can use certain features. Any user below the specified minimum required user level, will not see nor have access to the feature.";
 $ccms['lang']['permission']['target']	= "Target";
 $ccms['lang']['permission']['level1']	= "Level 1 - User";
 $ccms['lang']['permission']['level2']	= "Level 2 - Editor";
@@ -230,7 +230,7 @@ $ccms['lang']['permission']['level4']	= "Level 4 - Admin";
 
 // Content owners
 $ccms['lang']['owners']['header']		= "Content owners";
-$ccms['lang']['owners']['explain']		= "Use ...";
+$ccms['lang']['owners']['explain']		= "Here you can appoint specific page ownership to individual users. If for a cartain page no users are selected, everyone can modify the page. Otherwise only the specified user had modification rights to the file. Administrators always have access to all files.";
 $ccms['lang']['owners']['pages']		= "Pages";
 $ccms['lang']['owners']['users']		= "Users";
 

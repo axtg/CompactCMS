@@ -84,7 +84,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) 
 				}
 				
 				if($i==count($_POST['owner'])) {
-					header("Location: ./content-owners.Manage.php?status=success&action=".$ccms['lang']['backend']['success']);
+					header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['success']);
 					exit();
 				} 
 			}

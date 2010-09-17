@@ -221,7 +221,7 @@ $ccms['lang']['template']['nowrite']	= "Het huidige template is <strong>niet</st
 
 // Permissions
 $ccms['lang']['permission']['header']	= "Toegangsvoorkeuren";
-$ccms['lang']['permission']['explain']	= "Use ...";
+$ccms['lang']['permission']['explain']	= "Gebruik onderstaande tabel om het minimale gebruikersniveau voor een bepaalde functie te bepalen. Een gebruiker onder het gespecificeerde niveau heeft geen toegang tot de desbetreffende functie.";
 $ccms['lang']['permission']['target']	= "Doel";
 $ccms['lang']['permission']['level1']	= "Level 1 - User";
 $ccms['lang']['permission']['level2']	= "Level 2 - Editor";
@@ -230,7 +230,7 @@ $ccms['lang']['permission']['level4']	= "Level 4 - Admin";
 
 // Content owners
 $ccms['lang']['owners']['header']		= "Content eigenaren";
-$ccms['lang']['owners']['explain']		= "Use ...";
+$ccms['lang']['owners']['explain']		= "Hier kunnen content eigenaren gespecificeerd worden. Als voor &eacute;&eacute;n pagina geen gebruikers zijn geselecteerd, dan hebben alle gebruikers toegang tot de pagina. Anders enkel de geselecteerde gebruiker. Beheerders hebben altijd toegang tot alle pagina's";
 $ccms['lang']['owners']['pages']		= "Pagina's";
 $ccms['lang']['owners']['users']		= "Gebruikers";
 
