@@ -29,11 +29,22 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+define("COMPACTCMS_CODE", 1);
+
+
 // Compress all output and coding
 header('Content-type: text/html; charset=UTF-8');
 
+// Define default location
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(dirname(dirname(__FILE__))))));
+	define('BASE_PATH', $base);
+}
+
 // Include general configuration
-require_once('../../../../lib/sitemap.php');
+require_once(BASE_PATH . '/lib/sitemap.php');
 
 $canarycage	= md5(session_id());
 $currenthost= md5($_SERVER['HTTP_HOST']);
@@ -61,7 +72,7 @@ if ($perm['manageModBackup'] <= 0 || !checkAuth($canarycage, $currenthost))
 <?php
 
 
- /**
+/**
  *
  * Create requested backup archive
  *
@@ -207,7 +218,7 @@ else if($do=="delete" && empty($_POST['file']) && $_POST['btn_delete']=="dodelet
 				} else echo $ccms['lang']['auth']['featnotallowed'];?>
 			</form>
 		</div>
-		
+
 	</div>
 </body>
 </html>

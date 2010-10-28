@@ -29,8 +29,9 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
-// Load previously defined variables
-global $db,$cfg,$ccms;
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) die('Illegal entry point!');
+
 
 // Load news preferences
 $pageID	= (isset($_GET['page'])?$_GET['page']:null);

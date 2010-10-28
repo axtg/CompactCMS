@@ -29,6 +29,10 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) die('Illegal entry point!');
+
+
 // Default albums location
 $album_path	= BASE_PATH.'/media/albums';
 $album_url	= $cfg['rootdir'].'media/albums';

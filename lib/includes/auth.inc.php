@@ -29,8 +29,17 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+define("COMPACTCMS_CODE", 1);
+
+
 // Include general configuration
-require_once(dirname(dirname(__FILE__)).'/sitemap.php');
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(__FILE__))));
+	define('BASE_PATH', $base);
+}
+require_once(BASE_PATH.'/lib/sitemap.php');
 
 // If session already exists
 if(isset($_SESSION['ccms_userID']) && isset($_SESSION['ccms_userName'])) {

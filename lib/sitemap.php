@@ -34,12 +34,15 @@
  * > W: http://community.CompactCMS.nl/forum
 **/
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) die('Illegal entry point!');
+
+
 // Start session
 session_start();
 
 // Define default location
-$base = str_replace('\\','/',dirname(dirname(__FILE__)));
-@define('BASE_PATH',$base);
+if (!defined('BASE_PATH')) die('BASE_PATH not defined!');
 
 // Load basic configuration
 require_once(BASE_PATH . '/lib/config.inc.php');
@@ -47,6 +50,10 @@ require_once(BASE_PATH . '/lib/config.inc.php');
 // Load MySQL Class and initiate connection
 require_once(BASE_PATH . '/lib/class/mysql.class.php');
 $db = new MySQL();
+
+// Load generic functions
+require_once(BASE_PATH . '/lib/includes/common.inc.php');
+
 
 // LANGUAGE ==
 // Either select the specified file ($cfg['language']) or fall back to English
@@ -116,20 +123,7 @@ if ($handle = @opendir(BASE_PATH . '/lib/templates/')) {
 } else {die($ccms['lang']['system']['error_templatedir']);}
 
 // GENERAL FUNCTIONS ==
-// Register filter regex for URL detection in description
-function regexUrl($data) {
-	$regex = "((https?|ftp)\:\/\/)?"; // SCHEME 
-	$regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"; // User and Pass 
-	$regex .= "([a-z0-9-.]*)\.([a-z]{2,3})"; // Host or IP 
-	$regex .= "(\:[0-9]{2,5})?"; // Port 
-	$regex .= "(\/([a-z0-9+\$_-]\.?)+)*\/?"; // Path 
-	$regex .= "(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?"; // GET Query 
-	$regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor 
-	
-	if(preg_match("/^$regex/i", $data)) {
-		return true;
-	}
-}
+// [i_a] moved to common.inc.php
 
 // OPERATION MODE ==
 // 1) Start normal operation mode (if sitemap.php is not requested directly).
