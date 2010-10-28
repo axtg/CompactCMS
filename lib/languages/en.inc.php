@@ -236,6 +236,9 @@ $ccms['lang']['owners']['users']		= "Users";
 
 // Album messages
 $ccms['lang']['album']['album']			= "Album";
+$ccms['lang']['album']['settings']		= "Album settings";
+$ccms['lang']['album']['apply_to']		= "Specifically apply this album to";
+$ccms['lang']['album']['description']	= "Album description";
 $ccms['lang']['album']['currentalbums']	= "Current albums";
 $ccms['lang']['album']['uploadcontent']	= "Upload content";
 $ccms['lang']['album']['toexisting']	= "Upload to existing album";
@@ -288,4 +291,51 @@ $ccms['lang']['guestbook']['verify']	= "Verification";
 $ccms['lang']['guestbook']['preview']	= "Preview comment";
 $ccms['lang']['guestbook']['add']		= "Add your comments";
 $ccms['lang']['guestbook']['posted']	= "Comment has been posted!";
+
+
+      /* ### OBSOLETED ENTRIES ### */
+      /*
+         Please check the CompactCMS code to:
+
+         a) make sure whether these entries are indeed obsoleted.
+            When yes, then the corresponding entry above should be
+            removed as well!
+
+         b) When no, i.e. the entry exists in the code, this merits
+            a bug report regarding the ./collect_lang_items.sh script.
+       
+         ----------------------------------------------------------
+	
+	$ccms['lang']['album']['nodir']			
+	$ccms['lang']['backend']['startedittitle'] 	
+	$ccms['lang']['backend']['updatelist']		
+	$ccms['lang']['editor']['closeeditor']	
+	$ccms['lang']['forms']['filter_showing']	
+	$ccms['lang']['guestbook']['posted']	
+	$ccms['lang']['guestbook']['reaction']	
+	$ccms['lang']['guestbook']['removed'] 	
+	$ccms['lang']['login']['falsetries']		
+	$ccms['lang']['login']['provide']			
+	$ccms['lang']['system']['error_default']	
+	$ccms['lang']['system']['error_sitemap'] 	
+       
+         ----------------------------------------------------------
+	
+         ### MISSING ENTRIES ###
+
+         The entries below have been found to be missing from this 
+         translation file; move them from this comment section to the
+         PHP code above and assign them a suitable text.
+
+         When done so, you can of course remove them from the list 
+         below.
+       
+         ----------------------------------------------------------
+      */
+	  
+       
+      /*
+         ----------------------------------------------------------
+      */
+	  
 ?>
