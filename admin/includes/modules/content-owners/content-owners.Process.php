@@ -74,9 +74,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) 
 				$explode = explode("||",$value);
 			
 				// Set variables
-				$pageID = (isset($explode['1'])&&is_numeric($explode['1'])?$explode['1']:null);
+				$pageID = (isset($explode[1])&&is_numeric($explode[1])?$explode[1]:null);
 				$current = $db->QuerySingleValue("SELECT user_ids FROM ".$cfg['db_prefix']."pages WHERE page_id='".$pageID."'");
-				$users = $current.$explode['0'].'||';
+				$users = $current.$explode[0].'||';
 				$values["user_ids"] = MySQL::SQLValue($users,MySQL::SQLVALUE_TEXT);
 			
 				if($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => "\"$pageID\""))) {

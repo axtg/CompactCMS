@@ -9,7 +9,7 @@ function sanitize($dtype, $dlen, $data){
 // dtype 3: allow alphanumeric, spaces, period, and '-'
 // dtype 4: allow alphanumeric w/ all punctuation 
 // dtype 5: email validation chars 
-// dlen: data length limit, '0' = no length limit 
+// dlen: data length limit, 0 = no length limit 
 
 	// special cleanups
 	$data = preg_replace("/x1a/",'', $data);
@@ -56,9 +56,9 @@ function sanitize($dtype, $dlen, $data){
 // We only convert entities that are within tags since
 // these are the ones that will pose security problems.
     if (preg_match_all("/<(.+?)>/si", $data, $matches)) {		
-        for ($i = 0; $i < count($matches['0']); $i++) {
-            $data = str_replace($matches['1'][$i],
-                html_entity_decode($matches['1'][$i], ENT_COMPAT, $charset), $data);
+        for ($i = 0; $i < count($matches[0]); $i++) {
+            $data = str_replace($matches[1][$i],
+                html_entity_decode($matches[1][$i], ENT_COMPAT, $charset), $data);
         }
     }
 	
@@ -144,31 +144,31 @@ function sanitize($dtype, $dlen, $data){
 ////////// END NEW TESTS /////////////////////////////////////////////////////
 // final character stripping & length limiting
 
-	if($dlen != '0'){
+	if($dlen != 0){
 		$data = substr($data, 0, $dlen);
 	}
 
-	if($dtype == '1'){
+	if($dtype == 1){
 		// allow only numeric characters, space, period, and '-' 
 		$data = preg_replace("/[^0-9\-\ \.]/",'', $data);
 	}
 	
-	if($dtype == '2'){
+	if($dtype == 2){
 		// allow only alpha characters, '_' and space 
 		$data = preg_replace("/[^a-zA-Z~\ \_]/",'', $data);
 	}
 	
-	if($dtype == '3'){
+	if($dtype == 3){
 		// allow only alphanumeric characters, space, '_', period, colon, and '-'
 		$data = preg_replace("/[^0-9a-zA-Z~\-\ \.\:\_]/",'', $data);
 	}
 	
-	if($dtype == '4'){
+	if($dtype == 4){
 		// allow only alphanumeric characters w/ punctuation + carriage returns
 		$data = preg_replace("|[^0-9a-zA-Z~@#$%=:;_, \\n\\\!\^&\*\(\)\-\+\.\?\/\'\"]|",'', $data);
 	}
 
-	if($dtype == '5'){
+	if($dtype == 5){
 		// specifically for email validation 
 		$data = preg_replace("|[^0-9a-zA-Z@_\-\.]|",'', $data);
 	}

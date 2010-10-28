@@ -101,7 +101,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 		<div class="pagination">
 			<?php $current = (isset($_GET['offset'])&&$_GET['offset']>0?$_GET['offset']:'0'); ?>
 			<?php for ($i=0; $i<$total; $i++) { 
-				$linktext = ($i/$max>0?($i/$max)+1:'1');
+				$linktext = ($i/$max>0?($i/$max)+1:1);
 				if($i%$max==0&&$current==($i/$max)) {
 					echo '<span class="current">'.$linktext.'</span>';
 				} elseif($i%$max==0&&$current!=($i/$max)) {
