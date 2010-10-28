@@ -10,9 +10,9 @@
 	
 	// CONFIG
 	$param['cache_duration']= 3600 * 24 * 10;		// 10 days util client cache expires
-	$param['compress'] = true;						// Enable the code compression
+	$param['compress'] = true;						// Enable the code compression, should be activated but it can be useful to deactivate it for easier error diagnostics (true or false)
 	$param['debug'] = false;						// Enable this option if you need debuging info
-	$param['use_disk_cache']= false;				// If you enable this option gzip files will be cached on disk.
+	$param['use_disk_cache']= true;					// If you enable this option gzip files will be cached on disk.
 	$param['use_gzip']= true;						// Enable gzip compression
 	// END CONFIG
 	
@@ -33,9 +33,15 @@
 			$this->param= $param;
 			$this->script_list="";
 			$this->path= dirname(__FILE__)."/";
+			if(isset($_GET['plugins'])){
+				$this->load_all_plugins= true;
+				$this->full_cache_file= $this->path."edit_area_full_with_plugins.js";
+				$this->gzip_cache_file= $this->path."edit_area_full_with_plugins.gz";
+			}else{
 			$this->load_all_plugins= false;
 			$this->full_cache_file= $this->path."edit_area_full.js";
 			$this->gzip_cache_file= $this->path."edit_area_full.gz";
+			}
 			
 			$this->check_gzip_use();
 			$this->send_headers();
