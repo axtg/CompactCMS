@@ -63,7 +63,7 @@ $users = $db->QueryArray("SELECT userID,userName,userFirst,userLast,userEmail,us
 	<div class="module">
 
 	<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
-		<? if(isset($_GET['action'])) { echo '<span class="ss_sprite ss_confirm">'.$_GET['action'].'</span>'; } ?>
+		<?php if(isset($_GET['action'])) { echo '<span class="ss_sprite ss_confirm">'.$_GET['action'].'</span>'; } ?>
 	</div>
 	
 	<div>
