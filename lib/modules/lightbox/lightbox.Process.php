@@ -173,7 +173,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "apply-album" && checkA
 		if($album_name!=null) {
 			// Posted variables
 			$topage = (!empty($_POST['albumtopage'])?$_POST['albumtopage']:' ');
-			$description = (!empty($_POST['description'])?trim($_POST['description']):trim(' '));
+			$description = (!empty($_POST['description'])?trim(htmlspecialchars($_POST['description'])):trim(' '));
 			$infofile = BASE_PATH."/media/albums/$album_name/info.txt";
 			
 			if ($handle = fopen($infofile, 'w+')) {
@@ -203,7 +203,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files" && checkAu
 	if(!is_dir($dest)) {
 		header("Location: lightbox.Manage.php?status=error&msg=writeerr");
 		exit();
-	} else
+	} 
+	// else ...    [i_a] dangling else removed
 	
 	// Validation
 	$error 		= false;
