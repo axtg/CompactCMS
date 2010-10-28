@@ -162,7 +162,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 			<h2><?php echo $ccms['lang']['album']['newalbum']; ?></h2>
 			<?php if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {?>
 			<form action="lightbox.Process.php?action=create-album" method="post" accept-charset="utf-8">
-				<label for="album"><?php $ccms['lang']['album']['album']; ?></label><input type="text" class="text" style="width:160px;" name="album" value="" id="album" />
+				<label for="album"><?php echo $ccms['lang']['album']['album']; ?></label><input type="text" class="text" style="width:160px;" name="album" value="" id="album" />
 				<button type="submit"><span class="ss_sprite ss_wand"><?php echo $ccms['lang']['forms']['createbutton']; ?></span></button>
 			</form>
 			<?php } else echo $ccms['lang']['auth']['featnotallowed']; ?>
@@ -170,9 +170,9 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 		<hr class="space" />
 		<?php } elseif(isset($_GET['album'])&&!empty($_GET['album'])) { 
 			$lines = @file(BASE_PATH.'/media/albums/'.$_GET['album'].'/info.txt'); ?>
-			<h2>Album settings</h2>
+			<h2><?php echo $ccms['lang']['album']['settings']; ?></h2>
 			<form action="lightbox.Process.php?action=apply-album" method="post" accept-charset="utf-8">
-				<label for="albumtopage">Specifically apply this album to</label>
+				<label for="albumtopage"><?php echo $ccms['lang']['album']['apply_to']; ?></label>
 				<select class="text" name="albumtopage" id="albumtopage" size="1">
 					<option value=""><?php echo $ccms['lang']['backend']['none']; ?></option>
 					<?php $lightboxes = $db->QueryArray("SELECT * FROM ".$cfg['db_prefix']."pages WHERE module='lightbox'"); 
@@ -186,10 +186,10 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
     					$desc = trim($desc.' '.htmlspecialchars($lines[$x]));
 					}
 				?>
-				<label for="description">Album description</label>
+				<label for="description"><?php echo $ccms['lang']['album']['description']; ?></label>
 				<textarea name="description" rows="3" cols="40" style="height:50px;width:290px;" id="description"><?php echo trim($desc);?></textarea>
 				<input type="hidden" name="album" value="<?php echo $_GET['album']; ?>" id="album" />
-				<p class="prepend-5"><button type="submit"><span class="ss_sprite ss_disk">Save</span></button></p>
+				<p class="prepend-5"><button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button></p>
 			</form>
 		<?php } if(count($albums)>0) { ?>
 		<h2><?php echo $ccms['lang']['album']['uploadcontent']; ?></h2>

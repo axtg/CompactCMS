@@ -52,15 +52,16 @@ if($handle = opendir($album_path)) {
 }
 
 // Get specified album for current page
+$singleShow = false;
 if(isset($albums)&&count($albums)>0) {
 	foreach ($albums as $file) {
 		$lines = @file($album_path.'/'.$file.'/info.txt');
 		if($lines>0&&@preg_match('/'.$_GET['page'].'/',$lines[0])) {
-			$spec_album = $file;
+			$spec_album[] = $file;
 		}
 	}
 	// Define single show
-	$singleShow = (isset($spec_album)||count($albums)=='1'||isset($_GET['id'])&&!empty($_GET['id'])?'1':'0');
+	$singleShow = (((isset($spec_album) && count($spec_album) == 1)||count($albums)==1)&&!empty($_GET['id']));
 }
 ?>
 
@@ -70,9 +71,28 @@ if(isset($albums)&&count($albums)>0) {
 <script type="text/javascript" charset="utf-8">window.addEvent("domready", function() {initImageZoom({loadImage: '<?php echo $cfg['rootdir']."lib/modules/lightbox/resources/loading.gif"; ?>'});});</script>
 
 <!-- lay-out -->
-<?php if(!isset($_GET['id'])&&empty($_GET['id'])&&isset($albums)&&count($albums)>1&&$singleShow!='1') { ?>
-	<?php if(!empty($albums)) {
-		foreach ($albums as $i => $file) { 
+<?php 
+if(empty($_GET['id'])&&isset($albums)&&count($albums)>1&&$singleShow==false) 
+{
+	if(!empty($albums)) 
+	{
+		foreach ($albums as $i => $file) 
+		{
+			if (isset($spec_album) && count($spec_album) > 0)
+			{
+				$show_this_one = false;
+				foreach ($spec_album as $j => $spec) 
+				{
+					if ($spec == $file)
+					{
+						$show_this_one = true;
+						break;
+					}
+				}		
+				if (!$show_this_one)
+					continue; // skip this entry
+			}
+			
 			// Get the images in an album
 			$image = @fileList($album_path.'/'.$file);
 			
@@ -98,19 +118,25 @@ if(isset($albums)&&count($albums)>0) {
 				echo ucfirst($file)." (".count($image).")</a></div>";	
 			}
 		} 
-	} else echo $ccms['lang']['album']['noalbums'];
-} elseif(isset($singleShow)&&$singleShow=='1') {
+	} 
+	else 
+		echo $ccms['lang']['album']['noalbums'];
+} 
+elseif(isset($singleShow)&&$singleShow=='1') 
+{
 	$album = (isset($_GET['id'])?htmlentities($_GET['id']):$albums[0]);
-	$album = (isset($spec_album)?$spec_album:$album);
+	$album = (isset($spec_album)?$spec_album[0]:$album);
 	
 	echo "<h3>".$ccms['lang']['album']['album']." ".ucfirst($album)."</h3>";
 	if(isset($_GET['id'])) { echo "<p style=\"text-align:right\"><a href=\"".$cfg['rootdir'].$_GET['page'].".html\"\">".$ccms['lang']['backend']['tooverview']."</a></p>"; }
 
 	$desc = null;
 	$lines = @file($album_path.'/'.$album.'/info.txt');
-	for ($x=1; $x<count($lines); $x++) {
-    	$desc = trim($desc.' '.htmlspecialchars($lines[$x]));
-	} echo "<p>$desc</p>";
+	for ($x = 1; $x < count($lines); $x++) 
+	{
+    	$desc = trim($desc.' '.$lines[$x]); // [i_a] double invocation of htmlspecialchars, together with the form input (lightbox.Process.php)
+	} 
+	echo "<p>$desc</p>";
 
 	if($handle = @opendir($album_path.'/'.$album)) {
 		while (false !== ($content = readdir($handle))) {
