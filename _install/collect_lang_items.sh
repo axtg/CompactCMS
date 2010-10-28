@@ -7,6 +7,18 @@
 # next, compare this list with the existing translation files and add the missing entries
 # to them, where applicable.
 #
+# See also:
+#   http://community.compactcms.nl/forum/index.php/topic,170.0.html
+#
+# The 'collect_lang_items.sh' script is handy to test/update the language files in 
+# ./lib/languages/ : it scans the entire CCMS source tree and detects which 
+# $ccms['lang'][etc.etc.] multilingual item references exist in there, then checks 
+# this set against each of the language files, e.g. lib/languages/de.inc.php and 
+# writes a code block like shown below to that file, so the translator can see which 
+# entries still must be done.
+# It's also handy as a semi-auto way to update language files while the CCMS is further 
+# developed (and possibly new $ccms['lang'][...] entries are introduced.
+#
 
 #
 # first, collect all the source files:

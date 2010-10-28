@@ -1,4 +1,12 @@
 #! /bin/bash
+#    
+# See also:
+#   http://community.compactcms.nl/forum/index.php/topic,170.0.html
+#
+# Handy if you're editing CCMS like me and want to send .tar.bz2 files up 
+# and down instead of sets of (edited) files: this script creates a 
+# 'release equivalent' CCMS .tar.bz2 archive.
+#
 
 pushd .
 DSTDIR=`pwd`
