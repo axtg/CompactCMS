@@ -17,7 +17,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 DROP TABLE IF EXISTS `ccms_cfgcomment`;
 CREATE TABLE IF NOT EXISTS `ccms_cfgcomment` (
-  `cfgID` int(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `cfgID` int(5) unsigned NOT NULL AUTO_INCREMENT,
   `pageID` varchar(100) CHARACTER SET latin1 NOT NULL,
   `showLocale` varchar(5) CHARACTER SET latin1 NOT NULL DEFAULT 'eng',
   `showMessage` int(5) NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `ccms_cfgcomment` (
 
 DROP TABLE IF EXISTS `ccms_cfgnews`;
 CREATE TABLE IF NOT EXISTS `ccms_cfgnews` (
-  `cfgID` int(5) NOT NULL AUTO_INCREMENT,
+  `cfgID` int(5) unsigned NOT NULL AUTO_INCREMENT,
   `pageID` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `showLocale` varchar(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'eng',
   `showMessage` int(5) NOT NULL DEFAULT '3',
@@ -78,7 +78,8 @@ CREATE TABLE IF NOT EXISTS `ccms_cfgpermissions` (
 -- Dumping data for table `ccms_cfgpermissions`
 --
 
-INSERT INTO `ccms_cfgpermissions` (`manageUsers`, `manageOwners`, `managePages`, `manageMenu`, `manageTemplate`, `manageModules`, `manageActivity`, `manageVarCoding`, `manageModBackup`, `manageModNews`, `manageModLightbox`, `manageModComment`) VALUES (3, 0, 2, 2, 4, 4, 2, 4, 3, 2, 2, 2);
+INSERT INTO `ccms_cfgpermissions` (`manageUsers`, `manageOwners`, `managePages`, `manageMenu`, `manageTemplate`, `manageModules`, `manageActivity`, `manageVarCoding`, `manageModBackup`, `manageModNews`, `manageModLightbox`, `manageModComment`) VALUES
+(3, 0, 2, 2, 4, 4, 2, 4, 3, 2, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -88,7 +89,7 @@ INSERT INTO `ccms_cfgpermissions` (`manageUsers`, `manageOwners`, `managePages`,
 
 DROP TABLE IF EXISTS `ccms_modcomment`;
 CREATE TABLE IF NOT EXISTS `ccms_modcomment` (
-  `commentID` int(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `commentID` int(5) unsigned NOT NULL AUTO_INCREMENT,
   `pageID` varchar(100) NOT NULL,
   `commentName` varchar(100) NOT NULL,
   `commentEmail` varchar(100) NOT NULL,
@@ -113,8 +114,8 @@ CREATE TABLE IF NOT EXISTS `ccms_modcomment` (
 
 DROP TABLE IF EXISTS `ccms_modnews`;
 CREATE TABLE IF NOT EXISTS `ccms_modnews` (
-  `newsID` int(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
-  `userID` int(5) unsigned zerofill NOT NULL,
+  `newsID` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `userID` int(5) unsigned NOT NULL,
   `pageID` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `newsTitle` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   `newsTeaser` text COLLATE utf8_unicode_ci NOT NULL,
@@ -137,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `ccms_modnews` (
 
 DROP TABLE IF EXISTS `ccms_modules`;
 CREATE TABLE IF NOT EXISTS `ccms_modules` (
-  `modID` int(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `modID` int(5) unsigned NOT NULL AUTO_INCREMENT,
   `modName` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT 'File name',
   `modTitle` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Friendly name',
   `modLocation` text COLLATE utf8_unicode_ci NOT NULL,
@@ -164,23 +165,23 @@ INSERT INTO `ccms_modules` (`modID`, `modName`, `modTitle`, `modLocation`, `modV
 
 DROP TABLE IF EXISTS `ccms_pages`;
 CREATE TABLE IF NOT EXISTS `ccms_pages` (
-  `page_id` int(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `page_id` int(5) unsigned NOT NULL AUTO_INCREMENT,
   `user_ids` varchar(300) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0' COMMENT 'Separated by ||',
-  `urlpage` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `urlpage` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'The in-site part of the URL, without the .html at the end',
   `module` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'editor',
-  `toplevel` tinyint(5) DEFAULT NULL,
-  `sublevel` tinyint(5) DEFAULT NULL,
-  `menu_id` int(5) DEFAULT '1',
-  `variant` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ccms',
+  `toplevel` smallint(5) DEFAULT NULL,
+  `sublevel` smallint(5) DEFAULT NULL,
+  `menu_id` smallint(5) DEFAULT '1' COMMENT 'The menu this will appear in; one of define(MENU_TARGET_COUNT)',
+  `variant` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ccms' COMMENT 'The template ID which will be used in conjuction with this page when rendering',
   `pagetitle` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `subheader` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-  `description` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  `description` varchar(250) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description showing as tooltip in page OR as direct link to other place when starting with FQDN/URL',
   `keywords` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `srcfile` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `printable` enum('Y','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y',
-  `islink` enum('Y','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y',
-  `iscoding` enum('Y','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N',
-  `published` enum('Y','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y',
+  `islink` enum('Y','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y' COMMENT 'Y when the item should show up in the menu',
+  `iscoding` enum('Y','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N' COMMENT 'Y when the WYSIWYG HTML editor should not be used, e.g. when page contains PHP code',
+  `published` enum('Y','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y' COMMENT 'N will not show the page to visitors and give them a 403 page instead',
   PRIMARY KEY (`page_id`),
   UNIQUE KEY `urlpage` (`urlpage`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='Table with details for included pages' AUTO_INCREMENT=3 ;
@@ -201,14 +202,14 @@ INSERT INTO `ccms_pages` (`page_id`, `user_ids`, `urlpage`, `module`, `toplevel`
 
 DROP TABLE IF EXISTS `ccms_users`;
 CREATE TABLE IF NOT EXISTS `ccms_users` (
-  `userID` int(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `userID` int(5) unsigned NOT NULL AUTO_INCREMENT,
   `userName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `userPass` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `userFirst` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `userLast` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `userEmail` varchar(75) COLLATE utf8_unicode_ci NOT NULL,
-  `userActive` tinyint(1) NOT NULL,
-  `userLevel` tinyint(1) NOT NULL,
+  `userActive` smallint(1) NOT NULL,
+  `userLevel` smallint(1) NOT NULL,
   `userToken` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `userLastlog` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `userTimestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
