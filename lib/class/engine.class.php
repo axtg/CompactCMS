@@ -230,7 +230,8 @@ class ccmsParser {
 
   ## Prints PHP code to the output page
   function CheckPHP($text) {
-  eval('?>'.$text.'<?'); 
+  eval('?>'.$text.'<?php'); 
+  //echo $text;
   }
   
   function append($text) {

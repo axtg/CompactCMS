@@ -86,7 +86,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 	<div class="module">
 			
 		<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
-			<? if(isset($_GET['msg'])&&strlen($_GET['msg'])>'2') { echo $_GET['msg']; } ?>
+			<?php if(isset($_GET['msg'])&&strlen($_GET['msg'])>'2') { echo $_GET['msg']; } ?>
 		</div>
 		
 		<div class="span-14 colborder">

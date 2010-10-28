@@ -53,7 +53,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	<div class="module">
 		
 		<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
-			<? if(isset($_GET['msg'])&&strlen($_GET['msg'])>'2') { echo $_GET['msg']; } ?>
+			<?php if(isset($_GET['msg'])&&strlen($_GET['msg'])>'2') { echo $_GET['msg']; } ?>
 		</div>
 			
 		<div class="span-16 colborder">
