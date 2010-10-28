@@ -37,10 +37,29 @@ require_once('../../../../lib/sitemap.php');
 
 $canarycage	= md5(session_id());
 $currenthost= md5($_SERVER['HTTP_HOST']);
-$do 		= (isset($_GET['do'])?$_GET['do']:null);
+$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+
+if ($perm['manageModBackup'] <= 0 || !checkAuth($canarycage, $currenthost)) 
+{
+	die("No external access to file");
+}
+
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+		<title>Back-up &amp; Restore module</title>
+		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
+		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
+	</head>
+<body>
+	<div class="module">
+<?php
+
 
  /**
  *
@@ -102,44 +121,44 @@ if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_ba
 	$fd			= fopen ($fileName, "wb");
 	$out		= fwrite ($fd, $createZip -> getZippedfile());
 	fclose ($fd);
+	
+	echo "<p class=\"success center\">".$ccms['lang']['backend']['newfilecreated'].", <a href=\"../../../../media/files/$backupName\">".strtolower($ccms['lang']['backup']['download'])."</a>.</p>"; 
 }
 
- /**
+/**
  *
  * Delete current backup archives
  *
  */
-if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth($canarycage,$currenthost)) {
-	
+if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth($canarycage,$currenthost)) 
+{
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) {
 	
 		echo "<div class=\"module notice center\">";
-		foreach ($_POST['file'] as $key => $value) {
-			unlink('../../../../media/files/'.$value);
-			echo ucfirst($value)." ".$ccms['lang']['backend']['statusremoved'].".<br/>";
+		foreach ($_POST['file'] as $key => $value) 
+		{
+			$value = filterParam4Filename($value);
+			if (!empty($value))
+			{
+				unlink('../../../../media/files/'.$value);
+				echo ucfirst($value)." ".$ccms['lang']['backend']['statusremoved'].".<br/>";
+			}
+			else 
+				die($ccms['lang']['auth']['featnotallowed']);
 		}
 		echo "</div>";
-	} else die($ccms['lang']['auth']['featnotallowed']);
-	
-} elseif($do=="delete" && empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth($canarycage,$currenthost)) {
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
+} 
+else if($do=="delete" && empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth($canarycage,$currenthost)) 
+{
 	echo "<div class=\"module error center\">".$ccms['lang']['system']['error_selection']."</div>";
 }
+
+
 ?>
-<?php if($perm['manageModBackup']>0&&checkAuth($canarycage,$currenthost)) { ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-	<head>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<title>Back-up &amp; Restore module</title>
-		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
-		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
-	</head>
-<body>
-	<div class="module">
-		<?php if(!empty($backupName)) { 
-			echo "<p class=\"success center\">".$ccms['lang']['backend']['newfilecreated'].", <a href=\"../../../../media/files/$backupName\">".strtolower($ccms['lang']['backup']['download'])."</a>.</p>"; 
-		} ?>
 	
 		<div class="span-6 colborder">
 		<h2><?php echo $ccms['lang']['backup']['createhd']; ?></h2>
@@ -192,4 +211,3 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 	</div>
 </body>
 </html>
-<?php } else die("No external access to file");?>
