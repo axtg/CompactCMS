@@ -47,8 +47,8 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
  * Create requested backup archive
  *
  */
-if(!empty($do) && $_GET['do']=="backup" && isset($_POST['btn_backup']) && $_POST['btn_backup']=="dobackup" && checkAuth($canarycage,$currenthost)) {
-	
+if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_backup']=="dobackup" && checkAuth($canarycage,$currenthost)) 
+{
 	// Include back-up functions
 	include_once('functions.php');
 	

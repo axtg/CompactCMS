@@ -55,7 +55,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	<div class="module">
 		
 		<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
-			<?php if(isset($_GET['msg'])&&strlen($_GET['msg'])>'2') { echo $_GET['msg']; } ?>
+			<?php if(isset($_GET['msg'])&&strlen($_GET['msg'])>2) { echo $_GET['msg']; } ?>
 		</div>
 		
 		<div class="span-16 colborder">
@@ -81,7 +81,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			    	$rsNews = $db->Row();
 					
 			    	// Alternate rows
-			    	if($i%2 != '1') {
+						if($i%2 != 1) {
 						echo '<tr style="background-color: #E6F2D9;">';
 					} else { 
 						echo '<tr>';

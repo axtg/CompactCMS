@@ -46,7 +46,7 @@ if(is_dir('../../_install/')) {
 // Do authentication
 if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST") {
 	$userName = mysql_real_escape_string($_POST['userName']);
-	$userPass = mysql_real_escape_string($_POST['userPass']).$cfg['authcode'];
+	$userPass = mysql_real_escape_string($_POST['userPass']) . $cfg['authcode'];
 
 	if(empty($userName) && empty($userPass)){
 		$_SESSION['logmsg'] = $ccms['lang']['login']['nodetails'];

@@ -101,14 +101,15 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
 		}
 		
 		// Define $isEven for alternate table coloring
-		if($i%2 != '1') {
+		if($i%2 != 1) {
 			if($row->published === "N") {
 				echo '<tr style="background-color: #F2D9DE;">';
 			} else echo '<tr style="background-color: #E6F2D9;">';
 		} else { 
 			if($row->published === "N") {
 				echo '<tr style="background-color: #EBC6CD;">';
-			} else echo '<tr>'; } ?>
+			} else echo '<tr>'; 
+		} ?>
 			<td style="padding-left:2px;" class="span-1">
 			<?php if($_SESSION['ccms_userLevel']<$perm['managePages'] || $row->urlpage == "home" || in_array($row->urlpage, $cfg['restrict'])) { ?>
 				<span class="ss_sprite ss_bullet_red" title="<?php echo $ccms['lang']['auth']['featnotallowed']; ?>"></span>
@@ -151,14 +152,15 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
 				</td>
 			<?php } ?>
 		</tr>
-		<?php if($i%2 != '1') {
+		<?php if($i%2 != 1) {
 			if($row->published === "N") {
 				echo "<tr style=\"background-color: #F2D9DE;\">";
 			} else echo "<tr style=\"background-color: #E6F2D9;\">";
 		} else { 
 			if($row->published === "N") {
 				echo "<tr style=\"background-color: #EBC6CD;\">";
-			} else echo "<tr>"; } ?>
+			} else echo "<tr>"; 
+		} ?>
 			<td>&#160;</td>
 			<td colspan="5"><strong><?php echo $ccms['lang']['forms']['description']; ?></strong>: <span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="description"><?php echo ucfirst($row->description) ;?></span></td>
 			<td colspan="2" style="text-align: right; padding-right:5px;">
@@ -177,7 +179,8 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
 	$i++;
 	} ?>
 	</table>
-<?php }
+<?php 
+}
 
  /**
  *
@@ -381,13 +384,13 @@ if($target_form == "delete" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		// Loop through all submitted page ids
 		foreach ($_POST['page_id'] as $index) {
 		$value = explode($_SESSION['rc2'], $index);
-			if(is_numeric($value['1'])) {	
+			if(is_numeric($value[1])) {	
 				// Select file name and module with given page_id
-				$correct_filename = $db->QuerySingleValue("SELECT `urlpage` FROM `".$cfg['db_prefix']."pages` WHERE `page_id` = ".$value['1']);
-				$module = $db->QuerySingleValue("SELECT `module` FROM `".$cfg['db_prefix']."pages` WHERE `page_id` = ".$value['1']);
+				$correct_filename = $db->QuerySingleValue("SELECT `urlpage` FROM `".$cfg['db_prefix']."pages` WHERE `page_id` = ".$value[1]);
+				$module = $db->QuerySingleValue("SELECT `module` FROM `".$cfg['db_prefix']."pages` WHERE `page_id` = ".$value[1]);
 				
 				// Delete details from the database
-				$values["page_id"] = MySQL::SQLValue($value['1'],MySQL::SQLVALUE_NUMBER);
+				$values["page_id"] = MySQL::SQLValue($value[1],MySQL::SQLVALUE_NUMBER);
 				$result = $db->DeleteRows($cfg['db_prefix']."pages", $values);
 				
 				// Delete linked rows from module tables
@@ -460,13 +463,13 @@ if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] != "POST" && checkA
 	$page_id = explode("-", $_GET['id']);
 	
 	// Set the action for this call
-	if($page_id['0'] == "printable" || $page_id['0'] == "published" || $page_id['0'] == "iscoding") {
-		$action	 = $page_id['0'];
+	if($page_id[0] == "printable" || $page_id[0] == "published" || $page_id[0] == "iscoding") {
+		$action	 = $page_id[0];
 	} else die($ccms['lang']['system']['error_forged']);
 	if($_GET['s'] == "Y") { $new = "N"; } elseif($_GET['s'] == "N") { $new = "Y"; }
 	$values["$action"] = MySQL::SQLValue($new,MySQL::SQLVALUE_Y_N);
 	
-	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id['1']))) {
+	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id[1]))) {
 		if($new == "Y") { echo $ccms['lang']['backend']['yes']; } else echo $ccms['lang']['backend']['no'];
 	} else die($db->Error($ccms['lang']['system']['error_general']));
 }
@@ -558,7 +561,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	
 		$i=0;
 		foreach ($_POST as $key => $value) {
-			$count[] = (strlen($value)>'0'?$i++:null);
+			$count[] = (strlen($value)>0?$i++:null);
 		}
 		if($i<=6) {
 			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_tooshort']);
@@ -597,7 +600,7 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) {
 	
 		// Check length of values
-		if(strlen($_POST['first'])>'2'&&strlen($_POST['last'])>'2'&&strlen($_POST['email'])>'6') {
+		if(strlen($_POST['first'])>2&&strlen($_POST['last'])>2&&strlen($_POST['email'])>6) {
 		
 			$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
 			$values["userFirst"]= MySQL::SQLValue($_POST['first'],MySQL::SQLVALUE_TEXT);
@@ -632,7 +635,7 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) {
 	
-		if(strlen($_POST['pass'])>'6'&&md5($_POST['pass'])===md5($_POST['cpass'])) {
+		if(strlen($_POST['pass'])>6&&md5($_POST['pass'])===md5($_POST['cpass'])) {
 		
 			$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
 			$values["userPass"] = MySQL::SQLValue(md5($_POST['pass'].$cfg['authcode']),MySQL::SQLVALUE_TEXT);
@@ -641,7 +644,7 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
 				exit();
 			}
-		} elseif(strlen($_POST['pass'])<='6') {
+		} elseif(strlen($_POST['pass'])<=6) {
 			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passshort']);
 			exit();
 		} elseif(md5($_POST['pass'])!==md5($_POST['cpass'])) {
@@ -875,7 +878,7 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth($c
 		<div id="handler-wrapper" class="module">
 			
 			<?php if($active=="N") {?>
-			<p class="notice"><?php $msg = explode('::', $ccms['lang']['hints']['published']); echo $msg['0'].": <strong>".strtolower($ccms['lang']['backend']['disabled'])."</strong>"; ?></p>
+			<p class="notice"><?php $msg = explode('::', $ccms['lang']['hints']['published']); echo $msg[0].": <strong>".strtolower($ccms['lang']['backend']['disabled'])."</strong>"; ?></p>
 			<?php } ?>
 			<p class="success"><?php echo $ccms['lang']['editor']['savesuccess']; ?><em><?php echo $name; ?>.html</em>.</p>
 			<hr/>
@@ -897,6 +900,8 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth($c
 	</body>
 	</html>
 	<?php 	
-	} else $db->Kill();
+	} 
+	else 
+		$db->Kill();
 } 
 ?>

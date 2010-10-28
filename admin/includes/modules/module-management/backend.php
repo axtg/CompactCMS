@@ -36,7 +36,7 @@ $canarycage	= md5(session_id());
 $currenthost= md5($_SERVER['HTTP_HOST']);
 $do 		= (isset($_GET['do'])?$_GET['do']:null);
 
-if(!empty($do) && $_GET['do']=="backup" && $_POST['btn_backup']=="dobackup" && md5(session_id())==$canarycage && isset($_SESSION['rc1']) && md5($_SERVER['HTTP_HOST'])==$currenthost) {
+if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && md5(session_id())==$canarycage && isset($_SESSION['rc1']) && md5($_SERVER['HTTP_HOST'])==$currenthost) {
 	
 	// Include back-up functions
 	include_once('functions.php');

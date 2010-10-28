@@ -77,10 +77,11 @@ if(isset($albums)&&count($albums)>0) {
 			$image = @fileList($album_path.'/'.$file);
 			
 			// If album is not empty and thumbnail is found
-			if(file_exists($album_path.'/'.$file.'/_thumbs/'.$image['0'])&&count($image)>0) {
+			if(file_exists($album_path.'/'.$file.'/_thumbs/'.$image[0])&&count($image)>0) 
+			{
 				echo "<div class=\"album-item\">";
 				echo "<a href=\"".$cfg['rootdir'].$_GET['page']."/".$file.".html\">";
-				echo "<img src=\"$album_url/$file/_thumbs/".$image['0']."\" height=\"80\" width=\"80\"/><br/>";
+				echo "<img src=\"$album_url/$file/_thumbs/".$image[0]."\" height=\"80\" width=\"80\"/><br/>";
 				echo ucfirst($file)." (".count($image).")</a></div>";	
 			} 
 			// If album does exist, but no contents (empty album)
@@ -93,7 +94,7 @@ if(isset($albums)&&count($albums)>0) {
 			else {
 				echo "<div class=\"album-item\">";
 				echo "<a href=\"".$cfg['rootdir'].$_GET['page']."/".$file.".html\">";
-				echo "<img src=\"".$album_url."/".$file."/".$image['0']."\" height=\"80\" width=\"80\"/><br/>";
+				echo "<img src=\"".$album_url."/".$file."/".$image[0]."\" height=\"80\" width=\"80\"/><br/>";
 				echo ucfirst($file)." (".count($image).")</a></div>";	
 			}
 		} 
