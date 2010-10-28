@@ -44,7 +44,7 @@ class ccmsParser {
   #  le = lower or equal (Numbers only)
   #  eq = equal (Number or string)
   #  ne = not equal (Number or string)
-  #  lk = existis in string (String only, functions like the 
+  #  lk = exists in string (String only, functions like the 
   #       SQL LIKE '%string%'
   #
   # $value = value to check condition against
@@ -69,7 +69,7 @@ class ccmsParser {
   ## Enables changing Colors f.e. in table rows
   ## initiating an array with the color values
   ## as given by the template in form
-  ## <#ATTR COLOR1,COLOR2,COLOR3...%} 
+  ## {%ATTR COLOR1,COLOR2,COLOR3...%} 
   ## 
   #
   function colorSet($colorstring)  {
@@ -163,7 +163,7 @@ class ccmsParser {
     for ($i = $from; $i < $to; $i++) {
       $p = $this->template[$i];
       if ($enable != 1) {
-        # nur nach ELSE und geschachtelten IFs suchen
+        # only look for ELSE and nested IFs
         if ($p == "{%ELSE%}") {
           $enable = -$enable;
         } elseif (preg_match('/^{%IF (!?)(.*)?%}/', $p, $matches)) {
@@ -186,7 +186,7 @@ class ccmsParser {
         $value = $this->getvar($vars, $var);
         $j = ++$i;
         while ($j < $to && $this->template[$j] != "{%/FOR $var%}") ++$j;
-        if ($j >= $to) die("Schließendes Tag für $p fehlt");
+        if ($j >= $to) die("Lacking a closing tag for $p");
         
         # call process() recursively for each line
         if (is_array($value)) foreach ($value as $row) {
@@ -220,9 +220,9 @@ class ccmsParser {
       } elseif ($p == "{%ELSE%}") {
         $enable = -$enable;
       } elseif (preg_match("/^{%(.*)%}/", $p, $matches)) {
-        # Variablen-Wert ausgeben
+        # print variable value
         $this->append($this->getvar($vars, $matches[1]));
-      } else { # Normaler Text
+      } else { # Regular text
         $this->append($p);
       }
     }
@@ -336,7 +336,7 @@ class ccmsParser {
   }
   
   # Parse template and ECHO the result;
-  # Eval One-line PHP code
+  # Eval inline PHP code
   function parseAndEchoPHP() {
     $this->CheckPHP($this->parseAndReturn());
   }
