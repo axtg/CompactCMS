@@ -1,4 +1,19 @@
 #! /bin/bash
+#
+# See also:
+#   http://community.compactcms.nl/forum/index.php/topic,170.0.html
+#
+# For the folks who have SSH/telnet access to their web server (like me: no TP, 
+# but SSH+SCP instead): run the script and all the files and directories get 
+# their modes set right, so the install script doesn't yak about this.
+#
+# NOTE: this version makes only ./lib/templates/ccms.tpl.html writable, not all the 
+# template files, so those will show up as 'cannot edit'able items when you go 
+# to the admin template editor.
+# Another 'find ... -exec ...' in there will remedy that if you want that. I wanted 
+# the 'standard' templates non-writable but shut up the CCMS installer at the 
+# same time.
+#
 
 pushd .
 cd ../
