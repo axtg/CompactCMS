@@ -34,11 +34,22 @@
  * > W: http://community.CompactCMS.nl/forum
 **/
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+define("COMPACTCMS_CODE", 1);
+
+
 // Compress all output and coding
 header('Content-type: text/html; charset=UTF-8');
 
+// Define default location
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(dirname(__FILE__)))));
+	define('BASE_PATH', $base);
+}
+
 // Include general configuration
-require_once('../../sitemap.php');
+require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Security functions
 $canarycage		= md5(session_id());

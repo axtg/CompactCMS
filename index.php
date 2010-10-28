@@ -29,17 +29,27 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+define("COMPACTCMS_CODE", 1);
+
+
 // Check first whether installation directory exists
 if(is_dir('./_install/')&&is_file('./_install/index.php')) {
 	header('Location: ./_install/index.php');
 	exit();
 }
 
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(__FILE__));
+	define('BASE_PATH', $base);
+}
+
 // This file loads the appropriate configuration
-require_once(dirname(__FILE__) . '/lib/sitemap.php'); 
+require_once(BASE_PATH . '/lib/sitemap.php');
 
 // This file parses the template and coding
-require_once(dirname(__FILE__) . '/lib/class/engine.class.php');
+require_once(BASE_PATH . '/lib/class/engine.class.php');
 
 // Initialize ccmsParser class
 $STP = new ccmsParser;

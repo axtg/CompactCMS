@@ -29,8 +29,19 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+define("COMPACTCMS_CODE", 1);
+
+
+// Define default location
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(dirname(dirname(__FILE__))))));
+	define('BASE_PATH', $base);
+}
+
 // Include general configuration
-require_once('../../../../lib/sitemap.php');
+require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Set default variables
 $canarycage	= md5(session_id());

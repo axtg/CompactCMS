@@ -1,9 +1,27 @@
 <?php
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+define("COMPACTCMS_CODE", 1);
+
+
+// Define default location
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(__FILE__))));
+	define('BASE_PATH', $base);
+}
+
+// Load basic configuration
+require_once(BASE_PATH . '/lib/config.inc.php');
+
+// Load generic functions
+require_once(BASE_PATH . '/lib/includes/common.inc.php');
+
+
 	$cache		= true;
-    $cachedir	= dirname(__FILE__) . '/cache';
-    $jsdir		= dirname(__FILE__) . '/js';
-    $cssdir		= '../../admin/img/styles';
+    $cachedir	= BASE_PATH . '/lib/includes/cache';
+	$jsdir = BASE_PATH . '/lib/includes/js';
+    $cssdir = BASE_PATH . '/admin/img/styles';
 
 	// Determine the directory and type we should use
 	switch ($_GET['type']) {
