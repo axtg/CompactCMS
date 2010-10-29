@@ -414,4 +414,32 @@ function get_response_code_string($reponse_code)
 	}
 }
 
+
+
+/**
+ Check for authentic request ($cage=md5(SESSION_ID),$host=md5(CURRENT_HOST)) v.s. 'id' and 'host' session variable values.
+ 
+ This is a basic check to protect against some forms of CSRF attacks. An extended check using the additional 'rc1'/'rc2' session
+ variables must be used to validate form submissions to ensure the transmission follows such a web form immediately.
+*/
+function checkAuth()
+{
+	$canarycage	= md5(session_id());
+	$currenthost = md5($_SERVER['HTTP_HOST']);
+	
+	//if(md5(session_id())==$cage && md5($_SERVER['HTTP_HOST']) == $host) {   // [i_a] bugfix
+	if ($canarycage == $_SESSION['id'] && $currenthost == $_SESSION['host']) 
+	{
+		return true;
+	} 
+	return false;
+}
+
+function SetAuthSafety()
+{
+	$_SESSION['host'] = md5($_SERVER['HTTP_HOST']);
+	$_SESSION['id']	= md5(session_id());
+}
+
+
 ?>

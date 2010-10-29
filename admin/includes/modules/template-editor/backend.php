@@ -43,11 +43,11 @@ if (!defined('BASE_PATH'))
 // Include general configuration
 require_once(BASE_PATH . '/lib/sitemap.php');
 
-$canarycage	= md5(session_id());
-$currenthost= md5($_SERVER['HTTP_HOST']);
-$do 		= (isset($_GET['do'])?$_GET['do']:null);
 
-if(!empty($do) && $_GET['do']=="backup" && $_POST['btn_backup']=="dobackup" && md5(session_id())==$canarycage && isset($_SESSION['rc1']) && md5($_SERVER['HTTP_HOST'])==$currenthost) {
+
+$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
+
+if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && isset($_SESSION['rc1']) && checkAuth()) {
 	
 	// Include back-up functions
 	include_once('functions.php');

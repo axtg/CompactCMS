@@ -43,9 +43,9 @@ if (!defined('BASE_PATH'))
 // Include general configuration
 require_once(BASE_PATH . '/lib/sitemap.php');
 
-$canarycage	= md5(session_id());
-$currenthost= md5($_SERVER['HTTP_HOST']);
-$do 		= (isset($_GET['do'])?$_GET['do']:null);
+
+
+$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
@@ -78,7 +78,7 @@ if ($handle = opendir(BASE_PATH.'/media/albums/')) {
 }
 ?>
 
-<?php if(checkAuth($canarycage,$currenthost) && isset($_SESSION['rc1']) && !empty($_SESSION['rc2'])) { ?>
+<?php if(checkAuth() && isset($_SESSION['rc1']) && !empty($_SESSION['rc2'])) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>

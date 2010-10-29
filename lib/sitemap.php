@@ -84,15 +84,15 @@ setlocale(LC_ALL, $locale);
 // SECURITY ==
 // Include security file only for administration directory
 $location = explode("/", $_SERVER['PHP_SELF']);
-if(in_array("admin",$location)) {
+if(in_array("admin",$location)) 
+{
 	require_once(BASE_PATH . '/admin/includes/security.inc.php');
 }
-// Check for authentic request ($cage=md5(SESSION_ID),$host=md5(CURRENT_HOST))
-function checkAuth($cage, $host) {
-	if(md5(session_id())==$cage && md5($_SERVER['HTTP_HOST']) == $host) {
-		return true;
-	} else return false;
-}
+
+
+// CheckAuth() has been moved to common.inc.php
+
+
 
 // DATABASE ==
 // All set! Now this statement will connect to the database

@@ -52,8 +52,8 @@ if (!defined('BASE_PATH'))
 require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Security functions
-$canarycage		= md5(session_id());
-$currenthost	= md5($_SERVER['HTTP_HOST']);
+
+
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
@@ -69,7 +69,7 @@ $do_action 	= (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:n
  * Show comments
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAuth($canarycage,$currenthost)) {
+if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAuth()) {
 		
 	// Pagination variables
 	$pageID	= (isset($_GET['page'])?$_GET['page']:null);
@@ -130,7 +130,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
  * Delete comment
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth($canarycage,$currenthost)) {
+if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth()) {
 	
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) {
@@ -148,7 +148,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth
  * Add comment
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAuth($canarycage,$currenthost) && $_POST['verification']==$_SESSION['captcha']) {
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAuth() && $_POST['verification']==$_SESSION['captcha']) {
 
 	$values['pageID']		= MySQL::SQLValue($_POST['pageID'], MySQL::SQLVALUE_TEXT);
 	$values['commentName']	= MySQL::SQLValue($_POST['name'], MySQL::SQLVALUE_TEXT);
@@ -167,7 +167,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAut
  * Save configuration
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="save-cfg" && checkAuth($canarycage,$currenthost)) {
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="save-cfg" && checkAuth()) {
 
 	$values['pageID'] = MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
 	$values['showMessage'] = (is_numeric($_POST['messages'])&&!empty($_POST['messages'])?$_POST['messages']:null);

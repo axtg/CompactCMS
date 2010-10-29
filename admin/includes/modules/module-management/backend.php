@@ -43,11 +43,11 @@ if (!defined('BASE_PATH'))
 // Include general configuration
 require_once(BASE_PATH . '/lib/sitemap.php');
 
-$canarycage	= md5(session_id());
-$currenthost= md5($_SERVER['HTTP_HOST']);
-$do 		= (isset($_GET['do'])?$_GET['do']:null);
 
-if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && md5(session_id())==$canarycage && isset($_SESSION['rc1']) && md5($_SERVER['HTTP_HOST'])==$currenthost) {
+
+$do = (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
+
+if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && isset($_SESSION['rc1']) && checkAuth()) {
 	
 	// Include back-up functions
 	include_once('functions.php');
@@ -55,7 +55,7 @@ if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && md5(sessi
 
 }
 ?>
-<?php if(md5(session_id())==$canarycage && isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && md5($_SERVER['HTTP_HOST']) == $currenthost) { ?>
+<?php if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth()) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>

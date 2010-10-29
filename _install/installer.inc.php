@@ -39,6 +39,11 @@ $additional = (isset($_GET['do'])&&!empty($_GET['do'])?$_GET['do']:null);
 // Define default root folder
 @define('BASE_PATH',dirname(dirname(__FILE__)));
 
+// Load generic functions
+require_once(BASE_PATH . '/lib/includes/common.inc.php');
+
+
+
 /**
 *
 * Per step processing of input
@@ -46,7 +51,7 @@ $additional = (isset($_GET['do'])&&!empty($_GET['do'])?$_GET['do']:null);
 **/
 
 // Step two
-if($nextstep == md5('2') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['HTTP_HOST']) == $_SESSION['host']) { 
+if($nextstep == md5('2') && CheckAuth()) { 
 	
 	//
 	// Installation actions
@@ -59,12 +64,12 @@ if($nextstep == md5('2') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 	// Add new data to variable session
 	$_SESSION['variables'] = array_merge($rootdir,$sitename,$language);
 ?>
-	<script type="text/javascript" charset="utf-8">function passwordStrength(password){var score=0;if(password.length>5)score++;if((password.match(/[a-z]/))&&(password.match(/[A-Z]/)))score++;if(password.match(/\d+/))score++;if(password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/))score++;if(password.length>12)score++;document.getElementById("passwordStrength").className="strength"+score;}</script>
-	<script type="text/javascript" charset="utf-8">function randomPassword(length){chars="abcdefghijkmNPQRSTUVWXYZ123456789!@#$%";pass="";for(x=0;x<length;x++){i=Math.floor(Math.random()*38);pass+=chars.charAt(i);}passwordStrength(pass);return document.getElementById("adminpass").value=pass;}</script>
+	<script type="text/javascript" src="../admin/includes/modules/user-management/passwordcheck.js" charset="utf-8"></script>
+	
 	<legend class="installMsg">Step 2 - Setting your preferences</legend>
 
-		<label for="adminpass"><span class="ss_sprite ss_lock">Administrator password</span><br/><a href="#" class="small ss_sprite ss_arrow_refresh" onclick="randomPassword(8);">Auto generate a safe password</a></label>
-		<input type="text" class="alt title" name="adminpass" maxlenght="5" onkeyup="passwordStrength(this.value)" style="width:300px;" value="" id="adminpass" />
+		<label for="userPass"><span class="ss_sprite ss_lock">Administrator password</span><br/><a href="#" class="small ss_sprite ss_arrow_refresh" onclick="randomPassword(8);">Auto generate a safe password</a></label>
+		<input type="text" class="alt title" name="userPass" maxlenght="5" onkeyup="passwordStrength(this.value)" style="width:300px;" value="" id="userPass" />
 		<div class="clear center">
 			<div id="passwordStrength" class="strength0"></div>
 		</div>
@@ -92,7 +97,7 @@ if($nextstep == md5('2') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 } // Close step two
 
 // Step three
-if($nextstep == md5('3') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['HTTP_HOST']) == $_SESSION['host']) { 
+if($nextstep == md5('3') && CheckAuth()) { 
 	//
 	// Installation actions
 	//  - Saving preferences
@@ -102,11 +107,11 @@ if($nextstep == md5('3') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 	$iframe		= array("iframe" => (isset($_POST['iframe'])&&$_POST['iframe']=='true'?'true':'false'));
 	$wysiwyg	= array("wysiwyg" => (isset($_POST['wysiwyg'])&&$_POST['wysiwyg']=='true'?'true':'false'));
 	$protect	= array("protect" => (isset($_POST['protect'])&&$_POST['protect']=='true'?'true':'false'));
-	$adminpass	= array("adminpass" => $_POST['adminpass']);
+	$userPass	= array("userPass" => $_POST['userPass']);
 	$authcode	= array("authcode" => $_POST['authcode']);
 	
 	// Add new data to variable session
-	$_SESSION['variables'] = array_merge($_SESSION['variables'],$version,$iframe,$wysiwyg,$protect,$adminpass,$authcode);
+	$_SESSION['variables'] = array_merge($_SESSION['variables'],$version,$iframe,$wysiwyg,$protect,$userPass,$authcode);
 ?>
 	<legend class="installMsg">Step 3 - Collecting your database details</legend>
 		<label for="db_host"><span class="ss_sprite ss_server_database">Database host</span></label><input type="text" class="alt title" name="db_host" style="width:300px;" value="localhost" id="db_host" />
@@ -129,7 +134,7 @@ if($nextstep == md5('3') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 } // Close step three
 
 // Step four
-if($nextstep == md5('4') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['HTTP_HOST']) == $_SESSION['host']) { 
+if($nextstep == md5('4') && CheckAuth()) { 
 	
 	//
 	// Installation actions
@@ -266,7 +271,7 @@ if($nextstep == md5('4') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['
 **/
 
 // Final step
-if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['HTTP_HOST']) == $_SESSION['host']) {
+if($nextstep == md5('final') && CheckAuth()) {
 	
 	//
 	// Installation actions
@@ -297,7 +302,7 @@ if($nextstep == md5('final') && md5(session_id())==$_SESSION['id'] && md5($_SERV
 	if($err==0) {
 		$sql = file_get_contents(BASE_PATH.'/_docs/structure.sql');
 		$sql = preg_replace('/ccms_/', $_SESSION['variables']['db_prefix'], $sql);
-		$sql = preg_replace('/52dcb810931e20f7aa2f49b3510d3805/', md5($_SESSION['variables']['adminpass'].$_SESSION['variables']['authcode']), $sql);
+		$sql = preg_replace('/52dcb810931e20f7aa2f49b3510d3805/', md5($_SESSION['variables']['userPass'].$_SESSION['variables']['authcode']), $sql);
 		
 		// Execute per sql piece
 		$tok = strtok($sql, ";");

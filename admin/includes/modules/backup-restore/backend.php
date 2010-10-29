@@ -46,14 +46,12 @@ if (!defined('BASE_PATH'))
 // Include general configuration
 require_once(BASE_PATH . '/lib/sitemap.php');
 
-$canarycage	= md5(session_id());
-$currenthost= md5($_SERVER['HTTP_HOST']);
 $do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
-if ($perm['manageModBackup'] <= 0 || !checkAuth($canarycage, $currenthost)) 
+if ($perm['manageModBackup'] <= 0 || !checkAuth()) 
 {
 	die("No external access to file");
 }
@@ -77,7 +75,7 @@ if ($perm['manageModBackup'] <= 0 || !checkAuth($canarycage, $currenthost))
  * Create requested backup archive
  *
  */
-if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_backup']=="dobackup" && checkAuth($canarycage,$currenthost)) 
+if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_backup']=="dobackup" && checkAuth()) 
 {
 	// Include back-up functions
 	include_once('functions.php');
@@ -141,7 +139,7 @@ if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_ba
  * Delete current backup archives
  *
  */
-if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth($canarycage,$currenthost)) 
+if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth()) 
 {
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) {
@@ -163,7 +161,7 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 	else 
 		die($ccms['lang']['auth']['featnotallowed']);
 } 
-else if($do=="delete" && empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth($canarycage,$currenthost)) 
+else if($do=="delete" && empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth()) 
 {
 	echo "<div class=\"module error center\">".$ccms['lang']['system']['error_selection']."</div>";
 }
