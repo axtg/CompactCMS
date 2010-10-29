@@ -44,9 +44,9 @@ if (!defined('BASE_PATH'))
 require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Set default variables
-$canarycage	= md5(session_id());
-$currenthost= md5($_SERVER['HTTP_HOST']);
-$do 		= (isset($_GET['do'])?$_GET['do']:null);
+
+
+$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
 
 // Open recordset for specified user
 $userID = (isset($_GET['userID']) && is_numeric($_GET['userID'])?$_GET['userID']:null);
@@ -58,7 +58,7 @@ if($userID!=null) {
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 ?>
-<?php if(md5(session_id())==$canarycage && isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && md5($_SERVER['HTTP_HOST']) == $currenthost) { ?>
+<?php if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth()) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
@@ -69,14 +69,12 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 	<!-- Check form and post -->
 	<script type="text/javascript" charset="utf-8">
 	window.addEvent('domready', function(){
-		new FormValidator($('userDetail'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}})
-		new FormValidator($('userPass'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}})
-		new FormValidator($('userLevel'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}})
-	;});
+		new FormValidator($('userDetailForm'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}});
+		new FormValidator($('userPassForm'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}});
+		new FormValidator($('userLevelForm'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}});
+	});
 	</script>
-	<script type="text/javascript" charset="utf-8">
-	function passwordStrength(password){var score=0;if(password.length>5)score++;if((password.match(/[a-z]/))&&(password.match(/[A-Z]/)))score++;if(password.match(/\d+/))score++;if(password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/))score++;if(password.length>12)score++;document.getElementById("passwordStrength").className="strength"+score;}</script>
-	<script type="text/javascript" charset="utf-8">function randomPassword(length){var target=document.getElementById("pass");chars="abcdefghijkmNPQRSTUVWXYZ123456789=*^?!@#$%";pass="";for(x=0;x<length;x++){i=Math.floor(Math.random()*38);pass+=chars.charAt(i);}passwordStrength(pass);return target.value=pass;}</script>
+	<script type="text/javascript" src="passwordcheck.js" charset="utf-8"></script>
 </head>
 
 <body>
@@ -96,7 +94,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		
 		<div class="span-13 colborder">
 			<h2><?php echo $ccms['lang']['users']['editdetails']; ?></h2>
-			<form action="../../process.inc.php?action=edit-user-details" id="userDetail" method="post" accept-charset="utf-8">
+			<form action="../../process.inc.php?action=edit-user-details" id="userDetailForm" method="post" accept-charset="utf-8">
 				<label><?php echo $ccms['lang']['users']['username']; ?></label><span style="display:block;height:30px;"><?php echo $row->userName; ?></span>
 				<label for="first"><?php echo $ccms['lang']['users']['firstname']; ?></label><input type="text" class="required text" name="first" value="<?php echo $row->userFirst; ?>" id="first" />
 				<label for="last"><?php echo $ccms['lang']['users']['lastname']; ?></label><input type="text" class="required text" name="last" value="<?php echo $row->userLast; ?>" id="last" />
@@ -112,12 +110,12 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			<?php if($_SESSION['ccms_userID']==$row->userID||$_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) { ?>
 			<h2><?php echo $ccms['lang']['users']['editpassword']; ?></h2>
 			<div class="prepend-1">
-				<form action="../../process.inc.php?action=edit-user-password" id="userPass" method="post" accept-charset="utf-8">
-					<label for="pass"><?php echo $ccms['lang']['users']['password']; ?><br/><a href="#" class="small ss_sprite ss_bullet_key" onclick="randomPassword(8);"><?php echo $ccms['lang']['auth']['generatepass']; ?></a></label><input type="text" onkeyup="passwordStrength(this.value)" style="width:200px;" class="required minLength:6 text" name="pass" value="" id="pass" />
+				<form action="../../process.inc.php?action=edit-user-password" id="userPassForm" method="post" accept-charset="utf-8">
+					<label for="userPass"><?php echo $ccms['lang']['users']['password']; ?><br/><a href="#" class="small ss_sprite ss_bullet_key" onclick="randomPassword(8);"><?php echo $ccms['lang']['auth']['generatepass']; ?></a></label><input type="text" onkeyup="passwordStrength(this.value)" style="width:200px;" class="required minLength:6 text" name="userPass" value="" id="userPass" />
 					<div class="clear center">
 						<div id="passwordStrength" class="strength0"></div><br/>
 					</div>
-					<label for="cpass"><?php echo $ccms['lang']['users']['cpassword']; ?></label><input type="password" style="width:200px;" class="validate-match matchInput:'pass' matchName:'Password' required minLength:6 text" name="cpass" value="" id="cpass" />
+					<label for="cpass"><?php echo $ccms['lang']['users']['cpassword']; ?></label><input type="password" style="width:200px;" class="validate-match matchInput:'userPass' matchName:'Password' required minLength:6 text" name="cpass" value="" id="cpass" />
 					
 					<input type="hidden" name="userID" value="<?php echo $row->userID; ?>" id="userID" />
 					<p class="span-6 right"><button type="submit"><span class="ss_sprite ss_key"><?php echo $ccms['lang']['forms']['savebutton'];?></span></button></p>
@@ -129,7 +127,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			<h2><?php echo $ccms['lang']['users']['accountcfg']; ?></h2>
 			<?php } if($_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) { ?>
 			<div class="prepend-1">
-				<form action="../../process.inc.php?action=edit-user-level" id="userLevel" method="post" accept-charset="utf-8">
+				<form action="../../process.inc.php?action=edit-user-level" id="userLevelForm" method="post" accept-charset="utf-8">
 					<label for="userLevel"><?php echo $ccms['lang']['users']['userlevel']; ?></label>
 					<select name="userLevel" class="required" id="userLevel" size="1">
 						<option value="1" <?php echo ($row->userLevel==1?"selected='SELECTED'":null); ?>><?php echo $ccms['lang']['permission']['level1']; ?></option>

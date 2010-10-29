@@ -32,13 +32,20 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 // Start the current session
 session_start();
 
-// If no step, set session hash
-if(!isset($nextstep) && !isset($_SESSION['id']) && !isset($_SESSION['host'])) {
-	// Setting safety variables
-	$_SESSION['host'] 	= md5($_SERVER['HTTP_HOST']);
-	$_SESSION['id']		= md5(session_id());
+// Define default root folder
+@define('BASE_PATH',dirname(dirname(__FILE__)));
 
+// Load generic functions
+require_once(BASE_PATH . '/lib/includes/common.inc.php');
+
+
+// If no step, set session hash
+if(!isset($nextstep) && !isset($_SESSION['id']) && !isset($_SESSION['host'])) 
+{
+	// Setting safety variables
+	SetAuthSafety();
 } 
+
 // Set root directory
 $rootdir = dirname(dirname($_SERVER['PHP_SELF']));
 if($rootdir=='\\'||$rootdir=='/') {
@@ -181,7 +188,7 @@ function setLanguage($lang) {
 				<input type="hidden" name="do" value="<?php echo md5('2'); ?>" id="do" />
 				<?php } 
 				// Populate optional FTP form
-				elseif(isset($_GET['do']) && $_GET['do'] == md5('ftp') && md5(session_id())==$_SESSION['id'] && md5($_SERVER['HTTP_HOST']) == $_SESSION['host']) { ?>
+				elseif(isset($_GET['do']) && htmlspecialchars($_GET['do']) == md5('ftp') && CheckAuth()) { ?>
 					<p>Whenever a chmod() command failes through standard procedures, the installer can try to execute the chmod() command over FTP. This requires you to submit your FTP details and full path of your CCMS installation. Any of the data entered below will <strong>never</strong> be saved by the installer.</p>
 					
 					<label for="ftp_host">FTP host</label>

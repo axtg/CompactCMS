@@ -52,8 +52,8 @@ if (!defined('BASE_PATH'))
 require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Security functions
-$canarycage		= md5(session_id());
-$currenthost	= md5($_SERVER['HTTP_HOST']);
+
+
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
@@ -69,7 +69,7 @@ $do_action 	= (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:n
  * Either INSERT or UPDATE news article
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkAuth($canarycage,$currenthost)) {
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkAuth()) {
 	
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) {
@@ -99,7 +99,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkA
  * Delete current news item
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth($canarycage,$currenthost)) {
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth()) {
 	
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) {
@@ -134,7 +134,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth($
  * Save configuration preferences
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="cfg-news" && checkAuth($canarycage,$currenthost)) {
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="cfg-news" && checkAuth()) {
 	
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) {

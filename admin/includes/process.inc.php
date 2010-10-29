@@ -52,8 +52,8 @@ if (!defined('BASE_PATH'))
 require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Some security functions
-$canarycage		= md5(session_id());
-$currenthost	= md5($_SERVER['HTTP_HOST']);
+
+
 if(!isset($_SESSION['rc1']) || !isset($_SESSION['rc2'])) {
 	$_SESSION['rc1'] = rand('12345', '98765'); $_SESSION['rc2'] = rand('1234', '9876');
 }
@@ -84,7 +84,8 @@ $target_form = (!empty($_POST['form'])?$_POST['form']:null);
  * Render the dynamic list with files
  *
  */
-if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($canarycage,$currenthost)) {
+if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
+{
 	$i = 0;
 	
 	echo '<table cellpadding="0" cellspacing="0">';
@@ -194,7 +195,7 @@ if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($
  * Render the entire menu list
  *
  */
-if($do_action == "renderlist" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($canarycage,$currenthost)) {
+if($do_action == "renderlist" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) {
 	if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageMenu']) {
 		echo "<table class=\"span-15\" cellpadding=\"0\" cellspacing=\"0\">";
 		$i = 0;
@@ -269,7 +270,7 @@ if($do_action == "renderlist" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAu
  * Process the request for new page creation
  *
  */
-if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	
 	// Remove all none system friendly characters
 	$special_chars = array("#","$","%","@","^","&","*","!","~","‘","\"","’","'","=","?","/","[","]","(",")","|","<",">",";","\\",",");
@@ -383,7 +384,7 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
  * Process the request for page deletion
  *
  */
-if($target_form == "delete" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+if($target_form == "delete" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 
 	if(!empty($_POST['page_id'])) {
 	echo '<p class="h1"><span class="ss_sprite ss_accept" title="'.$ccms['lang']['backend']['success'].'"></span> '.$ccms['lang']['backend']['statusdelete'].'</p>';
@@ -423,7 +424,7 @@ if($target_form == "delete" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
  * Save the menu order, individual templating & menu allocation preferences
  *
  */
-if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 
 	$error = null;
 	
@@ -450,7 +451,7 @@ if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
  * Set actual hyperlink behind menu item to true/false
  *
  */
-if($do_action == "islink" && $_SERVER['REQUEST_METHOD'] == "POST" && md5(session_id()) == $canarycage && md5($_SERVER['HTTP_HOST']) == $currenthost) {
+if($do_action == "islink" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	$page_id = (!empty($_POST['id'])?$_POST['id']:null);
 	$values["islink"] = MySQL::SQLValue($_POST['cvalue'], MySQL::SQLVALUE_Y_N);
 	
@@ -464,7 +465,7 @@ if($do_action == "islink" && $_SERVER['REQUEST_METHOD'] == "POST" && md5(session
  * Edit print, publish or iscoding preference
  *
  */
-if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($canarycage,$currenthost)) {
+if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) {
 	
 	// Explode variable with all necessary information
 	$page_id = explode("-", $_GET['id']);
@@ -498,7 +499,7 @@ if(version_compare($version_recent, $v) != '1') {
  * Edit-in-place update action
  *
  */
-if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	
 	if(!empty($_POST['content']) && strlen($_POST['content'])>=3 && strlen($_POST['content'])<=240) {
 		if (!get_magic_quotes_gpc()) {
@@ -528,7 +529,7 @@ if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
  * Save the edited template and check for authority
  *
  */
-if($do_action == "save-template" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+if($do_action == "save-template" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageTemplate']) {
@@ -561,7 +562,7 @@ if($do_action == "save-template" && $_SERVER['REQUEST_METHOD'] == "POST" && chec
  * Create a new user as posted by an authorized user
  *
  */
-if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) {
@@ -577,7 +578,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 			
 		// Set variables
 		$values['userName']		= MySQL::SQLValue(strtolower($_POST['user']),MySQL::SQLVALUE_TEXT);
-		$values['userPass']		= MySQL::SQLValue(md5($_POST['pass'].$cfg['authcode']),MySQL::SQLVALUE_TEXT);
+		$values['userPass']		= MySQL::SQLValue(md5($_POST['userPass'].$cfg['authcode']),MySQL::SQLVALUE_TEXT);
 		$values['userFirst']	= MySQL::SQLValue($_POST['userFirstname'],MySQL::SQLVALUE_TEXT);
 		$values['userLast']		= MySQL::SQLValue($_POST['userLastname'],MySQL::SQLVALUE_TEXT);
 		$values['userEmail']	= MySQL::SQLValue($_POST['userEmail'],MySQL::SQLVALUE_TEXT);
@@ -601,7 +602,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
  * Edit user details as posted by an authorized user
  *
  */
-if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) {
@@ -637,24 +638,24 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
  *
  */
  
-if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) {
 	
-		if(strlen($_POST['pass'])>6&&md5($_POST['pass'])===md5($_POST['cpass'])) {
+		if(strlen($_POST['userPass'])>6&&md5($_POST['userPass'])===md5($_POST['cpass'])) {
 		
 			$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
-			$values["userPass"] = MySQL::SQLValue(md5($_POST['pass'].$cfg['authcode']),MySQL::SQLVALUE_TEXT);
+			$values["userPass"] = MySQL::SQLValue(md5($_POST['userPass'].$cfg['authcode']),MySQL::SQLVALUE_TEXT);
 			
 			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
 				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
 				exit();
 			}
-		} elseif(strlen($_POST['pass'])<=6) {
+		} elseif(strlen($_POST['userPass'])<=6) {
 			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passshort']);
 			exit();
-		} elseif(md5($_POST['pass'])!==md5($_POST['cpass'])) {
+		} elseif(md5($_POST['userPass'])!==md5($_POST['cpass'])) {
 			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passnequal']);
 			exit();
 		}
@@ -667,7 +668,7 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
  *
  */
  
-if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) {
@@ -694,7 +695,7 @@ if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && ch
  * Delete a user as posted by an authorized user
  *
  */
-if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
+if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) {
@@ -726,7 +727,7 @@ if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
  * Generate the WYSIWYG or code editor for editing purposes (prev. editor.php)
  *
  */
-if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($canarycage,$currenthost)) {
+if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) {
 	
 	// Set the necessary variables
 	$name 		= htmlentities($_GET['file']);
@@ -833,7 +834,7 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth($ca
  * Processing save page (prev. handler.inc.php)
  *
  */
-if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth($canarycage,$currenthost)) {
+if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth()) {
 
 	// Strip slashes for certain servers (DEPRECIATED for PHP6)
 	if (get_magic_quotes_gpc()) {

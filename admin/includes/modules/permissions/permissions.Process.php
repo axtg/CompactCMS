@@ -52,8 +52,8 @@ if (!defined('BASE_PATH'))
 require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Security functions
-$canarycage		= md5(session_id());
-$currenthost	= md5($_SERVER['HTTP_HOST']);
+
+
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
@@ -63,7 +63,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
  * Either INSERT or UPDATE preferences
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST) && checkAuth($canarycage,$currenthost)) {
+if($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST) && checkAuth()) {
 	
 	// (!) Only administrators can change these values
 	if($_SESSION['ccms_userLevel']>='4') {

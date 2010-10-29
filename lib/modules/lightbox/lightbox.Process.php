@@ -52,8 +52,8 @@ if (!defined('BASE_PATH'))
 require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Some security functions
-$canarycage		= md5(session_id());
-$currenthost	= md5($_SERVER['HTTP_HOST']);
+
+
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
@@ -67,8 +67,8 @@ $do_action	= (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:nu
  * Create a new album
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "create-album" && checkAuth($canarycage,$currenthost)) {
-
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "create-album" && checkAuth()) 
+{
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {
 	
@@ -98,8 +98,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "create-album" && check
  * Delete a current album (including all of its files)
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "del-album" && checkAuth($canarycage,$currenthost)) {
-
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "del-album" && checkAuth()) 
+{
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {
 
@@ -147,8 +147,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "del-album" && checkAut
  * Delete a single image
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "del-image" && checkAuth($canarycage,$currenthost)) {
-	
+if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "del-image" && checkAuth()) 
+{
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {
 
@@ -176,8 +176,8 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "del-image" && checkAuth
  * Apply album to page
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "apply-album" && checkAuth($canarycage,$currenthost)) {
-
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "apply-album" && checkAuth()) 
+{
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {
 		
@@ -208,8 +208,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "apply-album" && checkA
  * Process and save image plus thumbnail
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files" && checkAuth($canarycage,$currenthost)) {
-	
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files" && checkAuth()) 
+{
 	$dest = BASE_PATH.'/media/albums/'.$album_name;
 	if(!is_dir($dest)) {
 		header("Location: lightbox.Manage.php?status=error&msg=writeerr");

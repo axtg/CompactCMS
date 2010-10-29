@@ -43,9 +43,9 @@ if (!defined('BASE_PATH'))
 // Include general configuration
 require_once(BASE_PATH . '/lib/sitemap.php');
 
-$canarycage	= md5(session_id());
-$currenthost= md5($_SERVER['HTTP_HOST']);
-$do 		= (isset($_GET['do'])?$_GET['do']:null);
+
+
+$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
 
 // Open recordset for specified user
 $newsID = (isset($_GET['newsID']) && is_numeric($_GET['newsID'])?$_GET['newsID']:null);
@@ -58,7 +58,7 @@ if($newsID!=null) {
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 ?>
-<?php if(checkAuth($canarycage,$currenthost)&&$_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?>
+<?php if(checkAuth()&&$_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
