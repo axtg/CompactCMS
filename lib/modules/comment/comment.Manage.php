@@ -84,7 +84,8 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<div class="span-16 colborder">
 		<h2><?php echo $ccms['lang']['guestbook']['manage']; ?></h2>
 		<?php // Load recordset
-		$db->Query("SELECT * FROM `".$cfg['db_prefix']."modcomment` WHERE pageID='$pageID' ORDER BY `commentID` DESC");
+		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."modcomment` WHERE pageID=" . MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT) . " ORDER BY `commentID` DESC"))
+			$db->Kill();
 	
 		// Start switch for news, select all the right details
 		if($db->HasRecords()) {

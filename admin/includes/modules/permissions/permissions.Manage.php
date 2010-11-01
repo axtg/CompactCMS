@@ -110,7 +110,7 @@ if(checkAuth() && isset($_SESSION['rc1']) && !empty($_SESSION['rc2']))
 				} else { 
 					echo '<tr>';
 				}  ?>
-    	<th><?php echo ($comments!=""?"<abbr title=\"$comments\">$columnName</abbr>":$columnName); ?></th>
+		<th><?php echo (!empty($comments) ? "<abbr title=\"$comments\">$columnName</abbr>" : $columnName); ?></th>
 		<td class="center">
 			<input type="radio" name="<?php echo $columnName; ?>" <?php echo ($rsCfg->$columnName=='0'?"checked":null); ?> value="0" id="<?php echo $columnName; ?>">
 		</td>

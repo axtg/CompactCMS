@@ -57,8 +57,10 @@ $do	= getGETparam4IdOrNumber('do');
 $newsID = getGETparam4Number('newsID');
 $pageID = getGETparam4IdOrNumber('pageID');
 
-if($newsID!=null) {
-	$news = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."modnews` m LEFT JOIN `".$cfg['db_prefix']."users` u ON m.userID=u.userID WHERE newsID = $newsID AND pageID='$pageID'");
+if($newsID != null) 
+{
+	$news = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."modnews` m LEFT JOIN `".$cfg['db_prefix']."users` u ON m.userID=u.userID WHERE newsID = " . MySQL::SQLValue($newsID, MySQL::SQLVALUE_NUMBER) . " AND pageID=" . MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT));
+	if (!$news) $db->Kill();
 }
 
 // Get permissions

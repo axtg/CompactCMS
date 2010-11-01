@@ -78,8 +78,10 @@ if(!empty($get_temp)) {
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+
+if(checkAuth() && $_SESSION['ccms_userLevel']>=$perm['manageTemplate']) 
+{ 
 ?>
-<?php if(checkAuth($canarycage,$currenthost) && $_SESSION['ccms_userLevel']>=$perm['manageTemplate']) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>

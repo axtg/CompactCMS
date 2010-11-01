@@ -55,8 +55,11 @@ $do	= getGETparam4IdOrNumber('do');
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+
+
+if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth()) 
+{ 
 ?>
-<?php if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth()) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
@@ -94,7 +97,8 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			// Get previously opened DB stream
 			$i=0;
 			// Open recordset for all users with levels <= to own
-			$db->Query("SELECT * FROM `".$cfg['db_prefix']."users` ORDER BY userID ASC");
+					if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."users` ORDER BY userID ASC"))
+						$db->Kill();
 			$db->MoveFirst();
 			
 			// Loop through results
