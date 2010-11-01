@@ -334,13 +334,13 @@ class ccmsParser {
   }
   
   # Load a monolithic template
-  public function setTemplate($tmpl) {
+  public function setTemplate($tmpl, $leadin = '', $leadout = '') {
     if (!is_file($tmpl))
       die("Template not found: $tmpl");
     $idx = strrpos($tmpl, '/');
     if (!isset($this->includePath))
       $this->includePath = substr($tmpl, 0, $idx === false ? 0 : $idx+1);
-    $this->splitTemplate(file_get_contents($tmpl));
+    $this->splitTemplate($leadin . file_get_contents($tmpl) . $leadout);
   }
   
   # Sets the template content directly (not through a file)
