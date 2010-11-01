@@ -78,7 +78,7 @@ class ccmsParser {
   #
   function colorSet($colorstring)  {
     $colorstring = preg_replace("( + )","",$colorstring);
-    $this->colors = split(",", $colorstring);
+    $this->colors = explode(',', $colorstring);
     $this->colorindex = 0;
     }
   
