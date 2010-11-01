@@ -198,17 +198,37 @@ $v = "1.4.1";
 
 // TEMPLATES ==
 // Read and list the available templates
-if ($handle = @opendir(BASE_PATH . '/lib/templates/')) {
+if ($handle = @opendir(BASE_PATH . '/lib/templates/')) 
+{
 	$template = array();
-	
-    while (false !== ($file = readdir($handle))) {
-        if ($file != "." && $file != ".." && strpos($file, ".tpl.html")) {
+
+	while (false !== ($file = readdir($handle))) 
+	{
+		if ($file != "." && $file != ".." && strpos($file, ".tpl.html")) 
+		{
 			// Add the templates to an array for use through-out CCMS, while removing the extension .tpl.html (=9)
-        	$template[] = substr($file,0,-9);
-        }
-    }
-    closedir($handle);
-} else {die($ccms['lang']['system']['error_templatedir']);}
+			$template_name = substr($file,0,-9);
+			if ($template_name != $cfg['default_template'])
+			{
+				$template[] = substr($file,0,-9);
+			}
+		}
+	}
+	closedir($handle);
+
+	// sort the order of the templates; also make sure that the 'default' template is placed at index [0] so that 404 pages and others pick that one.
+	sort($template, SORT_LOCALE_STRING);
+	if (!empty($cfg['default_template']))
+	{
+		array_unshift($template, $cfg['default_template']);
+	}
+	$ccms['template_collection'] = $template;
+	
+} 
+else 
+{
+	die($ccms['lang']['system']['error_templatedir']);
+}
 
 // GENERAL FUNCTIONS ==
 // [i_a] moved to common.inc.php
