@@ -54,10 +54,7 @@ ini_set('allow_url_fopen', 'Off');
 ini_set('allow_url_include', 'Off');
 
 // Set appropriate auth.inc.php file location
-$loc = "";
-if(is_file('../lib/includes/auth.inc.php')) 			{ $loc = "../lib/includes/auth.inc.php"; } 
-elseif(is_file('../../lib/includes/auth.inc.php'))		{ $loc = "../../lib/includes/auth.inc.php"; }
-elseif(is_file('../../../lib/includes/auth.inc.php'))	{ $loc = "../../../lib/includes/auth.inc.php"; }
+$loc = $cfg['rootdir'] . "lib/includes/auth.inc.php";
 
 	// Check whether current user has running session
 	if(empty($_SESSION['ccms_userID']) && $cfg['protect']==true){
