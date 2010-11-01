@@ -36,7 +36,7 @@ session_start();
 @define('BASE_PATH',dirname(dirname(__FILE__)));
 
 // Load generic functions
-require_once(BASE_PATH . '/lib/includes/common.inc.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/includes/common.inc.php');
 
 
 // If no step, set session hash

@@ -30,7 +30,12 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 ************************************************************ */
 
 /* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
-define("COMPACTCMS_CODE", 1);
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+/*
+We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
+*/
+define('CCMS_PERFORM_MINIMAL_INIT', true);
 
 
 // Define default location
@@ -41,16 +46,15 @@ if (!defined('BASE_PATH'))
 }
 
 // Include general configuration
-require_once(BASE_PATH . '/lib/sitemap.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
 
-
-$do = (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
+$do	= getGETparam4IdOrNumber('do');
 
 if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && isset($_SESSION['rc1']) && checkAuth()) {
 	
 	// Include back-up functions
-	include_once('functions.php');
+	/*MARKER*/require_once('./functions.php');
 	
 
 }

@@ -30,7 +30,7 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 ************************************************************ */
 
 /* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
-define("COMPACTCMS_CODE", 1);
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 
 
 // Check first whether installation directory exists
@@ -46,10 +46,10 @@ if (!defined('BASE_PATH'))
 }
 
 // This file loads the appropriate configuration
-require_once(BASE_PATH . '/lib/sitemap.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
 // This file parses the template and coding
-require_once(BASE_PATH . '/lib/class/engine.class.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/class/engine.class.php');
 
 // Initialize ccmsParser class
 $STP = new ccmsParser;

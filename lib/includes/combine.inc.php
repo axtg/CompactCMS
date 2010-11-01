@@ -30,7 +30,12 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 ************************************************************ */
 
 /* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
-define("COMPACTCMS_CODE", 1);
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+/*
+We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
+*/
+define('CCMS_PERFORM_MINIMAL_INIT', true);
 
 
 // Define default location
@@ -41,10 +46,10 @@ if (!defined('BASE_PATH'))
 }
 
 // Load basic configuration
-require_once(BASE_PATH . '/lib/config.inc.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/config.inc.php');
 
 // Load generic functions
-require_once(BASE_PATH . '/lib/includes/common.inc.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/includes/common.inc.php');
 
 
 	$cache		= true;
