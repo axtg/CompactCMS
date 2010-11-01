@@ -126,6 +126,11 @@ class ccmsParser {
   }
 
   # calls a variable or constant
+  #
+  # supports nested references to, for example, fetch values from a multidimensional variable array,
+  # by delimiting the subsequent indices with a ':' colon like
+  #
+  # {%lang:backend:gethelp%}
   function getvar(&$vars, $var) {
     if ($var == "ATTR")
       return $this->colorChange();
@@ -136,7 +141,14 @@ class ccmsParser {
     elseif (preg_match('/^G_/', $var) && defined($var))
       return constant($var);
     else
+	{
+	  $v = explode(':', $var, 2);
+	  if (is_array($v) && count($v) == 2 && array_key_exists($v[0], $vars))
+	  {
+		return $this->getvar($vars[$v[0]], $v[1]);
+	  }
       return '';
+	}
   }
   
   function findEndOfIF($j, $to, $var, $tag) {
