@@ -117,7 +117,7 @@ if (!defined('BASE_PATH'))
 	<fieldset>
 		<legend><span class="ss_sprite ss_add">&#160;</span><a class="toggle" rel="form_wrapper" href="#"><?php echo $ccms['lang']['backend']['createpage']; ?></a></legend>
 		<div id="form_wrapper">
-		<form method="post" id="addForm" action="<?php echo $_SERVER['PHP_SELF'] ?>">
+		<form method="post" id="addForm" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 				<p><?php echo $ccms['lang']['backend']['createtip']; ?></p>
 				<div id="fields">
 				<label for="urlpage"><?php echo $ccms['lang']['forms']['filename']; ?></label> 
