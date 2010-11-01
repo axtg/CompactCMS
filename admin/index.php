@@ -57,6 +57,15 @@ if (!defined('BASE_PATH'))
 // /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');   [i_a] loaded by process.inc.php anyway
 /*MARKER*/require_once(BASE_PATH . '/admin/includes/process.inc.php');
 
+
+/* make darn sure only authenticated users can get past this point in the code */
+if(empty($_SESSION['ccms_userID']) || empty($_SESSION['ccms_userName']) || !CheckAuth()) 
+{
+	// this situation should've caught inside process.inc.php above! This is just a safety measure here.
+	die($ccms['lang']['auth']['featnotallowed']); 
+}
+
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $cfg['language']; ?>">

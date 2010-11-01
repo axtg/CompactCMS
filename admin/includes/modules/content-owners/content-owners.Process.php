@@ -74,6 +74,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	if($_SESSION['ccms_userLevel']>=$perm['manageOwners']) {
 		
 		// Set all values back to zero
+		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		$values["user_ids"] = 0;
 		if($db->UpdateRows($cfg['db_prefix']."pages", $values)) {
 			
@@ -93,6 +94,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 				$pageID = filterParam4Number($explode[1]);
 				$current = $db->QuerySingleValue("SELECT user_ids FROM ".$cfg['db_prefix']."pages WHERE page_id='".$pageID."'");
 				$users = $current.$explode[0].'||';
+				$values = array(); // [i_a] make sure $values is an empty array to start with here
 				$values["user_ids"] = MySQL::SQLValue($users,MySQL::SQLVALUE_TEXT);
 			
 				if($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => "\"$pageID\""))) {

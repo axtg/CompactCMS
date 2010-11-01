@@ -62,8 +62,11 @@ if($userID!=null) {
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+
+
+if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth()) 
+{ 
 ?>
-<?php if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth()) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
@@ -92,7 +95,8 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		
 		<?php // Check authority 
 		if($_SESSION['ccms_userLevel']<$perm['manageUsers']||$row->userLevel>$_SESSION['ccms_userLevel']) {
-			if($_SESSION['ccms_userID']!=$_GET['userID']) {
+			if($_SESSION['ccms_userID']!=$userID) 
+			{
 				die("[ERR802] ".$ccms['lang']['auth']['featnotallowed']);
 			}
 		} ?>

@@ -46,6 +46,7 @@ if(!empty($pageID))
 }
 $locale 	= ($numCfg>0?$rsCfg->showLocale:$cfg['locale']);
 $newspages	= $db->QueryArray("SELECT urlpage FROM `".$cfg['db_prefix']."pages` WHERE module='news'");
+if ($db->Error()) $db->Kill();
 
 // Set front-end language
 SetUpLanguageAndLocale($locale);

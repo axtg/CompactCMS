@@ -83,6 +83,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkA
 		$newsPublished = getPOSTparam4boolean('newsPublished');
 		
 		// Set all the submitted variables
+		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		$values["userID"] = MySQL::SQLValue(getPOSTparam4IdOrNumber('newsAuthor'), MySQL::SQLVALUE_NUMBER);
 		$values["pageID"] = MySQL::SQLValue(getPOSTparam4IdOrNumber('pageID'), MySQL::SQLVALUE_TEXT);
 		$values["newsTitle"]  = MySQL::SQLValue($_POST['newsTitle'], MySQL::SQLVALUE_TEXT);
@@ -120,7 +121,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth()
 		
 		// Delete details from the database
 		$i=0;
-		foreach ($_POST['newsID'] as $value) {
+		foreach ($_POST['newsID'] as $value) 
+		{
+			$values = array(); // [i_a] make sure $values is an empty array to start with here
 			$values['newsID'] = MySQL::SQLValue($value,MySQL::SQLVALUE_NUMBER);
 			$result = $db->DeleteRows($cfg['db_prefix']."modnews", $values);
 			$i++;
@@ -144,6 +147,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="cfg-news" && checkAuth()
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) {
 		
+		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		$values["pageID"]		= MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
 		$values["showLocale"]	= MySQL::SQLValue(getPOSTparam4IdOrNumber('locale'), MySQL::SQLVALUE_TEXT);
 		$values["showMessage"]	= MySQL::SQLValue($_POST['messages']);

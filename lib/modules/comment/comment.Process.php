@@ -138,11 +138,12 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) {
 	
+		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		$values['commentID'] = MySQL::SQLValue($commentID,MySQL::SQLVALUE_NUMBER);
 		if($db->DeleteRows($cfg['db_prefix']."modcomment", $values)) {
 			header("Location: comment.Manage.php?status=notice&file=".$_GET['pageID']."&msg=".$ccms['lang']['backend']['fullremoved']);
 			exit();
-		} 
+		} else die($ccms['lang']['auth']['featnotallowed']);
 	} else die($ccms['lang']['auth']['featnotallowed']);
 }
 
@@ -153,7 +154,8 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth
  */
 if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAuth() && $_POST['verification']==$_SESSION['ccms_captcha']) 
 {
-	$values['pageID']		= MySQL::SQLValue($_POST['pageID'], MySQL::SQLVALUE_TEXT);
+	$values = array(); // [i_a] make sure $values is an empty array to start with here
+	$values['pageID']		= MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
 	$values['commentName']	= MySQL::SQLValue($_POST['name'], MySQL::SQLVALUE_TEXT);
 	$values['commentEmail']	= MySQL::SQLValue($_POST['email'], MySQL::SQLVALUE_TEXT);
 	$values['commentUrl']	= MySQL::SQLValue($_POST['website'], MySQL::SQLVALUE_TEXT);
@@ -162,7 +164,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAut
 	$values['commentHost']	= MySQL::SQLValue($_SERVER['REMOTE_ADDR'], MySQL::SQLVALUE_TEXT);
 	
 	// Insert new page into database
-	$db->InsertRow($cfg['db_prefix']."modcomment", $values);
+	if (!$db->InsertRow($cfg['db_prefix']."modcomment", $values))
+		$db->Kill();
 }
 
  /**
@@ -172,6 +175,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAut
  */
 if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="save-cfg" && checkAuth()) {
 
+	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values['pageID'] = MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
 	$values['showMessage'] = MySQL::SQLValue(getPOSTparam4Number('messages']), MySQL::SQLVALUE_NUMBER);
 	$values['showLocale'] = MySQL::SQLValue($_POST['locale'], MySQL::SQLVALUE_TEXT);

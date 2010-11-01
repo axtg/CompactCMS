@@ -48,7 +48,11 @@ if (!defined('BASE_PATH'))
 // Include general configuration
 /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
-
+// security check done ASAP
+if(!checkAuth() || empty($_SESSION['rc1']) || empty($_SESSION['rc2'])) 
+{ 
+	die("No external access to file");
+}
 
 $do = getGETparam4IdOrNumber('do');
 

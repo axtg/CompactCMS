@@ -59,6 +59,14 @@ if (!defined('BASE_PATH'))
 // Some security functions
 
 
+/* make darn sure only authenticated users can get past this point in the code */
+if(empty($_SESSION['ccms_userID']) || empty($_SESSION['ccms_userName']) || !CheckAuth()) 
+{
+	// this situation should've caught inside sitemap.php-->security.inc.php above! This is just a safety measure here.
+	die($ccms['lang']['auth']['featnotallowed']); 
+}
+
+
 if(!isset($_SESSION['rc1']) || !isset($_SESSION['rc2'])) 
 {
 	$_SESSION['rc1'] = mt_rand('12345', '98765'); 
@@ -404,11 +412,14 @@ if($target_form == "delete" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 				$module = $db->QuerySingleValue("SELECT `module` FROM `".$cfg['db_prefix']."pages` WHERE `page_id` = ".$value[1]);
 				
 				// Delete details from the database
+				$values = array(); // [i_a] make sure $values is an empty array to start with here
 				$values["page_id"] = MySQL::SQLValue($value[1],MySQL::SQLVALUE_NUMBER);
 				$result = $db->DeleteRows($cfg['db_prefix']."pages", $values);
 				
 				// Delete linked rows from module tables
-				if($module!="editor") {
+				if($module!="editor") 
+				{
+					$filter = array(); // [i_a] make sure $filter is an empty array to start with here
 					$filter["pageID"] = MySQL::SQLValue($correct_filename,MySQL::SQLVALUE_TEXT);
 					$delmod = $db->DeleteRows($cfg['db_prefix']."mod".$module, $filter);
 					$delcfg = $db->DeleteRows($cfg['db_prefix']."cfg".$module, $filter);
@@ -442,6 +453,7 @@ if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 			$error = true;
 			break;
 		}
+		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		$values["toplevel"]	= MySQL::SQLValue($_POST['toplevel'][$page_id], MySQL::SQLVALUE_NUMBER);
 		$values["sublevel"]	= MySQL::SQLValue($_POST['sublevel'][$page_id], MySQL::SQLVALUE_NUMBER);
 		$values["variant"]	= MySQL::SQLValue(filterParam4Filename($_POST['template'][$page_id]), MySQL::SQLVALUE_TEXT);
@@ -450,7 +462,7 @@ if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 		// Execute the update
 		if(!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id,MySQL::SQLVALUE_NUMBER)))) 
 		{
-			$error = "1";
+			$error = true; // alas, we exit here and now anyway
 			$db->Kill();
 		}
 	}
@@ -467,12 +479,15 @@ if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
  */
 if($do_action == "islink" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	$page_id = getPOSTparam4Number('id');
+	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values["islink"] = MySQL::SQLValue($_POST['cvalue'], MySQL::SQLVALUE_Y_N);
 	
 	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id,MySQL::SQLVALUE_NUMBER)))) 
 	{
 		if($values["islink"] == "Y") { echo $ccms['lang']['backend']['yes']; } else echo $ccms['lang']['backend']['no'];
-	} else die($db->Error($ccms['lang']['system']['error_general']));
+	} 
+	else 
+		$db->Kill();
 }
 
  /**
@@ -490,6 +505,7 @@ if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] != "POST" && checkA
 		$action	 = $page_id[0];
 	} else die($ccms['lang']['system']['error_forged']);
 	if($_GET['s'] == "Y") { $new = "N"; } elseif($_GET['s'] == "N") { $new = "Y"; }
+	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values["$action"] = MySQL::SQLValue($new,MySQL::SQLVALUE_Y_N);
 	
 	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id[1]))) {
@@ -528,6 +544,7 @@ if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	// Continue with content update
 	$page_id		= getPOSTparam4Number('id');
 	$dest			= getGETparam4IdOrNumber('part');
+	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values["$dest"]= MySQL::SQLValue($content,MySQL::SQLVALUE_TEXT);
 	
 	if (!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id))) $db->Kill();
@@ -592,6 +609,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		}
 			
 		// Set variables
+		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		$values['userName']		= MySQL::SQLValue(strtolower($_POST['user']),MySQL::SQLVALUE_TEXT);
 		$values['userPass']		= MySQL::SQLValue(md5($_POST['userPass'].$cfg['authcode']),MySQL::SQLVALUE_TEXT);
 		$values['userFirst']	= MySQL::SQLValue($_POST['userFirstname'],MySQL::SQLVALUE_TEXT);
@@ -626,6 +644,7 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 		if(strlen($_POST['first'])>2&&strlen($_POST['last'])>2&&strlen($_POST['email'])>6) {
 		
 			$userID = getPOSTparam4Number('userID');
+			$values = array(); // [i_a] make sure $values is an empty array to start with here
 			$values["userFirst"]= MySQL::SQLValue($_POST['first'],MySQL::SQLVALUE_TEXT);
 			$values["userLast"]	= MySQL::SQLValue($_POST['last'],MySQL::SQLVALUE_TEXT);
 			$values["userEmail"]= MySQL::SQLValue($_POST['email'],MySQL::SQLVALUE_TEXT);
@@ -640,7 +659,11 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
 				exit();
 			}
-		} else {
+			else
+				$db->Kill();
+		} 
+		else 
+		{
 			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_tooshort']);
 			exit();
 		}
@@ -661,6 +684,7 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 		if(strlen($_POST['userPass'])>6&&md5($_POST['userPass'])===md5($_POST['cpass'])) {
 		
 			$userID = getPOSTparam4Number('userID');
+			$values = array(); // [i_a] make sure $values is an empty array to start with here
 			$values["userPass"] = MySQL::SQLValue(md5($_POST['userPass'].$cfg['authcode']),MySQL::SQLVALUE_TEXT);
 			
 			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => MySQL::SQLValue($userID,MySQL::SQLVALUE_NUMBER)))) 
@@ -668,6 +692,8 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
 				exit();
 			}
+			else
+				$db->Kill();
 		} elseif(strlen($_POST['userPass'])<=6) {
 			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passshort']);
 			exit();
@@ -693,9 +719,9 @@ if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && ch
 		$userLevel = getPOSTparam4Number('userLevel');
 		if (is_integer($userLevel))
 		{
+			$values = array(); // [i_a] make sure $values is an empty array to start with here
 			$values["userLevel"] = MySQL::SQLValue($userLevel,MySQL::SQLVALUE_NUMBER);
 			$values["userActive"] = MySQL::SQLValue($_POST['userActive'],MySQL::SQLVALUE_BOOLEAN);
-			
 				
 			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => MySQL::SQLValue($userID,MySQL::SQLVALUE_NUMBER)))) 
 			{
@@ -707,8 +733,14 @@ if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && ch
 				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
 				exit();
 			}
-	
-	} else die($ccms['lang']['auth']['featnotallowed']);
+			else
+				$db->Kill();
+		}
+		else 
+			die($ccms['lang']['system']['error_forged']);
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
 }
 
  /**
@@ -730,7 +762,9 @@ if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 		
 		// Delete details from the database
 		$i=0;
-		foreach ($_POST['userID'] as $value) {
+		foreach ($_POST['userID'] as $value) 
+		{
+			$values = array(); // [i_a] make sure $values is an empty array to start with here
 			$values['userID'] = MySQL::SQLValue($value,MySQL::SQLVALUE_NUMBER);
 			$result = $db->DeleteRows($cfg['db_prefix']."users", $values);
 			$i++;
@@ -757,7 +791,7 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
 	$filename	= "../../content/".$name.".php";
 	
 	// Check for editor.css in template directory
-	$template	= $db->QuerySingleValue("SELECT `variant` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '$name'");
+	$template	= $db->QuerySingleValue("SELECT `variant` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = ".MySQL::SQLValue($name, MySQL::SQLVALUE_TEXT));
 	if (is_file('../../lib/templates/'.$template.'/editor.css')) {
 	    $css = '../../lib/templates/'.$template.'/editor.css';
 	}
@@ -892,6 +926,7 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth())
 	}
 	    
 	// Save keywords to database
+	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values["keywords"]= MySQL::SQLValue($keywords,MySQL::SQLVALUE_TEXT);
 	
 	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("urlpage" => MySQL::SQLValue($name,MySQL::SQLVALUE_TEXT)))) 
