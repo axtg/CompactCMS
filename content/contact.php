@@ -61,7 +61,7 @@ window.addEvent('domready', function(){
 	});
 });
 </script>
-<p>This is a simple contact form to show how you are able to code e.g. PHP code directly within the CCMS back-end. Feel free to modify the styling of this basic form to suit your websites' look &amp; feel. Don't forget to adjust the <YOUR_ADDRESS_HERE> line to your own e-mail address.</p>
+<p>This is a simple contact form to show how you are able to code e.g. PHP code directly within the CCMS back-end. Feel free to modify the styling of this basic form to suit your websites' look &amp; feel. Don't forget to adjust the &lt;YOUR_ADDRESS_HERE&gt; line to your own e-mail address.</p>
 
 <div id="status"><!-- spinner --></div>
 
