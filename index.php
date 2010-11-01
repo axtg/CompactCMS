@@ -62,7 +62,7 @@ $ccms['footermenu']	= (isset($ccms['structure4'])?$ccms['structure4']:null);
 $ccms['extramenu']	= (isset($ccms['structure5'])?$ccms['structure5']:null);
 
 // Set the appropriate template
-$STP->setTemplate('./lib/templates/'.$ccms['template'].'.tpl.html');
+$STP->setTemplate('./lib/templates/'.$ccms['template'].'.tpl.html', '<?php global $db, $cfg, $ccms; ?>');
 
 // Execute code
 $STP->setParams($ccms);
