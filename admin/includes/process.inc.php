@@ -54,8 +54,10 @@ require_once(BASE_PATH . '/lib/sitemap.php');
 // Some security functions
 
 
-if(!isset($_SESSION['rc1']) || !isset($_SESSION['rc2'])) {
-	$_SESSION['rc1'] = rand('12345', '98765'); $_SESSION['rc2'] = rand('1234', '9876');
+if(!isset($_SESSION['rc1']) || !isset($_SESSION['rc2'])) 
+{
+	$_SESSION['rc1'] = mt_rand('12345', '98765'); 
+	$_SESSION['rc2'] = mt_rand('1234', '9876');
 }
 
 // Get permissions
@@ -584,7 +586,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		$values['userEmail']	= MySQL::SQLValue($_POST['userEmail'],MySQL::SQLVALUE_TEXT);
 		$values['userActive']	= MySQL::SQLValue($_POST['userActive'],MySQL::SQLVALUE_NUMBER);
 		$values['userLevel']	= MySQL::SQLValue($_POST['userLevel'],MySQL::SQLVALUE_NUMBER);
-		$values['userToken']	= MySQL::SQLValue(rand('123456789','987654321'),MySQL::SQLVALUE_NUMBER);
+		$values['userToken']	= MySQL::SQLValue(mt_rand('123456789','987654321'),MySQL::SQLVALUE_NUMBER);
 		
 		// Execute the insert
 		$result = $db->InsertRow($cfg['db_prefix']."users", $values);

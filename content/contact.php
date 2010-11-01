@@ -13,7 +13,7 @@ if($action_type=='send' && !empty($_POST)) {
 	} else die("<p class=\"error center\">Error while processing your e-mail</p>");
 }
 else {
-	$_SESSION['captcha'] = rand('123456','987654'); 
+	$_SESSION['captcha'] = mt_rand('123456','987654'); 
 }
 
 ?>
