@@ -35,8 +35,7 @@
 **/
 
 /* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
-if(!defined("COMPACTCMS_CODE")) die('Illegal entry point!');
-
+if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
 
 // Start session
 session_start();
@@ -45,14 +44,14 @@ session_start();
 if (!defined('BASE_PATH')) die('BASE_PATH not defined!');
 
 // Load basic configuration
-require_once(BASE_PATH . '/lib/config.inc.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/config.inc.php');
 
 // Load MySQL Class and initiate connection
-require_once(BASE_PATH . '/lib/class/mysql.class.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/class/mysql.class.php');
 $db = new MySQL();
 
 // Load generic functions
-require_once(BASE_PATH . '/lib/includes/common.inc.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/includes/common.inc.php');
 
 
 // LANGUAGE ==
@@ -86,7 +85,7 @@ setlocale(LC_ALL, $locale);
 $location = explode("/", $_SERVER['PHP_SELF']);
 if(in_array("admin",$location)) 
 {
-	require_once(BASE_PATH . '/admin/includes/security.inc.php');
+	/*MARKER*/require_once(BASE_PATH . '/admin/includes/security.inc.php');
 }
 
 
@@ -125,6 +124,14 @@ if ($handle = @opendir(BASE_PATH . '/lib/templates/')) {
 // GENERAL FUNCTIONS ==
 // [i_a] moved to common.inc.php
 
+
+
+
+// only execute the remainder of this file's code if we aren't running a 'minimal' run...
+if (!defined('CCMS_PERFORM_MINIMAL_INIT'))
+{
+
+
 // OPERATION MODE ==
 // 1) Start normal operation mode (if sitemap.php is not requested directly).
 // This will fill all variables based on the requested page, or throw a 403/404 error when applicable.
@@ -143,8 +150,8 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 			
 			// Parse content for active or preview mode
 			if($published=='Y' || $preview==$cfg['authcode']) {
-				include_once(BASE_PATH. "/content/".$page.".php");
-			} 
+				/*MARKER*/require_once(BASE_PATH. "/content/".$page.".php");
+			}
 			// Parse 403 contents (disabled and no preview token)
 			elseif($published=='N') {
 				echo file_get_contents(BASE_PATH. "/content/403.php");
@@ -337,5 +344,10 @@ elseif($current == "sitemap.php" || $current == "sitemap.xml") {
 		}
 	}
 	echo "</urlset>";
-} 
+}
+
+
+} // if (!defined('CCMS_PERFORM_MINIMAL_INIT'))
+
+
 ?>

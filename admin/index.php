@@ -35,7 +35,12 @@
 **/
 
 /* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
-define("COMPACTCMS_CODE", 1);
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+/*
+We're rendering the admin page here, no need to load the user/viewer page content in sitemap.php, etc. 
+*/
+define('CCMS_PERFORM_MINIMAL_INIT', true);
 
 
 // Compress all output and coding
@@ -49,8 +54,9 @@ if (!defined('BASE_PATH'))
 }
 
 // Include general configuration
-require_once(BASE_PATH . '/lib/sitemap.php');
-require_once(BASE_PATH . '/admin/includes/process.inc.php');
+// /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');   [i_a] loaded by process.inc.php anyway
+/*MARKER*/require_once(BASE_PATH . '/admin/includes/process.inc.php');
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $cfg['language']; ?>">

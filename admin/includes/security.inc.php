@@ -30,7 +30,12 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 ************************************************************ */
 
 /* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
-define("COMPACTCMS_CODE", 1);
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+/*
+We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
+*/
+define('CCMS_PERFORM_MINIMAL_INIT', true);
 
 
 // Include general configuration
@@ -39,7 +44,8 @@ if (!defined('BASE_PATH'))
 	$base = str_replace('\\','/',dirname(dirname(dirname(__FILE__))));
 	define('BASE_PATH', $base);
 }
-require_once(BASE_PATH.'/lib/sitemap.php');
+
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Disable common hacking functions
 ini_set('base64_decode', 'Off');

@@ -6,7 +6,7 @@ part of CompactCMS
 
 
 /* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
-if(!defined("COMPACTCMS_CODE")) die('Illegal entry point!');
+if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
 
 define('CCMS_DEVELOPMENT_ENVIRONMENT', true); // set to 'false' for any release install (where you are not developing on a local & very safe machine)
 

@@ -40,7 +40,7 @@ $additional = (isset($_GET['do'])&&!empty($_GET['do'])?$_GET['do']:null);
 @define('BASE_PATH',dirname(dirname(__FILE__)));
 
 // Load generic functions
-require_once(BASE_PATH . '/lib/includes/common.inc.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/includes/common.inc.php');
 
 
 
@@ -282,7 +282,7 @@ if($nextstep == md5('final') && CheckAuth()) {
 	$err = 0;
 	
 	// Include MySQL class && initiate
-	require_once(BASE_PATH.'/lib/class/mysql.class.php');
+	/*MARKER*/require_once(BASE_PATH.'/lib/class/mysql.class.php');
 	$db = new MySQL();
 	
 	//
@@ -431,7 +431,7 @@ if($nextstep == md5('final') && CheckAuth()) {
 	// Write config.inc.php file
 	//
 	if($err==0) {
-		include(BASE_PATH.'/lib/config.inc.php');
+		/*MARKER*/include(BASE_PATH . '/lib/config.inc.php');
 		$config_str = "\$cfg = array();\r\n";
 		$write_err	= null;
 		
