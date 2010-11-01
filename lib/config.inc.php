@@ -57,4 +57,5 @@ $cfg['db_prefix']	= "ccms_";		// MySQL setting - the table prefix.
 
 // Restrict for editing with the editor. Use the filenames without extension.
 $cfg['restrict']	= array("foo","bar");
+$cfg['default_template'] = 'ccms'; 
 ?>
