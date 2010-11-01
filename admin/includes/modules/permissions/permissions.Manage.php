@@ -50,14 +50,17 @@ if (!defined('BASE_PATH'))
 
 
 
-$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
+$do	= getGETparam4IdOrNumber('do');
+$status = getGETparam4IdOrNumber('status');
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
 
+
+if(checkAuth() && isset($_SESSION['rc1']) && !empty($_SESSION['rc2'])) 
+{ 
 ?>
-<?php if(checkAuth() && isset($_SESSION['rc1']) && !empty($_SESSION['rc2'])) { ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
@@ -74,7 +77,7 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 <body>
 	<div class="module">
 
-	<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
+	<div class="center <?php echo $status; ?>">
 		<?php if(isset($_GET['msg'])) { echo '<span class="ss_sprite ss_confirm">'.$_GET['msg'].'</span>'; } ?>
 	</div>
 

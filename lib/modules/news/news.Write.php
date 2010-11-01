@@ -50,11 +50,12 @@ if (!defined('BASE_PATH'))
 
 
 
-$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
+
+$do	= getGETparam4IdOrNumber('do');
 
 // Open recordset for specified user
-$newsID = (isset($_GET['newsID']) && is_numeric($_GET['newsID'])?$_GET['newsID']:null);
-$pageID = (isset($_GET['pageID'])?$_GET['pageID']:null);
+$newsID = getGETparam4Number('newsID');
+$pageID = getGETparam4IdOrNumber('pageID');
 
 if($newsID!=null) {
 	$news = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."modnews` m LEFT JOIN `".$cfg['db_prefix']."users` u ON m.userID=u.userID WHERE newsID = $newsID AND pageID='$pageID'");
@@ -62,14 +63,22 @@ if($newsID!=null) {
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+
+
+if (!(checkAuth() && $perm['manageModNews']>0 && $_SESSION['ccms_userLevel'] >= $perm['manageModNews'])) 
+{
+	die("No external access to file");
+}
+
+
+
 ?>
-<?php if(checkAuth()&&$_SESSION['ccms_userLevel']>=$perm['manageModNews']) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
-	<head>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<title>News module</title>
-		
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title>News module</title>
+	
 		<!-- File uploader styles -->
 		<link rel="stylesheet" media="all" type="text/css" href="../../../admin/includes/fancyupload/Assets/manager.css" />
 	

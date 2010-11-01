@@ -90,7 +90,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 				$explode = explode("||",$value);
 			
 				// Set variables
-				$pageID = (isset($explode[1])&&is_numeric($explode[1])?$explode[1]:null);
+				$pageID = filterParam4Number($explode[1]);
 				$current = $db->QuerySingleValue("SELECT user_ids FROM ".$cfg['db_prefix']."pages WHERE page_id='".$pageID."'");
 				$users = $current.$explode[0].'||';
 				$values["user_ids"] = MySQL::SQLValue($users,MySQL::SQLVALUE_TEXT);

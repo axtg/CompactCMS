@@ -65,6 +65,9 @@ if(!isset($_SESSION['rc1']) || !isset($_SESSION['rc2']))
 	$_SESSION['rc2'] = mt_rand('1234', '9876');
 }
 
+// Prevent PHP warning by setting default (null) values
+$do_action = getGETparam4IdOrNumber('action');
+
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
@@ -80,11 +83,9 @@ if($db->HasRecords()) {
 // Set the pointer to the first row
 $db->MoveFirst();
 
-// Prevent PHP warning by setting default (null) values
-$do_action = (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:null);
 
 // Set the target for PHP processing
-$target_form = (!empty($_POST['form'])?$_POST['form']:null);
+	$target_form = getPOSTparam4IdOrNumber('form');
 
  /**
  *
@@ -280,15 +281,11 @@ if($do_action == "renderlist" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAu
 if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 	
 	// Remove all none system friendly characters
-	$special_chars = array("#","$","%","@","^","&","*","!","~","‘","\"","’","'","=","?","/","[","]","(",")","|","<",">",";","\\",",");
-	
-	// Filter spaces, non-file characters and account for UTF-8
-	$post_urlpage = @htmlentities($_POST['urlpage'],ENT_COMPAT,'UTF-8');
-  	$post_urlpage = str_replace($special_chars, "", $post_urlpage); 
-	$post_urlpage = str_replace(' ','-',$post_urlpage);
+	$post_urlpage = filterParam4Filename($_POST['urlpage']); 
+	$post_urlpage = strtolower(str_replace(' ','-',$post_urlpage));
 	
 	// Check for non-empty module variable
-	$post_module = (isset($_POST['module'])&&!empty($_POST['module'])?strtolower($_POST['module']):"editor");
+	$post_module = strtolower(filterParam4Filename($_POST['module'], "editor"));
 	
 	// Filter $_GET for bad hack coding
 	isset($_GET['page']) ? mysql_real_escape_string($_GET['page']) : null;
@@ -335,22 +332,22 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
     		$description = htmlspecialchars($_POST['description']);
     	}
     	
-    	// Check radio button values
-    	$printable_pref = (isset($_POST['printable'])&&!empty($_POST['printable'])?$_POST['printable']:'Y');
-    	$published_pref = (isset($_POST['published'])&&!empty($_POST['published'])?$_POST['published']:'Y');
-    	$iscoding_pref	= (isset($_POST['iscoding'])&&!empty($_POST['iscoding'])?$_POST['iscoding']:'N');
-    	
+		// Check radio button values
+		$printable_pref = getPOSTparam4boolYN('printable', 'Y');
+		$published_pref = getPOSTparam4boolYN('published', 'Y');
+		$iscoding_pref	= getPOSTparam4boolYN('iscoding', 'N');
+		
 		// Insert new page into database
 		// $arrayVariable["column name"] = formatted SQL value
-		$values['urlpage']		= MySQL::SQLValue(strtolower($post_urlpage),MySQL::SQLVALUE_TEXT);
-		$values['module']		= MySQL::SQLValue(strtolower($post_module),MySQL::SQLVALUE_TEXT);
+		$values['urlpage']		= MySQL::SQLValue($post_urlpage,MySQL::SQLVALUE_TEXT);
+		$values['module']		= MySQL::SQLValue($post_module,MySQL::SQLVALUE_TEXT);
 		$values['toplevel']		= MySQL::SQLValue('1',MySQL::SQLVALUE_NUMBER);
 		$values['sublevel']		= MySQL::SQLValue('0',MySQL::SQLVALUE_NUMBER);
 		$values['menu_id']		= MySQL::SQLValue('5',MySQL::SQLVALUE_NUMBER);
 		$values['pagetitle']	= MySQL::SQLValue($pagetitle,MySQL::SQLVALUE_TEXT);
 		$values['subheader']	= MySQL::SQLValue($subheader,MySQL::SQLVALUE_TEXT);
 		$values['description']	= MySQL::SQLValue($description,MySQL::SQLVALUE_TEXT);
-		$values['srcfile']		= MySQL::SQLValue(strtolower($post_urlpage).".php",MySQL::SQLVALUE_TEXT);
+		$values['srcfile']		= MySQL::SQLValue($post_urlpage.".php",MySQL::SQLVALUE_TEXT);
 		$values['printable']	= MySQL::SQLValue($printable_pref,MySQL::SQLVALUE_Y_N);
 		$values['published']	= MySQL::SQLValue($published_pref,MySQL::SQLVALUE_Y_N);
 		$values['iscoding']		= MySQL::SQLValue($iscoding_pref,MySQL::SQLVALUE_Y_N);
@@ -362,17 +359,19 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		if($result) {
 			
 			// Create the actual file
-			$filehandle = fopen("../../content/".strtolower($post_urlpage).".php", 'w');
-			if(!$filehandle) {
+			$filehandle = fopen("../../content/".$post_urlpage.".php", 'w');
+			if(!$filehandle) 
+			{
 				$db->TransactionRollback();
 				$errors[] = $ccms['lang']['system']['error_write'];
 			} else {
 				// Write default contents to newly created file
-				if(strtolower($post_module)==="editor") {
+				if($post_module==="editor") 
+				{
 					fwrite($filehandle, "<p>".$ccms['lang']['backend']['newfiledone']."</p>");
 				} 
 				// Write include_once tag to file (modname.Show.php)
-				elseif(strtolower($post_module)!=="editor") {
+				elseif($post_module!=="editor") {
 					fwrite($filehandle, "<?php include_once('./lib/modules/$post_module/$post_module.Show.php'); ?>");
 				} else die("[ERR048] ".$ccms['lang']['system']['error_general']);
 			}
@@ -435,14 +434,22 @@ if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 
 	$error = null;
 	
-	foreach ($_POST['pageid'] as $key => $pageid) {
-		$values["toplevel"]	= MySQL::SQLValue($_POST['toplevel'][$pageid], MySQL::SQLVALUE_NUMBER);
-		$values["sublevel"]	= MySQL::SQLValue($_POST['sublevel'][$pageid], MySQL::SQLVALUE_NUMBER);
-		$values["variant"]	= MySQL::SQLValue($_POST['template'][$pageid], MySQL::SQLVALUE_TEXT);
-		$values["menu_id"]	= MySQL::SQLValue($_POST['menuid'][$pageid], MySQL::SQLVALUE_NUMBER);
+	foreach ($_POST['pageid'] as $key => $page_id) 
+	{
+		$page_id = filterParam4Number($page_id);
+		if (!$page_id)
+		{
+			$error = true;
+			break;
+		}
+		$values["toplevel"]	= MySQL::SQLValue($_POST['toplevel'][$page_id], MySQL::SQLVALUE_NUMBER);
+		$values["sublevel"]	= MySQL::SQLValue($_POST['sublevel'][$page_id], MySQL::SQLVALUE_NUMBER);
+		$values["variant"]	= MySQL::SQLValue(filterParam4Filename($_POST['template'][$page_id]), MySQL::SQLVALUE_TEXT);
+		$values["menu_id"]	= MySQL::SQLValue($_POST['menuid'][$page_id], MySQL::SQLVALUE_NUMBER);
 		
 		// Execute the update
-		if(!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $pageid))) {
+		if(!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id,MySQL::SQLVALUE_NUMBER)))) 
+		{
 			$error = "1";
 			$db->Kill();
 		}
@@ -459,10 +466,11 @@ if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
  *
  */
 if($do_action == "islink" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-	$page_id = (!empty($_POST['id'])?$_POST['id']:null);
+	$page_id = getPOSTparam4Number('id');
 	$values["islink"] = MySQL::SQLValue($_POST['cvalue'], MySQL::SQLVALUE_Y_N);
 	
-	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id))) {
+	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id,MySQL::SQLVALUE_NUMBER)))) 
+	{
 		if($values["islink"] == "Y") { echo $ccms['lang']['backend']['yes']; } else echo $ccms['lang']['backend']['no'];
 	} else die($db->Error($ccms['lang']['system']['error_general']));
 }
@@ -518,8 +526,8 @@ if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	} else die($ccms['lang']['system']['error_value']);
 	
 	// Continue with content update
-	$page_id		= $_POST['id'];
-	$dest			= $_GET['part'];
+	$page_id		= getPOSTparam4Number('id');
+	$dest			= getGETparam4IdOrNumber('part');
 	$values["$dest"]= MySQL::SQLValue($content,MySQL::SQLVALUE_TEXT);
 	
 	if (!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id))) $db->Kill();
@@ -589,7 +597,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		$values['userFirst']	= MySQL::SQLValue($_POST['userFirstname'],MySQL::SQLVALUE_TEXT);
 		$values['userLast']		= MySQL::SQLValue($_POST['userLastname'],MySQL::SQLVALUE_TEXT);
 		$values['userEmail']	= MySQL::SQLValue($_POST['userEmail'],MySQL::SQLVALUE_TEXT);
-		$values['userActive']	= MySQL::SQLValue($_POST['userActive'],MySQL::SQLVALUE_NUMBER);
+		$values['userActive']	= MySQL::SQLValue($_POST['userActive'],MySQL::SQLVALUE_BOOLEAN);
 		$values['userLevel']	= MySQL::SQLValue($_POST['userLevel'],MySQL::SQLVALUE_NUMBER);
 		$values['userToken']	= MySQL::SQLValue(mt_rand('123456789','987654321'),MySQL::SQLVALUE_NUMBER);
 		
@@ -617,7 +625,7 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 		// Check length of values
 		if(strlen($_POST['first'])>2&&strlen($_POST['last'])>2&&strlen($_POST['email'])>6) {
 		
-			$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
+			$userID = getPOSTparam4Number('userID');
 			$values["userFirst"]= MySQL::SQLValue($_POST['first'],MySQL::SQLVALUE_TEXT);
 			$values["userLast"]	= MySQL::SQLValue($_POST['last'],MySQL::SQLVALUE_TEXT);
 			$values["userEmail"]= MySQL::SQLValue($_POST['email'],MySQL::SQLVALUE_TEXT);
@@ -652,10 +660,11 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 	
 		if(strlen($_POST['userPass'])>6&&md5($_POST['userPass'])===md5($_POST['cpass'])) {
 		
-			$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
+			$userID = getPOSTparam4Number('userID');
 			$values["userPass"] = MySQL::SQLValue(md5($_POST['userPass'].$cfg['authcode']),MySQL::SQLVALUE_TEXT);
 			
-			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
+			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => MySQL::SQLValue($userID,MySQL::SQLVALUE_NUMBER)))) 
+			{
 				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
 				exit();
 			}
@@ -680,14 +689,19 @@ if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && ch
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) {
 		
-		$userID = (isset($_POST['userID'])&&is_numeric($_POST['userID'])?$_POST['userID']:null);
-		$values["userLevel"] = MySQL::SQLValue($_POST['userLevel'],MySQL::SQLVALUE_NUMBER);
-		$values["userActive"] = MySQL::SQLValue($_POST['userActive'],MySQL::SQLVALUE_NUMBER);
+		$userID = getPOSTparam4Number('userID');
+		$userLevel = getPOSTparam4Number('userLevel');
+		if (is_integer($userLevel))
+		{
+			$values["userLevel"] = MySQL::SQLValue($userLevel,MySQL::SQLVALUE_NUMBER);
+			$values["userActive"] = MySQL::SQLValue($_POST['userActive'],MySQL::SQLVALUE_BOOLEAN);
 			
-			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
 				
-				if($userID==$_SESSION['ccms_userID']) {
-					$_SESSION['ccms_userLevel']	= (is_numeric($_POST['userLevel'])?$_POST['userLevel']:$_SESSION['ccms_userLevel']);
+			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => MySQL::SQLValue($userID,MySQL::SQLVALUE_NUMBER)))) 
+			{
+				if($userID==$_SESSION['ccms_userID']) 
+				{
+					$_SESSION['ccms_userLevel'] = $userLevel;
 				}
 				
 				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
@@ -737,10 +751,10 @@ if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) {
 	
 	// Set the necessary variables
-	$name 		= htmlentities($_GET['file']);
-	$iscoding	= $_GET['restrict'];
-	$active		= $_GET['active'];
-	$filename	= "../../content/".htmlentities($_GET['file']).".php";
+	$name 		= getGETparam4Filename('file');
+	$iscoding	= getGETparam4boolYN('restrict', 'N');
+	$active		= getGETparam4boolYN('active', 'N');
+	$filename	= "../../content/".$name.".php";
 	
 	// Check for editor.css in template directory
 	$template	= $db->QuerySingleValue("SELECT `variant` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '$name'");
@@ -858,8 +872,8 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth())
 	    $_GET = array_map('stripslashes_deep', $_GET);
 	}
 
-	$name 		= htmlentities($_GET['page']);
-	$active		= (isset($_GET['active'])&&$_GET['active']=="Y"?"Y":"N");
+	$name 		= getGETparam4Filename('page');
+	$active		= getGETparam4boolYN('active', 'N');
 	$type		= (isset($_POST['code'])&&$_POST['code']>0?"code":"text");
 	$content	= $_POST['content'];
 	$filename	= "../../content/$name.php";
@@ -880,7 +894,8 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth())
 	// Save keywords to database
 	$values["keywords"]= MySQL::SQLValue($keywords,MySQL::SQLVALUE_TEXT);
 	
-	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("urlpage" => "\"$name\""))) {
+	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("urlpage" => MySQL::SQLValue($name,MySQL::SQLVALUE_TEXT)))) 
+	{
 ?>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $cfg['language']; ?>">

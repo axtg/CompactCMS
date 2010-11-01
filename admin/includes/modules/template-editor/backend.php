@@ -50,7 +50,7 @@ if (!defined('BASE_PATH'))
 
 
 
-$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
+$do	= getGETparam4IdOrNumber('do');
 
 if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && isset($_SESSION['rc1']) && checkAuth()) {
 	

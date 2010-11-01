@@ -67,5 +67,5 @@ $browser = new FileManager(array(
 	'filter' => 'image/',
 ));
 
-$browser->fireEvent(!empty($_GET['event']) ? $_GET['event'] : null);
+$browser->fireEvent(getGETparam4IdOrNumber('event'));
 ?>

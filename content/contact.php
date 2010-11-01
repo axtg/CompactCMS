@@ -4,7 +4,7 @@
 if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
 
 // Check whether this is a send request
-$action_type = (!empty($_GET['do']))?$_GET['do']:null;
+$action_type = getGETparam4IdOrNumber('do');
 
 // If the action type is equal to send, then continue
 if($action_type=='send' && !empty($_POST) && $_POST['verification']==$_SESSION['ccms_captcha']) 

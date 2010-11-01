@@ -51,10 +51,10 @@ if (!defined('BASE_PATH'))
 // Set default variables
 
 
-$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
+$do	= getGETparam4IdOrNumber('do');
 
 // Open recordset for specified user
-$userID = (isset($_GET['userID']) && is_numeric($_GET['userID'])?$_GET['userID']:null);
+$userID = getGETparam4Number('userID');
 
 if($userID!=null) {
 	$row = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."users` WHERE userID = $userID");
