@@ -286,9 +286,16 @@ class ccmsParser {
   # accepts an array or an object that supports the method getVar($name)
   function setParams(&$params) {
     if (is_array($params))
+    {
       $this->params = $params + $this->params;
-    elseif (is_object($params))
+      return true;
+    }
+    elseif (is_object($params) && method_exists($params, 'getVar'))
+    {
       $this->paramObject = $params;
+      return true;
+    }
+    return false;
   }
   
   # Deletes all parameters (no argument)
@@ -321,6 +328,7 @@ class ccmsParser {
   	    $tmpl = preg_replace($cmd, file_get_contents($fragpath), $tmpl);
       }
     }
+    
     $this->splitTemplate($tmpl);
   }
   
