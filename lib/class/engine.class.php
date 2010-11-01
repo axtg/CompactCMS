@@ -374,7 +374,7 @@ class ccmsParser {
   }
   
   # Set include path (only 1 directory possible)
-  # Cal this before setTemplate!
+  # Call this before setTemplate!
   function setIncludePath($path) {
     $this->includePath = $path;
     if (substr($path, -1, 1) != '/') $this->includePath .= '/';
