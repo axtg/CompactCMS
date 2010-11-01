@@ -37,7 +37,9 @@ if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
 $_SESSION['ccms_captcha'] = mt_rand('123456','987654'); 
 
 // Load comment preferences
-$pageID	= (isset($_GET['page'])?$_GET['page']:null);
+$pageID	= getGETparam4Filename('page');
+
+
 ?>
 
 <!-- additional style and code -->
@@ -79,7 +81,7 @@ window.addEvent('domready',function(){var req=new Request.HTML({useSpinner:true,
 			<label for="verification"><?php echo $ccms['lang']['guestbook']['verify']; ?></label><input type="input" name="verification" style="width:50px;" maxlength="6" value="" id="verification" class="required validate-match matchInput:'captcha_check' matchName:'captcha' text"/>
 			
 			<input type="hidden" name="captcha_check" value="<?php echo $_SESSION['ccms_captcha']; ?>" id="captcha_check" />
-			<input type="hidden" name="pageID" value="<?php echo $_GET['page']; ?>" id="pageID" />
+			<input type="hidden" name="pageID" value="<?php echo $pageID; ?>" id="pageID" />
 			<p style="margin-bottom:20px;text-align:center;">
 				<button name="submit_gb" type="submit"><?php echo $ccms['lang']['guestbook']['add']; ?></button>
 			</p>

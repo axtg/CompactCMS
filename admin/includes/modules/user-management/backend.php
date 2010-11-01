@@ -51,7 +51,7 @@ if (!defined('BASE_PATH'))
 // Set default variables
 
 
-$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
+$do	= getGETparam4IdOrNumber('do');
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");

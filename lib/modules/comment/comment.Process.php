@@ -64,10 +64,10 @@ if (!defined('BASE_PATH'))
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
 // Set default variables
-$commentID 	= (isset($_GET['commentID'])&&!empty($_GET['commentID'])&&is_numeric($_GET['commentID'])?$_GET['commentID']:'0');
-$pageID		= (isset($_POST['pageID'])&&!empty($_POST['pageID'])?$_POST['pageID']:'0');
-$cfgID		= (isset($_POST['cfgID'])&&!empty($_POST['cfgID'])?$_POST['cfgID']:'0');
-$do_action 	= (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:null);
+$commentID 	= getGETparam4Number('commentID');
+$pageID		= getPOSTparam4Filename('pageID');
+$cfgID		= getPOSTparam4Number('cfgID');
+$do_action 	= getGETparam4IdOrNumber('action');
 
  /**
  *
@@ -77,7 +77,7 @@ $do_action 	= (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:n
 if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAuth()) {
 		
 	// Pagination variables
-	$pageID	= (isset($_GET['page'])?$_GET['page']:null);
+	$pageID	= getGETparam4Filename('page');
 	$rsCfg	= $db->QuerySingleValue("SELECT showMessage FROM `".$cfg['db_prefix']."cfgcomment` WHERE pageID='$pageID'");
 	$rsLoc	= $db->QuerySingleValue("SELECT showLocale FROM `".$cfg['db_prefix']."cfgcomment` WHERE pageID='$pageID'");
 	$max 	= (!empty($rsCfg)?$rsCfg:'10');
@@ -173,7 +173,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAut
 if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="save-cfg" && checkAuth()) {
 
 	$values['pageID'] = MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
-	$values['showMessage'] = (is_numeric($_POST['messages'])&&!empty($_POST['messages'])?$_POST['messages']:null);
+	$values['showMessage'] = MySQL::SQLValue(getPOSTparam4Number('messages']), MySQL::SQLVALUE_NUMBER);
 	$values['showLocale'] = MySQL::SQLValue($_POST['locale'], MySQL::SQLVALUE_TEXT);
 
 	// Insert or update configuration

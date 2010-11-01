@@ -58,21 +58,22 @@ if (!defined('BASE_PATH'))
     $cssdir = BASE_PATH . '/admin/img/styles';
 
 	// Determine the directory and type we should use
-	switch ($_GET['type']) {
-		case 'css':
-			$base = realpath($cssdir);
-			break;
-		case 'javascript':
-			$base = realpath($jsdir);
-			break;
-		default:
-			header ("HTTP/1.0 503 Not Implemented");
-			exit;
+	$type = getGETparam4IdOrNumber('type');
+	switch ($type) 
+	{
+	case 'css':
+		$base = realpath($cssdir);
+		break;
+	case 'javascript':
+		$base = realpath($jsdir);
+		break;
+	default:
+		send_response_status_header(503); // Not Implemented
+		exit;
 	};
 
-	$type = $_GET['type'];
-	$elements = explode(',', $_GET['files']);
-	
+	$elements = explode(',', getGETparam4CommaSeppedFilenames('files'));
+
 	// let's speed things up (min = 4 days)
   	$offset = 3600 * 120;	
 	$expire = "Expires: " . gmdate("D, d M Y H:i:s", time() + $offset) . " GMT";
@@ -84,13 +85,15 @@ if (!defined('BASE_PATH'))
 		$path = realpath($base . '/' . $element);
 	
 		if (($type == 'javascript' && substr($path, -3) != '.js') || 
-			($type == 'css' && substr($path, -4) != '.css')) {
-			header ("HTTP/1.0 403 Forbidden");
+			($type == 'css' && substr($path, -4) != '.css')) 
+		{
+			send_response_status_header(403); // Forbidden
 			exit;	
 		}
-	
-		if (substr($path, 0, strlen($base)) != $base || !file_exists($path)) {
-			header ("HTTP/1.0 404 Not Found");
+
+		if (substr($path, 0, strlen($base)) != $base || !file_exists($path)) 
+		{
+			send_response_status_header(404); // Not Found
 			exit;
 		}
 		
@@ -105,8 +108,8 @@ if (!defined('BASE_PATH'))
 		stripslashes($_SERVER['HTTP_IF_NONE_MATCH']) == '"' . $hash . '"') 
 	{
 		// Return visit and no modifications, so do not send anything
-		header ("HTTP/1.0 304 Not Modified");
-		header ('Content-Length: 0');
+		send_response_status_header(304); // Not Modified
+		header('Content-Length: 0');
 	} 
 	else 
 	{

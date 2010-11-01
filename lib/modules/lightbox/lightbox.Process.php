@@ -64,8 +64,8 @@ if (!defined('BASE_PATH'))
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
 // Set default variables
-$album_name	= (isset($_POST['album'])&&!empty($_POST['album'])?$_POST['album']:null);
-$do_action	= (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:null);
+$album_name	= getPOSTparam4Filename('album');
+$do_action	= getGETparam4IdOrNumber('action');
 
  /**
  *
@@ -157,8 +157,8 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "del-image" && checkAuth
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) {
 
-		$album = (isset($_GET['album'])&&!empty($_GET['album'])?$_GET['album']:null);
-		$image = (isset($_GET['image'])&&!empty($_GET['image'])?$_GET['image']:null);
+		$album = getGETparam4Filename('album');
+		$image = getGETparam4Filename('image');
 		
 		if(!empty($album)&&!empty($image)) {
 			$file	= BASE_PATH.'/media/albums/'.$album.'/'.$image;
@@ -188,7 +188,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "apply-album" && checkA
 		
 		if($album_name!=null) {
 			// Posted variables
-			$topage = (!empty($_POST['albumtopage'])?$_POST['albumtopage']:' ');
+			$topage = getPOSTparam4Filename('albumtopage');
 			$description = (!empty($_POST['description'])?trim(htmlspecialchars($_POST['description'])):trim(' '));
 			$infofile = BASE_PATH."/media/albums/$album_name/info.txt";
 			

@@ -8,7 +8,7 @@ part of CompactCMS
 /* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
 if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
 
-define('CCMS_DEVELOPMENT_ENVIRONMENT', true); // set to 'false' for any release install (where you are not developing on a local & very safe machine)
+
 
 
 
@@ -56,7 +56,7 @@ function str2USASCII($src)
 	return trim($src);
 }
 
-function str2VarOrFileName($src, $is_filename = false, $accept_leading_minus = false)
+function str2VarOrFileName($src, $extra_accept_set = '', $accept_leading_minus = false)
 {
 	static $regex4var;
 	
@@ -75,23 +75,12 @@ function str2VarOrFileName($src, $is_filename = false, $accept_leading_minus = f
 
 	$src = str_replace($regex4var[0], $regex4var[1], $src);
 	
-	if ($is_filename)
-	{
-		$src = preg_replace('/(?:[^A-Za-z0-9._-]|_)+/', '_', $src);
-	}
-	else
-	{
-		$src = preg_replace('/(?:[^A-Za-z0-9_]|_|\.)+/', '_', $src);
-	}
+	$src = preg_replace('/(?:[^\-A-Za-z0-9_' . $extra_accept_set . ']|_)+/', '_', $src);
 	// reduce series of underscores to a single one:
 	$src = preg_replace('/_+/', '_', $src);
 	// remove leading and trailing underscores (which may have been whitespace or other stuff before)
 	$src = trim($src, '_');
-	/*
-	make sure string starts with a alphanumeric, unless we accept a leading 'minus'. 
-	
-	We NEVER tolerate a leading dot, anyway.
-	*/
+	// We NEVER tolerate a leading dot:
 	$src = preg_replace('/^\.+/', '', $src);
 	if (!$accept_leading_minus)
 	{
@@ -117,23 +106,23 @@ Accepted/passed set of characters are, specified as a regex:
 
 As such, this is very good filter for numeric values, alphanumeric 'id's and filenames.
 */
-function getGETparam4IdOrNumber($name, $def = false) 
+function getGETparam4IdOrNumber($name, $def = null) 
 {
 	if (!isset($_GET[$name]))
 		return $def;
 
-	return filterParam4IdOrNumber($_GET[$name]);
+	return filterParam4IdOrNumber($_GET[$name], $def);
 }
 	
-function getPOSTparam4IdOrNumber($name, $def = false) 
+function getPOSTparam4IdOrNumber($name, $def = null) 
 {
 	if (!isset($_POST[$name]))
 		return $def;
 
-	return filterParam4IdOrNumber($_POST[$name]);
+	return filterParam4IdOrNumber($_POST[$name], $def);
 }
 	
-function filterParam4IdOrNumber($value, $def = false) 
+function filterParam4IdOrNumber($value, $def = null) 
 {
 	if (!isset($value))
 		return $def;
@@ -154,34 +143,274 @@ function filterParam4IdOrNumber($value, $def = false)
 	return $value;
 }
 
-function getGETparam4Filename($name, $def = false) 
+function getGETparam4Filename($name, $def = null) 
 {
 	if (!isset($_GET[$name]))
 		return $def;
 
-	return filterParam4Filename($_GET[$name]);
+	return filterParam4Filename($_GET[$name], $def);
 }
 
-function getPOSTparam4Filename($name, $def = false) 
+function getPOSTparam4Filename($name, $def = null) 
 {
 	if (!isset($_POST[$name]))
 		return $def;
 
-	return filterParam4Filename($_POST[$name]);
+	return filterParam4Filename($_POST[$name], $def);
 }
 
 /**
-As filterParam4IdOrNumber(), but also accepts '_' underscores and ' ' spaces (the latter only in between, not at end or start of the string).
+As filterParam4IdOrNumber(), but also accepts '_' underscores and '.' dots, but NOT at the start or end of the filename!
 */
-function filterParam4Filename($value, $def = false)
+function filterParam4Filename($value, $def = null)
 {
 	if (!isset($value))
 		return $def;
 
-	$value = str2VarOrFileName($value, true);
+	$value = str2VarOrFileName($value, '~\.');
 	
 	return $value;
 }
+
+
+
+
+
+
+function getGETparam4CommaSeppedFilenames($name, $def = null) 
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4CommaSeppedFilenames($_GET[$name], $def);
+}
+
+/**
+As filterParam4Filename(), but also accepts a 'comma' separator
+*/
+function filterParam4CommaSeppedFilenames($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$fns = explode(',', strval($value));
+	if (!is_array($fns))
+	{
+		return $def;
+	}
+	for ($i = count($fns); $i-- > 0; )
+	{
+		$fns[$i] = filterParam4Filename($fns[$i], '');
+	}
+	
+	return implode(',', $fns);
+}
+
+
+
+function getGETparam4FullFilePath($name, $def = null) 
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4FullFilePath($_GET[$name], $def);
+}
+
+/**
+As filterParam4Filename(), but also accepts '/' directory separators
+*/
+function filterParam4FullFilePath($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$fns = explode('/', strval($value));
+	if (!is_array($fns))
+	{
+		return $def;
+	}
+	for ($i = count($fns); $i-- > 0; )
+	{
+		$fns[$i] = filterParam4Filename($fns[$i], '');
+		if ($i > 0 && $i < count($fns) - 1 && empty($fns[$i]))
+		{
+			return $def; // illegal path specified!
+		}
+	}
+	
+	return implode('/', $fns);
+}
+
+
+
+
+function getGETparam4boolYN($name, $def = null)
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4boolYN($_GET[$name], $def);
+}
+
+function getPOSTparam4boolYN($name, $def = null)
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4boolYN($_POST[$name], $def);
+}
+
+/*
+Accepts any boolean value: as any number, T[rue]/F[alse] or Y[es]/N[o]
+*/
+function filterParam4boolYN($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$value = trim(strval($value)); // force cast to string before we do anything
+	if (empty($value))
+		return $def;
+	
+	// see if the value is a valid integer (plus or minus)
+	$numval = intval($value);
+	if (strval($numval) !== $value)
+	{
+		// no full match for the integer check, so this is a string hence we must check the text-based boolean values here:
+		switch (strtoupper(substr($value, 0, 1)))
+		{
+		case 'T':
+		case 'Y':
+			return 'Y';
+			
+		case 'F':
+		case 'N':
+			return 'N';
+			
+		default:
+			return $def;
+		}
+	}
+	else
+	{
+		return ($numval != 0 ? 'Y' : 'N');
+	}
+	return $def;
+}
+
+
+
+
+function getGETparam4boolean($name, $def = null)
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4boolean($_GET[$name], $def);
+}
+
+function getPOSTparam4boolean($name, $def = null)
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4boolean($_POST[$name], $def);
+}
+
+/*
+Accepts any boolean value: as any number, T[rue]/F[alse] or Y[es]/N[o]
+*/
+function filterParam4boolean($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$value = trim(strval($value)); // force cast to string before we do anything
+	if (empty($value))
+		return $def;
+	
+	// see if the value is a valid integer (plus or minus)
+	$numval = intval($value);
+	if (strval($numval) !== $value)
+	{
+		// no full match for the integer check, so this is a string hence we must check the text-based boolean values here:
+		switch (strtoupper(substr($value, 0, 1)))
+		{
+		case 'T':
+		case 'Y':
+			return true;
+			
+		case 'F':
+		case 'N':
+			return false;
+			
+		default:
+			return $def;
+		}
+	}
+	else
+	{
+		return ($numval != 0);
+	}
+	return $def;
+}
+
+
+
+
+function getGETparam4Number($name, $def = null)
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4Number($_GET[$name], $def);
+}
+
+function getPOSTparam4Number($name, $def = null)
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4Number($_POST[$name], $def);
+}
+
+/*
+Accepts any number
+*/
+function filterParam4Number($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$value = trim(strval($value)); // force cast to string before we do anything
+	if (empty($value))
+		return $def;
+	
+	// see if the value is a valid integer (plus or minus)
+	$numval = intval($value);
+	if (strval($numval) !== $value)
+	{
+		// no full match for the integer check, so this is a non-numeric string:
+		return $def;
+	}
+	else
+	{
+		return $numval;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

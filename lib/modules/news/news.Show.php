@@ -34,7 +34,10 @@ if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
 
 
 // Load news preferences
-$pageID	= (isset($_GET['page'])?$_GET['page']:null);
+$pageID	= getGETparam4Filename('page');
+$do	= getGETparam4IdOrNumber('do');
+$id = getGETparam4IdOrNumber('id');
+
 $numCfg = 0;
 if(!empty($pageID)) 
 {
@@ -79,17 +82,21 @@ elseif(isset($_GET['id'])&&!empty($_GET['id'])) {
 // Start switch for news, select all the right details
 if($db->HasRecords()) {
 
-	if(!isset($_GET['do'])) {
-		if(isset($numCfg)&&$numCfg>0) {
-			$listMax 	= ($rsCfg->showMessage>$db->RowCount()?$db->RowCount():$rsCfg->showMessage);
-			$showTeaser	= $rsCfg->showTeaser;
-			$showAuthor	= $rsCfg->showAuthor;
-			$showDate	= $rsCfg->showDate;
-		} else {
+	if(empty($do)) 
+	{
+		if($numCfg>0) 
+		{
+			$listMax 	= ($rsCfg->showMessage > $db->RowCount() ? $db->RowCount() : $rsCfg->showMessage);
+			$showTeaser	= intval($rsCfg->showTeaser);
+			$showAuthor	= intval($rsCfg->showAuthor);
+			$showDate	= intval($rsCfg->showDate);
+		} 
+		else 
+		{
 			$listMax = $db->RowCount();
-			$showTeaser	= '1';
-			$showAuthor	= '1';
-			$showDate	= '1';
+			$showTeaser	= 1;
+			$showAuthor	= 1;
+			$showDate	= 1;
 		}
 		for ($i=0; $i<$listMax; $i++) { 
 		    $rsNews = $db->Row();
@@ -132,12 +139,16 @@ if($db->HasRecords()) {
 <hr style="clear:both;"/>
 <?php
 		}
-		if(!isset($_GET['id'])||empty($_GET['id'])&&$db->RowCount()>$rsCfg->showMessage) { ?>
+		if(empty($id) && $db->RowCount() > $rsCfg->showMessage) 
+		{ 
+		?>
 			<hr/><p style="text-align:center;"><a href="<?php echo $cfg['rootdir'].$rsNews->pageID; ?>.html?do=all"><?php echo $ccms['lang']['news']['viewarchive']; ?></a></p>
 		<?php 
 		}
 	}
-	if(isset($_GET['do'])&&$_GET['do']=="all") {
+	
+	if($do == "all") 
+	{
 		for ($i=0; $i<$db->RowCount(); $i++) { 
 	    	$rsNews = $db->Row();
 	    	

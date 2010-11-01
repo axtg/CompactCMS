@@ -253,7 +253,7 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 		$msg = explode(' ::', $ccms['lang']['hints']['published']); 
 		ob_start();
 			// Check for preview variable
-			$preview = (isset($_GET['preview'])?$_GET['preview']:null);
+			$preview = getGETparam4IdOrNumber('preview');
 			// Warning message when page is disabled and authcode is correct
 			echo ($preview==$cfg['authcode']&&$ccms['published']=='N')?"<p style=\"clear:both;padding:.8em;margin-bottom:1em;background:#FBE3E4;color:#8a1f11;border:2px solid #FBC2C4;\">".$msg['0'].": <strong>".strtolower($ccms['lang']['backend']['disabled'])."</strong></p>":null;
 			

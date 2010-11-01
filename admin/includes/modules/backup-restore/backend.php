@@ -51,7 +51,7 @@ if (!defined('BASE_PATH'))
 // Include general configuration
 /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
-$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
+$do = getGETparam4IdOrNumber('do');
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
@@ -144,31 +144,34 @@ if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_ba
  * Delete current backup archives
  *
  */
-if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth()) 
+if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth()) 
 {
-	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) {
-	
-		echo "<div class=\"module notice center\">";
-		foreach ($_POST['file'] as $key => $value) 
+	if (!empty($_POST['file']))
+	{
+		// Only if current user has the rights
+		if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) 
 		{
-			$value = filterParam4Filename($value);
-			if (!empty($value))
+			echo "<div class=\"module notice center\">";
+			foreach ($_POST['file'] as $key => $value) 
 			{
-				unlink('../../../../media/files/'.$value);
-				echo ucfirst($value)." ".$ccms['lang']['backend']['statusremoved'].".<br/>";
+				$value = filterParam4Filename($value);
+				if (!empty($value))
+				{
+					unlink('../../../../media/files/'.$value);
+					echo ucfirst($value)." ".$ccms['lang']['backend']['statusremoved'].".<br/>";
+				}
+				else 
+					die($ccms['lang']['auth']['featnotallowed']);
 			}
-			else 
-				die($ccms['lang']['auth']['featnotallowed']);
-		}
-		echo "</div>";
+			echo "</div>";
+		} 
+		else 
+			die($ccms['lang']['auth']['featnotallowed']);
 	} 
 	else 
-		die($ccms['lang']['auth']['featnotallowed']);
-} 
-else if($do=="delete" && empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth()) 
-{
-	echo "<div class=\"module error center\">".$ccms['lang']['system']['error_selection']."</div>";
+	{
+		echo "<div class=\"module error center\">".$ccms['lang']['system']['error_selection']."</div>";
+	}
 }
 
 

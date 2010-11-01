@@ -50,7 +50,8 @@ if (!defined('BASE_PATH'))
 
 
 
-$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
+$do = getGETparam4IdOrNumber('do');
+$status = getGETparam4IdOrNumber('status');
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
@@ -60,8 +61,11 @@ $pages = $db->QueryArray("SELECT page_id,urlpage,user_ids FROM ".$cfg['db_prefix
 
 // Get all users
 $users = $db->QueryArray("SELECT userID,userName,userFirst,userLast,userEmail,userLevel FROM ".$cfg['db_prefix']."users");
+
+
+if(checkAuth() && !empty($_SESSION['rc1']) && !empty($_SESSION['rc2'])) 
+{ 
 ?>
-<?php if(checkAuth() && isset($_SESSION['rc1']) && !empty($_SESSION['rc2'])) { ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
@@ -78,7 +82,7 @@ $users = $db->QueryArray("SELECT userID,userName,userFirst,userLast,userEmail,us
 <body>
 	<div class="module">
 
-	<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
+	<div class="center <?php echo $status; ?>">
 		<?php if(isset($_GET['action'])) { echo '<span class="ss_sprite ss_confirm">'.$_GET['action'].'</span>'; } ?>
 	</div>
 	

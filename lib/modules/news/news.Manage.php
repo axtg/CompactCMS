@@ -49,16 +49,22 @@ if (!defined('BASE_PATH'))
 /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
 
+if (!checkAuth() || empty($_SESSION['rc1']) || empty($_SESSION['rc2'])) 
+{
+	die("No external access to file");
+}
 
-$do 		= (isset($_GET['do'])?htmlspecialchars($_GET['do']):null);
+
+
+$do	= getGETparam4IdOrNumber('do');
 $pageID		= (isset($_GET['file'])?htmlspecialchars($_GET['file']):null);
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
-?>
 
-<?php if(checkAuth() && isset($_SESSION['rc1']) && !empty($_SESSION['rc2'])) { ?>
+
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>

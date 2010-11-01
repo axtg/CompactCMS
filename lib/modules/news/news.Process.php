@@ -64,10 +64,10 @@ if (!defined('BASE_PATH'))
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
 // Set default variables
-$newsID 	= (isset($_POST['newsID'])&&!empty($_POST['newsID'])&&is_numeric($_POST['newsID'])?$_POST['newsID']:'0');
-$pageID		= (isset($_POST['pageID'])&&!empty($_POST['pageID'])?$_POST['pageID']:'0');
-$cfgID		= (isset($_POST['cfgID'])&&!empty($_POST['cfgID'])?$_POST['cfgID']:'0');
-$do_action 	= (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:null);
+$newsID 	= getPOSTparam4Number('newsID');
+$pageID		= getPOSTparam4IdOrNumber('pageID');
+$cfgID		= getPOSTparam4Number('cfgID');
+$do_action 	= getGETparam4IdOrNumber('action');
 
  /**
  *
@@ -80,11 +80,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkA
 	if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) {
 	
 		// Published
-		$newsPublished = (!isset($_POST['newsPublished'])&&empty($_POST['newsPublished'])?"0":"1");
+		$newsPublished = getPOSTparam4boolean('newsPublished');
 		
 		// Set all the submitted variables
-		$values["userID"] = MySQL::SQLValue($_POST['newsAuthor'], MySQL::SQLVALUE_NUMBER);
-		$values["pageID"] = MySQL::SQLValue($_POST['pageID'], MySQL::SQLVALUE_TEXT);
+		$values["userID"] = MySQL::SQLValue(getPOSTparam4IdOrNumber('newsAuthor'), MySQL::SQLVALUE_NUMBER);
+		$values["pageID"] = MySQL::SQLValue(getPOSTparam4IdOrNumber('pageID'), MySQL::SQLVALUE_TEXT);
 		$values["newsTitle"]  = MySQL::SQLValue($_POST['newsTitle'], MySQL::SQLVALUE_TEXT);
 		$values["newsTeaser"]  = MySQL::SQLValue($_POST['newsTeaser'], MySQL::SQLVALUE_TEXT);
 		$values["newsContent"]  = MySQL::SQLValue($_POST['newsContent'], MySQL::SQLVALUE_TEXT);
@@ -145,7 +145,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="cfg-news" && checkAuth()
 	if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) {
 		
 		$values["pageID"]		= MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
-		$values["showLocale"]	= MySQL::SQLValue($_POST['locale']);
+		$values["showLocale"]	= MySQL::SQLValue(getPOSTparam4IdOrNumber('locale'), MySQL::SQLVALUE_TEXT);
 		$values["showMessage"]	= MySQL::SQLValue($_POST['messages']);
 		$values["showAuthor"]	= MySQL::SQLValue($_POST['author']);
 		$values["showDate"]		= MySQL::SQLValue($_POST['show_modified']);
