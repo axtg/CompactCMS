@@ -54,7 +54,8 @@ if(!empty($_SESSION['ccms_userID']) && !empty($_SESSION['ccms_userName']) && Che
 }
 
 // Check for ./install directory
-if(is_dir('../../_install/')) {
+if(is_dir('../../_install/') && !defined('CCMS_DEVELOPMENT_ENVIRONMENT')) 
+{
 	die('<strong>Security risk: the installation directory is still present.</strong><br/>Either first <a href="../../_install/">run the installer</a>, or remove the <em>./_install</em> directory, before accessing <a href="../../admin/">the back-end</a>.');
 }
 
