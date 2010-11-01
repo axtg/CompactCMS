@@ -1,0 +1,25 @@
+tracking who loads what in what order:
+
+if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } else { file_put_contents("/fileput.".preg_replace('/[^a-z0-9_\-.~]/i', '_', $_SERVER['REQUEST_URI']).".txt", "\n".__FILE__.'@'.__LINE__,FILE_APPEND); }
+
+and
+
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); file_put_contents("/fileput.".preg_replace('/[^a-z0-9_\-.~]/i', '_', $_SERVER['REQUEST_URI']).".txt", $_SERVER['REQUEST_URI']."\n\n".__FILE__.'@'.__LINE__); } else { file_put_contents("/fileput.".preg_replace('/[^a-z0-9_\-.~]/i', '_', $_SERVER['REQUEST_URI']).".txt", "\n".__FILE__.'@'.__LINE__,FILE_APPEND); }
+
+for all the files which have those COMPACTCMS_CODE checks in them already and you'll get a set of 
+files in your root path which include the URL query starting that particular run plus in order 
+of appearance all the require/require_once/include/include_once statements we hit:
+
+file_put_contents("/fileput.".preg_replace('/[^a-z0-9_\-.~]/i', '_', $_SERVER['REQUEST_URI']).".txt", "\n".__FILE__.'@'.__LINE__.' REQUIRE',FILE_APPEND);require_once(BASE_PATH . '/lib/config.inc.php');
+file_put_contents("/fileput.".preg_replace('/[^a-z0-9_\-.~]/i', '_', $_SERVER['REQUEST_URI']).".txt", "\n".__FILE__.'@'.__LINE__.' INCLUDE',FILE_APPEND);include('./Backend/FileManager.php');
+
+all the above have been replaced by a 
+ /*MARKER*/
+comment so I can always global find&replace all the instances again when another problem like 
+the catcha changing behind my back occurs again (that one was due to NOT having defined the
+  define('CCMS_PERFORM_MINIMAL_INIT', true);
+in all those files which need the db, etc. loaded but just not the page contents (and thus
+a implied [re]load of plugin PHP files at a bad time in the session. Blame it on bad coding
+somewhere. ;-)
+
+
