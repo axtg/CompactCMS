@@ -1,10 +1,3 @@
-/**
- * $Id: editor_plugin_src.js 787 2008-04-10 11:40:57Z spocke $
- *
- * @author Moxiecode
- * @copyright Copyright © 2004-2008, Moxiecode Systems AB, All rights reserved.
- */
-
 (function() {
 	var DOM = tinymce.DOM, Event = tinymce.dom.Event, each = tinymce.each, explode = tinymce.explode;
 
@@ -68,7 +61,7 @@
 					}
 
 					if (el) {
-						if (ed = tinymce.EditorManager.get(el.id || el.name))
+						if (ed = tinymce.get(el.id || el.name))
 							ed.focus();
 						else
 							window.setTimeout(function() {window.focus();el.focus();}, 10);
