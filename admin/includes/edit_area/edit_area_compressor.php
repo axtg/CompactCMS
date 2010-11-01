@@ -33,14 +33,17 @@
 			$this->param= $param;
 			$this->script_list="";
 			$this->path= dirname(__FILE__)."/";
-			if(isset($_GET['plugins'])){
+			if(isset($_GET['plugins']))
+			{
 				$this->load_all_plugins= true;
 				$this->full_cache_file= $this->path."edit_area_full_with_plugins.js";
 				$this->gzip_cache_file= $this->path."edit_area_full_with_plugins.gz";
-			}else{
-			$this->load_all_plugins= false;
-			$this->full_cache_file= $this->path."edit_area_full.js";
-			$this->gzip_cache_file= $this->path."edit_area_full.gz";
+			}
+			else
+			{
+				$this->load_all_plugins= false;
+				$this->full_cache_file= $this->path."edit_area_full.js";
+				$this->gzip_cache_file= $this->path."edit_area_full.gz";
 			}
 			
 			$this->check_gzip_use();
