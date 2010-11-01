@@ -59,15 +59,31 @@ echo collecting data...
 #      files against!
 
 find ../ -type f -a ! -path '*/lib/languages/*' \
-		-a ! -path '*/media/*' -a ! -path '*/includes/cache/*' -print0 \
+		-a ! -path '*/media/*' -a ! -path '*/includes/cache/*' -a ! -path '*.sh' -print0 \
 	| xargs -0 grep -e "\$ccms\['lang'\]" \
 	| sed -e 's/\$/\n\$/g' -e 's/\:/:\n/g' -e 's/;/\n/g' -e 's/\]\./\]\n/g' -e 's/\]:/\]\n/g' -e 's/)/\n/g' \
 	| grep -e "^\(\$ccms\['lang'\].*\]\)$\|^\(../[.a-zA-Z0-9_/-]\+\:\)$" \
-	| gawk -- 'BEGIN { qt=39; for (i=1; i<6; i++) { printf("../--manually-added--/:\t$ccms[%clang%c][%cmenu%c][%c%d%c]\n", qt, qt, qt, qt, qt, i, qt); } } /:/ { path=$0; next; } /./ { printf("%s\t%s\n", path, $0); }' \
+	| gawk -- 'BEGIN { qt=39; for (i=1; i<=5; i++) { printf("../--manually-added--/:\t$ccms[%clang%c][%cmenu%c][%c%d%c]\n", qt, qt, qt, qt, qt, i, qt); } } /:/ { path=$0; next; } /./ { printf("%s\t%s\n", path, $0); }' \
 	| sort | uniq | tee ccms_lang_entries_log.txt \
+	> ccms_lang_entries.txt.tmp
+	
+# also find all template references to '{%lang:xyz:abc%}' template args as those are language items as well:
+# these are the template-language equivalent of $ccms['lang']['xyz']['abc']
+find ../lib/templates -type f -print0 \
+	| xargs -0 grep -e "\{%lang\:" \
+	| sed -e 's/{%/\n\$ccms\[/g' -e 's/\:/\]\[/g' -e 's/%}/\]\n/g' \
+	| grep -e "^\(\$ccms\['lang'\].*\]\)$\|^\(../[.a-zA-Z0-9_/-]\+\:\)$" \
+	| gawk -- ' /:/ { path=$0; next; } /./ { printf("%s\t%s\n", path, $0); }' \
+	| sort | uniq | tee -a ccms_lang_entries_log.txt \
+	>> ccms_lang_entries.txt.tmp
+
+# marge both and turn them into one	
+cat ccms_lang_entries.txt.tmp \
 	| sed -e 's/^.*:\t//' \
 	| sort | uniq \
 	> ccms_lang_entries.txt
+	
+
 
  
 # now get the language files and check each to see whether we're having missing and/or superfluous items in there.
@@ -194,6 +210,7 @@ done
 rm lang_diff.$$.tmp
 rm lang_list.$$.tmp
 rm lang.$$.php.tmp
+rm ccms_lang_entries.txt.tmp
 rm ccms_lang_entries.txt
 # keep the ccms_lang_entries_log.txt
 
