@@ -84,11 +84,9 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 	$limit 	= (isset($_GET['offset'])&&$_GET['offset']>0?($_GET['offset']*$max).','.$max:"0,$max");
 	$total	= count($db->QueryArray("SELECT commentID FROM `".$cfg['db_prefix']."modcomment` WHERE pageID='$pageID'"));
 	
-	$locale = (!empty($rsLoc)?$rsLoc:'eng');
-
 	// Set front-end language
-	setlocale(LC_ALL, $locale);
-	
+	SetUpLanguageAndLocale($rsLoc);
+
 	// Load recordset
 	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modcomment` WHERE pageID='$pageID' ORDER BY `commentID` DESC LIMIT $limit");
 	
