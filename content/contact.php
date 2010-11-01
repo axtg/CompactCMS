@@ -3,7 +3,8 @@
 $action_type = (!empty($_GET['do']))?$_GET['do']:null;
 
 // If the action type is equal to send, then continue
-if($action_type=='send' && !empty($_POST)) {
+if($action_type=='send' && !empty($_POST) && $_POST['verification']==$_SESSION['ccms_captcha']) 
+{
 	$subject = $_POST['subject'];
 	$message = $_POST['message'];
 	$headers = 'From: '.$_POST['name'].' <'.$_POST['email'].'>' . "\r\n";
@@ -12,8 +13,9 @@ if($action_type=='send' && !empty($_POST)) {
 		exit();
 	} else die("<p class=\"error center\">Error while processing your e-mail</p>");
 }
-else {
-	$_SESSION['captcha'] = mt_rand('123456','987654'); 
+else 
+{
+	$_SESSION['ccms_captcha'] = mt_rand('123456','987654'); 
 }
 
 ?>
@@ -67,9 +69,9 @@ window.addEvent('domready', function(){
 		<label class="clear" for="email">Your e-mail</label><input type="text" name="email" value="" id="email" class="text required validate-email" /><br/><br/>
 		<label class="clear" for="subject">Subject</label><input type="text" name="subject" value="" id="subject" class="text required" /><br/><br/>
 		<label class="clear" for="message">Message content</label><textarea name="message" id="message" class="minLength:10" rows="8" cols="40"></textarea>
-		<p>And to check that this message isn't automated... Please re-enter <span style="font-weight:bold;color: #f00;"><?php echo $_SESSION['captcha']; ?></span>.</p>
+		<p>And to check that this message isn't automated... Please re-enter <span style="font-weight:bold;color: #f00;"><?php echo $_SESSION['ccms_captcha']; ?></span>.</p>
 		<label for="verification">Verification</label><input type="text" name="verification" maxlength="6" value="" id="verification" class="required validate-match matchInput:'captcha_check' matchName:'captcha' text"/><br/><br/>
-		<input type="hidden" name="captcha_check" value="<?php echo $_SESSION['captcha']; ?>" id="captcha_check" />
+		<input type="hidden" name="captcha_check" value="<?php echo $_SESSION['ccms_captcha']; ?>" id="captcha_check" />
 		
 		<p class="prepend-7"><button type="submit">Send e-mail &rarr;</button></p>
 	</fieldset>

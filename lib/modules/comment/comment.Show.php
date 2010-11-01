@@ -34,7 +34,7 @@ if(!defined("COMPACTCMS_CODE")) die('Illegal entry point!');
 
 
 // Set Captcha value
-$_SESSION['captcha'] = rand('123456','987654'); 
+$_SESSION['ccms_captcha'] = mt_rand('123456','987654'); 
 
 // Load comment preferences
 $pageID	= (isset($_GET['page'])?$_GET['page']:null);
@@ -75,10 +75,10 @@ window.addEvent('domready',function(){var req=new Request.HTML({useSpinner:true,
 				<option value="4">4 ****</option>
 				<option value="5">5 *****</option>
 			</select><br/>
-			<p><?php echo $ccms['lang']['guestbook']['verinstr']; ?> <span style="font-weight:bold;color: #f00;"><?php echo $_SESSION['captcha']; ?></span>.</p>
+			<p><?php echo $ccms['lang']['guestbook']['verinstr']; ?> <span style="font-weight:bold;color: #f00;"><?php echo $_SESSION['ccms_captcha']; ?></span>.</p>
 			<label for="verification"><?php echo $ccms['lang']['guestbook']['verify']; ?></label><input type="input" name="verification" style="width:50px;" maxlength="6" value="" id="verification" class="required validate-match matchInput:'captcha_check' matchName:'captcha' text"/>
 			
-			<input type="hidden" name="captcha_check" value="<?php echo $_SESSION['captcha']; ?>" id="captcha_check" />
+			<input type="hidden" name="captcha_check" value="<?php echo $_SESSION['ccms_captcha']; ?>" id="captcha_check" />
 			<input type="hidden" name="pageID" value="<?php echo $_GET['page']; ?>" id="pageID" />
 			<p style="margin-bottom:20px;text-align:center;">
 				<button name="submit_gb" type="submit"><?php echo $ccms['lang']['guestbook']['add']; ?></button>
