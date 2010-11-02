@@ -35,12 +35,13 @@ RewriteBase /
 # Various rewrite rules
 ##
 
-RewriteRule ^([^/]*)/([^/]*)\.html$ 		index.php?page=$1&id=$2 [QSA]
-RewriteRule ^([^/]+)\.html$ 				index.php?page=$1 [QSA]
-RewriteRule ^([^/]+)\.print$				afdrukken.php?page=$1 [L]
+RewriteRule ^([^/]*)/([^/]*)\.html$             index.php?page=$1&id=$2 [QSA]
+RewriteRule ^([^/]*)/([^/]*)\.print$            index.php?page=$1&id=$2&printing=Y [QSA]
+RewriteRule ^([^/]+)\.html$                     index.php?page=$1 [QSA]
+RewriteRule ^([^/]+)\.print$                    index.php?page=$1&printing=Y [L]
 RewriteRule ^lib/includes/js/(.+\.js)$ 		lib/includes/combine.inc.php?type=javascript&files=$1 [L]
 RewriteRule ^admin/img/styles/(.+\.css)$ 	lib/includes/combine.inc.php?type=css&files=$1 [L]
-RewriteRule ^sitemap\.xml$ 					lib/sitemap.php [L]
+RewriteRule ^sitemap\.xml$                      index.php?page=sitemap [L]
 
 ##
 # Security measures
@@ -49,11 +50,11 @@ RewriteCond %{QUERY_STRING} (.*)(http|https|ftp):\/\/(.*)
 RewriteRule ^(.+)$ - [F]
 
 <IfModule mod_security.c>
-	SecFilterEngine On
-	SecFilterDefaultAction "deny,log,status:403"
-	SecFilterScanPOST On
-	SecFilterCheckURLEncoding On
-	SecFilterCheckUnicodeEncoding Off
+    SecFilterEngine On
+    SecFilterDefaultAction "deny,log,status:403"
+    SecFilterScanPOST On
+    SecFilterCheckURLEncoding On
+    SecFilterCheckUnicodeEncoding Off
 </IfModule>
 
 ##
@@ -64,26 +65,26 @@ RewriteRule ^(.+)$ - [F]
 ##
 
 <IfModule mod_deflate.c>
-	SetOutputFilter DEFLATE
+    SetOutputFilter DEFLATE
 </IfModule>
 
 <IfModule mod_headers.c>
-	<FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|swf|mp3|mp4)$">
-	Header set Cache-Control "public"
-	Header set Expires "Fri, 1 Jun 2012 20:00:00 GMT"
-	Header unset Last-Modified
-	</FilesMatch>
-	<FilesMatch "\.(html|htm|xml|txt|xsl)$">
-	Header set Cache-Control "max-age=7200, must-revalidate"
-	</FilesMatch>
-	<FilesMatch "\.(js|css)$">
-	Header set Cache-Control "public"
-	Header set Expires "Sun, 1 Jun 2014 20:00:00 GMT"
-	Header unset Last-Modified
-	</FilesMatch>
-	
-	Header unset ETag
-	Header unset Pragma
+    <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|swf|mp3|mp4)$">
+    Header set Cache-Control "public"
+    Header set Expires "Fri, 1 Jun 2012 20:00:00 GMT"
+    Header unset Last-Modified
+    </FilesMatch>
+    <FilesMatch "\.(html|htm|xml|txt|xsl)$">
+    Header set Cache-Control "max-age=7200, must-revalidate"
+    </FilesMatch>
+    <FilesMatch "\.(js|css)$">
+    Header set Cache-Control "public"
+    Header set Expires "Sun, 1 Jun 2014 20:00:00 GMT"
+    Header unset Last-Modified
+    </FilesMatch>
+    
+    Header unset ETag
+    Header unset Pragma
 </IfModule>
 
 FileETag None
