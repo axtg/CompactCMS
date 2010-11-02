@@ -46,7 +46,8 @@ if(!empty($pageID))
 	$numCfg	= $db->RowCount();
 }
 $locale 	= ($numCfg>0?$rsCfg->showLocale:$cfg['locale']);
-$newspages	= $db->QueryArray("SELECT urlpage FROM `".$cfg['db_prefix']."pages` WHERE module='news'");
+// we only need to check if the given page is a valid news page...
+$news_in_page = $db->SelectSingleValue($cfg['db_prefix']."pages", array('module' => "'news'", 'urlpage' => MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT)), array('urlpage'));
 if ($db->Error()) $db->Kill();
 
 // Set front-end language
@@ -56,28 +57,28 @@ SetUpLanguageAndLocale($locale);
 $special_chars = array("#","$","%","@","^","&","*","!","~","‘","\"","’","'","=","?","/","[","]","(",")","|","<",">",";","\\",",");
 
 // Do actions for overview
-if(!isset($_GET['id'])||empty($_GET['id'])) 
+if(empty($id)) 
 {
-	if(in_array($pageID, $newspages[0])) 
+	if($news_in_page) 
 	{
 		// Load recordset for all news on specific news page
-		$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsPublished>'0' AND pageID='$pageID' ORDER BY newsModified DESC");
+		$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsPublished<>'0' AND pageID=" . MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT) . " ORDER BY newsModified DESC");
 	} 
-	elseif(!in_array($pageID, $newspages[0])) 
+	else 
 	{
 		// Load recordset for all news on any page
-		$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsPublished>'0' ORDER BY newsModified DESC");
+		$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsPublished<>'0' ORDER BY newsModified DESC");
 	}
 } 
-elseif(isset($_GET['id'])&&!empty($_GET['id'])) 
+else 
 {
 	// Do actions for specific news
-
+	
 	// Define requested news item
-	$newsID = explode("-",$_GET['id']);
+	$newsID = explode("-", $id, 2);
 	
 	// Load recordset for newsID
-	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsID=".$newsID[0]." AND newsPublished>'0' AND pageID='$pageID'");
+	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsID=".MySQL::SQLValue($newsID[0], MySQL::SQLVALUE_NUMBER)." AND newsPublished<>'0' AND pageID=".MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT));
 }
 
 ?>
@@ -119,10 +120,10 @@ if($db->HasRecords())
 				<?php 
 				} 
 
-				if(!isset($_GET['id'])||empty($_GET['id'])) 
+				if(empty($id)) 
 				{ 
 					// Filter spaces, non-file characters and account for UTF-8
-					$newsTitle = @htmlentities(strtolower($rsNews->newsTitle),ENT_COMPAT,'UTF-8');
+					$newsTitle = htmlentities(strtolower($rsNews->newsTitle),ENT_COMPAT,'UTF-8');
 					$newsTitle = str_replace($special_chars, "", $newsTitle); 
 					$newsTitle = str_replace(' ','-',$newsTitle);
 					
@@ -200,7 +201,7 @@ if($db->HasRecords())
 			$rsNews = $db->Row();
 	    	
 			// Filter spaces, non-file characters and account for UTF-8
-			$newsTitle = @htmlentities(strtolower($rsNews->newsTitle),ENT_COMPAT,'UTF-8');
+			$newsTitle = htmlentities(strtolower($rsNews->newsTitle),ENT_COMPAT,'UTF-8');
   			$newsTitle = str_replace($special_chars, "", $newsTitle); 
 			$newsTitle = str_replace(' ','-',$newsTitle); 
 			?>
