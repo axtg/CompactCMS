@@ -84,17 +84,17 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 
 
 
+$do_update_or_livefilter = ($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST");
+
+
+$page_selectquery_restriction = '';
+
 // Open recordset for sites' pages
-$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` ORDER BY `published`, `menu_id`, `toplevel` ASC, `sublevel` ASC");
+$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` " . $page_selectquery_restriction . " ORDER BY `published`, `menu_id`, `toplevel`, `sublevel` ASC");
 
 // Check whether the recordset is not empty
 if($db->HasRecords()) 
 {
-
-	// Set the pointer to the first row
-	$db->MoveFirst();
-
-
 	// Set the target for PHP processing
 	$target_form = getPOSTparam4IdOrNumber('form');
 
@@ -103,7 +103,7 @@ if($db->HasRecords())
 	 * Render the dynamic list with files
 	 *
 	 */
-	if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
+	if ($do_update_or_livefilter && checkAuth()) 
 	{
 		$i = 0;
 		
@@ -325,6 +325,7 @@ if($db->HasRecords())
 			
 			$i = 0;
 			// Get previously opened DB stream
+			$db->MoveFirst();
 			while (!$db->EndOfSeek()) 
 			{
 				// Fill $row with values
@@ -551,7 +552,7 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 			else 
 				die($ccms['lang']['system']['error_create']);
 		} 
-		elseif(mysql_errno() == "1062") 
+		elseif($db->ErrorNumber() == 1062) 
 		{
 			die("<p class=\"h1\"><span class=\"ss_sprite ss_exclamation\" title=\"".$ccms['lang']['system']['error_general']."\"></span> ".$ccms['lang']['backend']['fileexists']."</p>- ".$ccms['lang']['system']['error_exists']); 
 		} 
@@ -652,7 +653,7 @@ if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 		echo '<p class="h1"><span class="ss_sprite ss_accept" title="'.$ccms['lang']['backend']['success'].'"></span> '.$ccms['lang']['backend']['success'].'</p>'.$ccms['lang']['backend']['orderprefsaved'];
 	} 
 	else 
-		die($db->Error($ccms['lang']['system']['error_general']));
+		$db->Kill($ccms['lang']['system']['error_general']);
 }
 
  /**
@@ -692,19 +693,19 @@ if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] != "POST" && checkA
 	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values["$action"] = MySQL::SQLValue($new,MySQL::SQLVALUE_Y_N);
 	
-	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id[1]))) 
+	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id[1],MySQL::SQLVALUE_NUMBER)))) 
 	{
 		if($new == "Y") 
 		{ 
 			echo $ccms['lang']['backend']['yes']; 
 		} 
 		else 
+		{
 			echo $ccms['lang']['backend']['no'];
+		}
 	} 
 	else 
-	} 
-	else 
-		die($db->Error($ccms['lang']['system']['error_general']));
+		$db->Kill($ccms['lang']['system']['error_general']);
 }
 
 /**
@@ -747,7 +748,7 @@ if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values["$dest"]= MySQL::SQLValue($content,MySQL::SQLVALUE_TEXT);
 	
-	if (!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id))) 
+	if (!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id,MySQL::SQLVALUE_NUMBER))))
 		$db->Kill();
 	if (!get_magic_quotes_gpc()) 
 	{
@@ -866,7 +867,7 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 			$values["userLast"]	= MySQL::SQLValue($_POST['last'],MySQL::SQLVALUE_TEXT);
 			$values["userEmail"]= MySQL::SQLValue($_POST['email'],MySQL::SQLVALUE_TEXT);
 			
-			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) 
+			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => MySQL::SQLValue($userID,MySQL::SQLVALUE_NUMBER)))) 
 			{
 				if($userID==$_SESSION['ccms_userID']) 
 				{

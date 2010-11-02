@@ -42,7 +42,7 @@ $id = getGETparam4IdOrNumber('id');
 $numCfg = 0;
 if(!empty($pageID)) 
 {
-	$rsCfg	= $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgnews` WHERE pageID='$pageID'");
+	$rsCfg	= $db->SelectSingleRow($cfg['db_prefix']."cfgnews", array('pageID' => MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT)));
 	$numCfg	= $db->RowCount();
 }
 $locale 	= ($numCfg>0?$rsCfg->showLocale:$cfg['locale']);
@@ -176,7 +176,7 @@ if($db->HasRecords())
 					} 
 					?>
 					<p>&laquo; <a href="<?php echo $cfg['rootdir'].$rsNews->pageID; ?>.html?do=all"><?php echo $ccms['lang']['news']['viewarchive']; ?></a> | <a href="<?php echo $cfg['rootdir'].$rsNews->pageID; ?>.html"><?php 
-						echo $db->QuerySingleValue("SELECT `pagetitle` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '".$rsNews->pageID."'"); 
+						echo $db->QuerySingleValue("SELECT `pagetitle` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = ".MySQL::SQLValue($rsNews->pageID, MySQL::SQLVALUE_TEXT)); 
 					?></a></p>
 				<?php 
 				} 
