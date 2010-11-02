@@ -129,6 +129,8 @@ function confirmation()
 		<?php 
 		for ($i = 0; $i < count($pages); $i++) 
 		{ 
+			$users_owning_page = explode('||', $pages[$i]['user_ids']);
+			
 		?>
 			<tr>			
 			<td class="span-4" style="padding-left:2px;background-color:<?php echo ($i%2!=1?'#EAF3E2;':'#fff;'); ?>border-right:solid #AD8CCF 2px;">
@@ -139,14 +141,23 @@ function confirmation()
 				{ 
 				?>
 					<td class="hover center">
-						<label for="<?php echo $i.$ar2;?>"><span>
+						<label for="<?php echo $i.'_'.$ar2;?>"><span>
 						<input type="checkbox" name="owner[]" 
 						<?php 
-						if(strstr($pages[$i]['user_ids'], $users[$ar2]['userID'])!==false) 
+						/*
+						This code is a security issue of another kind: user ownership settings will OVERLAP for certain users when their IDs are substrings, e.g. user #1 will have everything user #11 has as well.
+						
+						if(strstr($pages[$i]['user_ids'], $users[$ar2]['userID'])!==false)
+						
+						Hence the code is replaced with an explode plus array scan. Another way to solve would be padding the rights string with leading and trailing '||' and then
+						regex matching against "/||$userid||/".
+						
+						*/
+						if (in_array($users[$ar2]['userID'], $users_owning_page))
 						{
 							echo 'checked';
 						} 
-						?> value="<?php echo $users[$ar2]['userID'].'||'.$pages[$i]['page_id'];?>" id="<?php echo $i.$ar2;?>" />
+						?> value="<?php echo $users[$ar2]['userID'].'||'.$pages[$i]['page_id'];?>" id="<?php echo $i.'_'.$ar2;?>" />
 						</span></label>
 					</td>
 				<?php 
