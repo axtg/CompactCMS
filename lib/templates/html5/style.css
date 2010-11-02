@@ -39,8 +39,8 @@ header, section, article, footer {
 	margin:10px;
 	border:1px solid #e7e2d7;
 	border-radius:8px;
-	-webkit-border-radius:.8em;
-	-moz-border-radius:.8em;
+	-webkit-border-radius:8px;
+	-moz-border-radius:8px;
 	background:#fff url(sprites.png) repeat-x 0px -120px;
 }
 
@@ -178,8 +178,8 @@ input, textarea {
 	color:#968765;
 	border:1px solid #e7e2d7;
 	border-radius:3px;
-	-webkit-border-radius:.3em;
-	-moz-border-radius:.3em;
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;
 	padding:2px 4px;
 	width:168px;
 	background:#fff url(sprites.png) repeat-x 0px -120px;
