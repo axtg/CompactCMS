@@ -59,10 +59,106 @@ $do = getGETparam4IdOrNumber('do');
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
+
+
+// Read through selected album, get first and count all
+function fileList($d)
+{
+	$l = array();
+	foreach(array_diff(scandir($d),array('.','..','index.html','info.txt','_thumbs')) as $f) 
+	{
+		if(is_file($d.'/'.$f)) 
+		{
+			$ext = strtolower(substr($f, strrpos($f, '.') + 1));
+			if ($ext=="jpg"||$ext=="jpeg"||$ext=="png"||$ext=="gif") 
+			{
+				$l[] = $f;
+			}
+   		}
+   	} 
+	sort($l, SORT_STRING);
+	return $l;
+} 
+
+
+function calc_thumb_padding($img_path, $thumb_path = null, $max_height = 80, $max_width = 80)
+{
+	$show_thumb = 0;
+	$height = null;
+	$width = null;
+	$aspect_ratio = null;
+	if(!empty($thumb_path) && file_exists($thumb_path))
+	{
+		$imginfo = @getimagesize($thumb_path);
+		if (!empty($imginfo[0]))
+		{
+			$height = floatval($imginfo[1]);
+			$width = floatval($imginfo[0]);
+			$aspect_ratio = (floatval($height)/floatval($width));
+		
+			$show_thumb = 1;
+		}
+	}
+	if ($show_thumb != 1)
+	{
+		$thumb_path = $img_path;
+		if(file_exists($thumb_path)) 
+		{
+			$imginfo = @getimagesize($thumb_path);
+			if (!empty($imginfo[0]))
+			{
+				$height = floatval($imginfo[1]);
+				$width = floatval($imginfo[0]);
+				$aspect_ratio = (floatval($height)/floatval($width));
+				
+				$show_thumb = 2;
+			}
+		}
+	}
+	
+	if ($show_thumb == 0)
+	{
+		return null;
+	}
+	
+	// Resize thumbnail to approx 80 x 80
+	$newheight = $height;
+	$newwidth = $width;
+	if ($newwidth > $max_width)
+	{
+		$newwidth = $max_width;
+		$newheight = intval($aspect_ratio * $newwidth);
+	}
+	if ($newheight > $max_height)
+	{
+		$newheight = $max_height;
+		$newwidth = intval($newheight / $aspect_ratio);
+	}
+	
+	// calc padding to fill box up to max_h x max_w
+	$pad_height = $max_height - $newheight;
+	$pad_width = $max_width - $newwidth;
+	
+	$rv = array();
+	$rv['h'] = $newheight;
+	$rv['w'] = $newwidth;
+	$rv['show'] = $show_thumb;
+	$rv['ph1'] = intval($pad_height / 2);
+	$pad_height -= $rv['ph1'];
+	$rv['ph2'] = $pad_height;
+	$rv['pw1'] = intval($pad_width / 2);
+	$pad_width -= $rv['pw1'];
+	$rv['pw2'] = $pad_width;
+	
+	$rv['style'] = 'style="padding:' . $rv['ph1'] . 'px ' . $rv['pw2'] . 'px ' . $rv['ph2'] . 'px ' . $rv['pw1'] . 'px; width:' . $rv['w'] . 'px; height:' . $rv['h'] . 'px;"';
+	
+	return $rv;
+}
+
+
 // Fill array with albums
 $albums = array();
 $count = array();
-$index = 0;
 
 if ($handle = opendir(BASE_PATH.'/media/albums/')) 
 {
@@ -72,25 +168,18 @@ if ($handle = opendir(BASE_PATH.'/media/albums/'))
 		{
 			// Fill albums array
 			$albums[] = $file;
-			
-			// Count files in album
-			if ($countdir = opendir(BASE_PATH.'/media/albums/'.$file)) 
-			{
-				$count[$index] = '0';
-				while (false !== ($counthandle = readdir($countdir))) 
-				{
-					$ext = strtolower(substr($counthandle, strrpos($counthandle, '.') + 1));
-					if ($ext=="jpg"||$ext=="jpeg"||$ext=="png"||$ext=="gif") 
-					{
-						$count[$index]++;
-					}
-				} 
-				closedir($countdir);
-			}
-			$index++;
 		} 
 	}
 	closedir($handle);
+	sort($albums, SORT_STRING);
+	
+	// to make sure $count[] array is in sync with the $albums[] array, we need to perform this extra round AFTER the sort() operation.
+	foreach($albums as $key => $file) 
+	{
+		// Count files in album
+		$images = fileList(BASE_PATH.'/media/albums/'.$file);
+		$count[$key] = count($images);
+	}
 }
 
 
@@ -153,7 +242,7 @@ function confirmation()
 				<h2><?php echo $ccms['lang']['album']['currentalbums']; ?></h2>
 				<table border="0" cellspacing="5" cellpadding="5">
 					<?php 
-					if(!empty($albums)) 
+					if(count($albums) > 0) 
 					{ 
 					?>
 					<tr>
@@ -170,11 +259,10 @@ function confirmation()
 						<th class="span-4"><?php echo $ccms['lang']['album']['lastmod']; ?></th>
 						</tr>
 						<?php 
-						$i = 0;
-						foreach ($albums as $value) 
+						foreach ($albums as $key => $value) 
 						{
 							// Alternate rows
-						    	if($i%2 != '1') 
+					    	if($key % 2 != 1) 
 							{
 								echo '<tr style="background-color: #E6F2D9;">';
 							} 
@@ -186,16 +274,15 @@ function confirmation()
 							if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 							{ 
 							?>
-								<td><input type="checkbox" name="albumID[<?php echo $i+1;?>]" value="<?php echo $value; ?>" id="newsID"></td>
+								<td><input type="checkbox" name="albumID[<?php echo $key+1;?>]" value="<?php echo $value; ?>" id="newsID"></td>
 							<?php 
 							} 
 							?>
 							<td><span class="ss_sprite ss_folder_picture"><a href="lightbox.Manage.php?album=<?php echo $value;?>"><?php echo $value;?></a></span></td>
-							<td><span class="ss_sprite ss_pictures"><?php echo ($count[$i]>0?$count[$i]:'0'); ?></span></td>
+							<td><span class="ss_sprite ss_pictures"><?php echo $count[$key]; ?></span></td>
 							<td><span class="ss_sprite ss_calendar"><?php echo date("Y-m-d G:i:s", filemtime(BASE_PATH.'/media/albums/'.$value)); ?></td>
 						</tr>
 						<?php
-				  			$i++;
 		  				}
 	  				} 
 					else 
@@ -217,18 +304,18 @@ function confirmation()
 		elseif($album_path!=null) 
 		{ 
 			// Load all images
-			$images = array();
-			if ($handle = opendir($album_path)) 
+			$images = fileList($album_path);
+			$imagethumbs = array();
+			$imginfo = array();
+			if (count($images) > 0)
 			{
-				while (false !== ($file = readdir($handle))) 
+				foreach($images as $index => $file) 
 				{
-					$ext = strtolower(substr($file, strrpos($file, '.') + 1));
-					if ($ext=="jpg"||$ext=="jpeg"||$ext=="png"||$ext=="gif") 
-					{
-						$images[$file] = '../../../media/albums/'.$_GET['album'].'/_thumbs/'.$file;
-					}
+					$imagethumbs[$index] = '../../../media/albums/'.$_GET['album'].'/_thumbs/'.$file;
+					$thumb_path = $album_path.'/_thumbs/'.$file;
+					$img_path = $album_path.'/'.$file;
+					$imginfo[$index] = calc_thumb_padding($img_path, $thumb_path);
 				} 
-				closedir($handle);
 			} 
 			?>
 			<h2><?php echo $ccms['lang']['album']['manage']; ?></h2>
@@ -237,19 +324,16 @@ function confirmation()
 			{ 
 				if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 				{
-				?>
-					<a onclick="return confirmation()" href="lightbox.Process.php?album=<?php echo $_GET['album']; ?>&amp;image=<?php echo $key; ?>&amp;action=del-image">
-				<?php 
+					echo '<a onclick="return confirmation();" href="lightbox.Process.php?album=' . $_GET['album'] . '&amp;image=' . $value . '&amp;action=del-image" title="' . $ccms['lang']['backend']['delete'] . ': ' . $value . '">';
 				} 
-				?>
-					<img src="<?php echo $value; ?>" class="thumbview" alt="Thumbnail of <?php echo $key; ?>" />
-				<?php 
+
+				echo '<img src="' . $imagethumbs[$key] . '" class="thumbview" alt="Thumbnail of ' . $value . '" ' . $imginfo[$key]['style'] . ' />';
+
 				if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 				{
-				?>
-					</a>
-				<?php 
+					echo '</a>';
 				} 
+				echo "\n";
 			} 
 			?>
 				
@@ -305,7 +389,7 @@ function confirmation()
 					?>
 				</select>
 				<?php
-					$desc = null;
+					$desc = '';
 					for ($x=1; $x<count($lines); $x++) 
 					{
     						$desc = trim($desc.' '.htmlspecialchars($lines[$x]));

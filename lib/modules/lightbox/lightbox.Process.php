@@ -309,39 +309,64 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files")
 		$src = imagecreatefromgif($uploadedfile);
 	}
 		 
-	list($width,$height)=getimagesize($uploadedfile);
-	
-	// Resize original file to max 640 x 480
-	$newwidth	= '640';
-	$newheight	= ($height/$width)*$newwidth;
-	$tmp		= imagecreatetruecolor($newwidth,$newheight);
-	imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height);
-	
-	// Resize thumbnail to approx 80 x 80
-	$newwidth_t	= '80';
-	$newheight_t= ($height/$width)*$newwidth_t;
-	$tmp_t		= imagecreatetruecolor($newwidth_t,$newheight_t);
-	imagecopyresampled($tmp_t,$src,0,0,0,0,$newwidth_t,$newheight_t,$width,$height);
-	
-	// Save newly generated versions
-	$thumbnail	= $dest.'/_thumbs/'. $_FILES['Filedata']['name'];
-	$original	= $dest.'/'.$_FILES['Filedata']['name'];
-	
-	if($extension=="jpg" || $extension=="jpeg" ) 
-	{
-		imagejpeg($tmp, $original, 100);
-		imagejpeg($tmp_t, $thumbnail, 100);
-	} 
-	elseif($extension=="png") 
-	{
-		imagepng($tmp, $original, 7);
-		imagepng($tmp_t, $thumbnail, 7);
-	} 
-	else 
-	{
-		imagegif($tmp, $original, 100);
-		imagegif($tmp_t, $thumbnail, 100);
-	}
+		list($width,$height)=getimagesize($uploadedfile);
+		
+		$aspect_ratio = (floatval($height)/floatval($width));
+		
+		// Resize original file to max 640 x 480
+		$newheight = $height;
+		$newwidth = $width;
+		if ($newwidth > 640)
+		{
+			$newwidth	= 640;
+			$newheight	= intval($aspect_ratio * $newwidth);
+		}
+		if ($newheight > 480)
+		{
+			$newheight = 480;
+			$newwidth = intval($newheight / $aspect_ratio);
+		}
+		$tmp = imagecreatetruecolor($newwidth,$newheight);
+		imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height);
+		
+		// Resize thumbnail to approx 80 x 80
+		$newheight_t = $height;
+		$newwidth_t = $width;
+		if ($newwidth_t > 80)
+		{
+			$newwidth_t = 80;
+			$newheight_t = intval($aspect_ratio * $newwidth_t);
+		}
+		if ($newheight_t > 80)
+		{
+			$newheight_t = 80;
+			$newwidth_t = intval($newheight_t / $aspect_ratio);
+		}
+		$tmp_t = imagecreatetruecolor($newwidth_t,$newheight_t);
+		imagecopyresampled($tmp_t,$src,0,0,0,0,$newwidth_t,$newheight_t,$width,$height);
+		
+		// Save newly generated versions
+		$thumbnail	= $dest.'/_thumbs/'. $_FILES['Filedata']['name'];
+		$original	= $dest.'/'.$_FILES['Filedata']['name'];
+		
+		if($extension=="jpg" || $extension=="jpeg" ) 
+		{
+			imagejpeg($tmp, $original, 100);
+			imagejpeg($tmp_t, $thumbnail, 100);
+		} 
+		elseif($extension=="png") 
+		{
+			imagepng($tmp, $original, 7);
+			imagepng($tmp_t, $thumbnail, 7);
+		} 
+		else 
+		{
+			imagegif($tmp, $original, 100);
+			imagegif($tmp_t, $thumbnail, 100);
+		}
+		
+		imagedestroy($tmp);
+		imagedestroy($tmp_t);
 	
 
 	// Check for errors
