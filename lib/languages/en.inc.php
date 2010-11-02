@@ -72,9 +72,12 @@ $ccms['lang']['backend']['ordertip'] 		= "Use the drop-downs below to reflect th
 $ccms['lang']['backend']['createtip'] 		= "To create a new page, fill out the form below and a new page will be created for you on the fly. After the file has been created, you'll be able to edit the page as usual.";
 $ccms['lang']['backend']['currentfiles'] 	= "In the listing below you'll find all pages currently published. You'll notice that the file default page can not be deleted, because it is the current homepage of your website. Other files may have restricted access because the administrator has sole ownership over these files.";
 $ccms['lang']['backend']['confirmdelete'] 	= "Please confirm that you want to delete the selected item(s).";
+$ccms['lang']['backend']['confirmthumbregen'] 	= "Please confirm that you want to regenerate all thumbnails.";
 $ccms['lang']['backend']['settingssaved']	= "Your changes have been successfully saved.";
+$ccms['lang']['backend']['must_refresh']	= "Please make sure to reload the main page to see <strong>all</strong> your changes";
 $ccms['lang']['backend']['itemcreated']		= "Successfully processed the submitted item(s).";
 $ccms['lang']['backend']['fullremoved']		= "Successfully deleted the selected item(s).";
+$ccms['lang']['backend']['fullregenerated']	= "Successfully regenerated the thumbnails.";
 $ccms['lang']['backend']['tooverview']		= "Back to overview";
 $ccms['lang']['backend']['permissions']		= "Set CCMS permissions";
 $ccms['lang']['backend']['contentowners']	= "Define content owners";
@@ -154,6 +157,7 @@ $ccms['lang']['forms']['createbutton'] 	= "Create!";
 $ccms['lang']['forms']['modifybutton'] 	= "Modify";
 $ccms['lang']['forms']['savebutton'] 	= "Save";
 $ccms['lang']['forms']['setlocale']		= "Front-end language";
+$ccms['lang']['forms']['filter_showing']	= "Right now we're only showing pages which have at least this text in here";
 
 // Administration hints for form fields
 $ccms['lang']['hints']['filename']		= "The page url (home.html) :: The file name which this page is called upon (without .html)";
@@ -191,7 +195,7 @@ $ccms['lang']['auth']['featnotallowed']	= "Your current account level does not a
 
 // Back-up messages
 $ccms['lang']['backup']['createhd']		= "Create new back-up";
-$ccms['lang']['backup']['explain']		= "To prevent possible loss of data due to whatever external event, it's wise to create back-ups of your files reguraly.";
+$ccms['lang']['backup']['explain']		= "To prevent possible loss of data due to whatever external event, it's wise to create back-ups of your files regularly.";
 $ccms['lang']['backup']['currenthd']	= "Available back-ups";
 $ccms['lang']['backup']['timestamp']	= "Back-up file name";
 $ccms['lang']['backup']['download']		= "Download archive";
@@ -218,6 +222,7 @@ $ccms['lang']['users']['lastlog']		= "Last log";
 // Template editor
 $ccms['lang']['template']['manage']		= "Manage templates";
 $ccms['lang']['template']['nowrite']	= "The current template is <strong>not</strong> writable";
+$ccms['lang']['template']['print']		= "Print";
 
 // Permissions
 $ccms['lang']['permission']['header']	= "Permission preferences";
@@ -248,11 +253,13 @@ $ccms['lang']['album']['clear']			= "Clear list";
 $ccms['lang']['album']['singlefile']	= "<strong>Single file upload</strong><br/><p>The Flash loader failed to initialize. Make sure Javascript is enabled and Flash is installed. Single file uploads are possible, but not optimized.</p>";
 $ccms['lang']['album']['manage']		= "Manage album";
 $ccms['lang']['album']['albumlist']		= "Album list";
+$ccms['lang']['album']['regenalbumthumbs']	= "Regenerate all thumbnails";
 $ccms['lang']['album']['newalbum']		= "Create new album";
 $ccms['lang']['album']['noalbums']		= "No albums have been created yet!";
 $ccms['lang']['album']['files']			= "Files";
 $ccms['lang']['album']['nodir']			= "Please make sure the directory <strong>albums</strong> exists in the ./media/ directory";
 $ccms['lang']['album']['lastmod']		= "Last modified";
+$ccms['lang']['album']['please_wait'] 	= "Please wait ...";
 
 // News messages
 $ccms['lang']['news']['manage']			= "Manage current news items";
@@ -310,6 +317,7 @@ $ccms['lang']['guestbook']['posted']	= "Comment has been posted!";
 	$ccms['lang']['backend']['startedittitle'] 	
 	$ccms['lang']['backend']['updatelist']		
 	$ccms['lang']['editor']['closeeditor']	
+	$ccms['lang']['forms']['filter_showing']	
 	$ccms['lang']['guestbook']['posted']	
 	$ccms['lang']['guestbook']['reaction']	
 	$ccms['lang']['guestbook']['removed'] 	
@@ -318,6 +326,7 @@ $ccms['lang']['guestbook']['posted']	= "Comment has been posted!";
 	$ccms['lang']['system']['error_default']	
 	$ccms['lang']['system']['error_sitemap'] 	
 	$ccms['lang']['system']['tooriginal']		
+	$ccms['lang']['template']['print']		
        
          ----------------------------------------------------------
 	
@@ -333,11 +342,6 @@ $ccms['lang']['guestbook']['posted']	= "Comment has been posted!";
          ----------------------------------------------------------
       */
 	  
-$ccms['lang']['album']['please_wait'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['album']['please_wait']";
-$ccms['lang']['album']['regenalbumthumbs'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['album']['regenalbumthumbs']";
-$ccms['lang']['backend']['confirmthumbregen'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['confirmthumbregen']";
-$ccms['lang']['backend']['fullregenerated'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['fullregenerated']";
-$ccms['lang']['backend']['must_refresh'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['must_refresh']";
        
       /*
          ----------------------------------------------------------
