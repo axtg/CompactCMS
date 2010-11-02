@@ -34,8 +34,6 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 // System wide messages
 $ccms['lang']['system']['error_database'] 	= "Die Verbindung zur Datenbank konnte nicht hergestellt werden. Bitte die Login-Details und das Datenbank-Passwort überprüfen.";
 $ccms['lang']['system']['error_openfile'] 	= "Kann die angegebene Datei nicht öffnen";
-$ccms['lang']['system']['error_notemplate']	= "No templates could be found to be applied to your site. Please add at least one template to ./lib/templates/.";
-$ccms['lang']['system']['error_templatedir'] = "Couldn't find the templates directory! Make sure it exists and contains at least one template.";
 $ccms['lang']['system']['error_write'] 		= "Datei hat keine Schreibberechtigung";
 $ccms['lang']['system']['error_chmod'] 		= "Die Datei kann nicht geändert werden. Überprüfen Sie die Dateiberechtigung (666).";
 $ccms['lang']['system']['error_value'] 		= "Fehler: falsche Eingabe";
@@ -54,7 +52,7 @@ $ccms['lang']['system']['error_exists'] 	= "Der Dateiname besteht bereits.";
 $ccms['lang']['system']['error_delete']		= "Fehler beim Löschen der ausgewählten Datei";
 $ccms['lang']['system']['error_selection'] 	= "Es wurde keine Datei ausgewählt.";
 $ccms['lang']['system']['error_versioninfo'] = "Keine Versionsinformationen verfügbar.";
-$ccms['lang']['system']['error_misconfig']	= "<strong>Es schint ein Fehler bei der Konfiguration vorzuliegen.</strong><br/>Die .htaccess Datei muss korrekt konfiguriert sein um die Dateistruktur wiederzugeben. Wenn<br/>CompactCMS in ein Unterverzeichnis installiert wurde, muss 
+$ccms['lang']['system']['error_misconfig']	= "<strong>Es scheint ein Fehler bei der Konfiguration vorzuliegen.</strong><br/>Die .htaccess Datei muss korrekt konfiguriert sein um die Dateistruktur wiederzugeben. Wenn<br/>CompactCMS in ein Unterverzeichnis installiert wurde, muss 
 die .htaccess Datei dementsprechend angepasst werden.";
 $ccms['lang']['system']['error_deleted']	= "<h1>Die ausgew&auml;hlte Datei schein gel&oouml;scht worden zu sein</h1><p>Um diesen Fehler zu vermeiden, 
 
@@ -112,7 +110,6 @@ $ccms['lang']['backend']['yes']				= "Ja";
 $ccms['lang']['backend']['no']				= "Nein";
 
 // Texts for authentication screen
-$ccms['lang']['login']['welcome']			= "<p>Use a valid username and password to gain access to the CompactCMS back-end. If you arrived here by mistake, return to the <a href='../../'>home page</a>.</p><p>Contact your webmaster for your details.</p>";
 $ccms['lang']['login']['username']			= "Username";
 $ccms['lang']['login']['password']			= "Password";
 $ccms['lang']['login']['login']				= "Login";
@@ -274,8 +271,8 @@ $ccms['lang']['album']['currentalbums']	= "Current albums";
 $ccms['lang']['album']['description']	= "Album description";
 $ccms['lang']['album']['files']			= "Files";
 $ccms['lang']['album']['lastmod']		= "Last modified";
-$ccms['lang']['album']['please_wait'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['album']['please_wait']";
-$ccms['lang']['album']['regenalbumthumbs'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['album']['regenalbumthumbs']";
+$ccms['lang']['album']['please_wait'] 	= "Please wait ...";
+$ccms['lang']['album']['regenalbumthumbs']	= "Regenerate all thumbnails";
 $ccms['lang']['album']['settings']		= "Album settings";
 $ccms['lang']['album']['singlefile']	= "<strong>Single file upload</strong><br/><p>The Flash loader failed to initialize. Make sure Javascript is enabled and Flash is installed. Single file uploads are possible, but not optimized.</p>";
 $ccms['lang']['album']['toexisting']	= "Upload to existing album";
@@ -283,12 +280,12 @@ $ccms['lang']['album']['upload']		= "Start upload";
 $ccms['lang']['album']['uploadcontent']	= "Upload content";
 $ccms['lang']['auth']['featnotallowed']	= "Your current account level does not allow you to use this feature.";
 $ccms['lang']['auth']['generatepass'] 	= "Auto generate a safe password";
-$ccms['lang']['backend']['confirmthumbregen'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['confirmthumbregen']";
+$ccms['lang']['backend']['confirmthumbregen'] 	= "Please confirm that you want to regenerate all thumbnails.";
 $ccms['lang']['backend']['contentowners']	= "Define content owners";
-$ccms['lang']['backend']['fullregenerated'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['fullregenerated']";
+$ccms['lang']['backend']['fullregenerated']	= "Successfully regenerated the thumbnails.";
 $ccms['lang']['backend']['fullremoved']		= "Successfully deleted the selected item(s).";
 $ccms['lang']['backend']['itemcreated']		= "Successfully processed the submitted item(s).";
-$ccms['lang']['backend']['must_refresh'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['must_refresh']";
+$ccms['lang']['backend']['must_refresh']	= "Please make sure to reload the main page to see <strong>all</strong> your changes";
 $ccms['lang']['backend']['none']			= "None";
 $ccms['lang']['backend']['permissions']		= "Set CCMS permissions";
 $ccms['lang']['backend']['settingssaved']	= "Your changes have been successfully saved.";
@@ -297,6 +294,7 @@ $ccms['lang']['backend']['tooverview']		= "Back to overview";
 $ccms['lang']['backend']['usermanagement']	= "User management";
 $ccms['lang']['forms']['modifybutton'] 	= "Modify";
 $ccms['lang']['forms']['setlocale']		= "Front-end language";
+$ccms['lang']['login']['welcome']			= "<p>Use a valid username and password to gain access to the CompactCMS back-end. If you arrived here by mistake, return to the <a href='../../'>home page</a>.</p><p>Contact your webmaster for your details.</p>";
 $ccms['lang']['news']['addnews']		= "Add news";
 $ccms['lang']['news']['addnewslink']	= "Write new article";
 $ccms['lang']['news']['author']			= "News author";
@@ -327,6 +325,7 @@ $ccms['lang']['permission']['target']	= "Target";
 $ccms['lang']['system']['error_dirwrite']	= "Directory has no write access";
 $ccms['lang']['system']['error_passnequal']	= "The entered passwords did not match";
 $ccms['lang']['system']['error_passshort']	= "A password should contain more than 6 characters";
+$ccms['lang']['system']['error_templatedir'] = "Couldn't find the templates directory! Make sure it exists and contains at least one template.";
 $ccms['lang']['system']['error_tooshort']	= "One or multiple submitted values were either too short or incorrect";
 $ccms['lang']['system']['noresults']		= "No results";
 $ccms['lang']['template']['manage']		= "Manage templates";

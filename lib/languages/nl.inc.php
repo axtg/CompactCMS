@@ -118,6 +118,9 @@ $ccms['lang']['backend']['item'] 			= "Item";
 $ccms['lang']['backend']['none']			= "Geen";
 $ccms['lang']['backend']['yes'] 			= "Ja";
 $ccms['lang']['backend']['no'] 				= "Nee";
+$ccms['lang']['backend']['confirmthumbregen'] 	= "Bevestig a.u.b. dat u alle mini-afbeeldingen wilt regeneren. Dit kan even duren.";
+$ccms['lang']['backend']['fullregenerated']	= "De mini-afbeeldingen zijn volledig geregenereerd.";
+$ccms['lang']['backend']['must_refresh']	= "Merk op dat het verstandig is om de admin pagina te herladen (functietoets F5) om <em>alle</em> wijzigingen in de rechten direct terug te zien!";
 
 // Texts for authentication screen
 $ccms['lang']['login']['welcome']			= "<p>Gebruik een geldige gebruikersnaam en wachtwoord om in te loggen op CompactCMS. Indien u hier per abuis belandde, keer dan terug naar de <a href='../../'>start pagina</a>.</p><p>E-mail de webmaster voor uw gegevens.</p>";
@@ -250,6 +253,11 @@ $ccms['lang']['album']['noalbums']		= "Er zijn nog geen albums aangemaakt!";
 $ccms['lang']['album']['files']			= "Bestanden";
 $ccms['lang']['album']['nodir']			= "Bevestig dat de map <strong>albums</strong> bestaat in de ./media/ map";
 $ccms['lang']['album']['lastmod']		= "Laatste update";
+$ccms['lang']['album']['apply_to']		= "Hang dit album aan de volgende index pagina:";
+$ccms['lang']['album']['description']	= "Album beschrijving";
+$ccms['lang']['album']['please_wait'] 	= "Even geduld, a.u.b. ...";
+$ccms['lang']['album']['regenalbumthumbs']	= "Regenereer alle mini-afbeeldingen";
+$ccms['lang']['album']['settings']		= "Album instellingen";
 
 // News messages
 $ccms['lang']['news']['manage']			= "Beheer huidige nieuwsitems";
@@ -330,14 +338,6 @@ $ccms['lang']['guestbook']['posted']	= "Je reactie is geplaatst!";
          ----------------------------------------------------------
       */
 	  
-$ccms['lang']['album']['apply_to']		= "Specifically apply this album to";
-$ccms['lang']['album']['description']	= "Album description";
-$ccms['lang']['album']['please_wait'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['album']['please_wait']";
-$ccms['lang']['album']['regenalbumthumbs'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['album']['regenalbumthumbs']";
-$ccms['lang']['album']['settings']		= "Album settings";
-$ccms['lang']['backend']['confirmthumbregen'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['confirmthumbregen']";
-$ccms['lang']['backend']['fullregenerated'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['fullregenerated']";
-$ccms['lang']['backend']['must_refresh'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['must_refresh']";
        
       /*
          ----------------------------------------------------------
