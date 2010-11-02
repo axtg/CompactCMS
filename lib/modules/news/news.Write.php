@@ -140,9 +140,6 @@ var Dialog=new Class(
 	<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,liquid.css,layout.css,sprite.css" />
 	
 	<!-- TinyMCE -->
-	<?php 
-	$cfg['language'] = (file_exists('../../../admin/includes/tiny_mce/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en';
-	?>
 	<script type="text/javascript" src="../../../admin/includes/tiny_mce/tiny_mce_gzip.js"></script>	
 	
 	<script type="text/javascript">
@@ -150,7 +147,7 @@ tinyMCE_GZ.init(
 	{
 		plugins:'safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave',
 		themes:'advanced',
-		<?php echo "languages: '".$cfg['language']."',"; ?>
+		<?php echo "languages: '".$cfg['tinymce_language']."',"; ?>
 		disk_cache:true,
 		debug:false
 	});
@@ -162,7 +159,7 @@ tinyMCE.init(
 		mode:"exact",
 		elements:"newsContent",
 		theme:"advanced",
-		<?php echo 'language:"'.$cfg['language'].'",'; ?>
+		<?php echo 'language:"'.$cfg['tinymce_language'].'",'; ?>
 		skin:"o2k7",
 		skin_variant:"silver",
 		plugins:"safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave",
