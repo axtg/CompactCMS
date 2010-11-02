@@ -257,9 +257,32 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "apply-album")
  *
  * Process and save image plus thumbnail
  *
+ * See also the comment in lightbox.Manage.php: FancyUpload 3.0 doesn't pass the 
+ * cookies, so we had to hack it using a URL query string adaptation.
+ * As we like to play it safe when uploading files, we'll add another check right 
+ * here to ensure this action is only allowed once per form rendering.
  */
 if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files") 
 {
+	if (!checkAuth() || empty($_GET['SIDCHK']) || $_SESSION['fup1'] != $_GET['SIDCHK'])
+	{
+		$_SESSION['fup1'] = md5(mt_rand().time().mt_rand());
+	
+		die($ccms['lang']['auth']['featnotallowed']);
+	}
+	
+	/*
+	WARNING: we must NOT reset/alter the extra check session value in here as 
+	         FancyUpload will invoke this code multiple times from the same 
+		 web form when bulk uploads are performed (more then one(1) image file).
+	
+	         So we are a little less safe as the extra session var will only 
+		 be regenerated every time the upload form is rerendered.
+		 
+	         Alas.
+	*/
+	//$_SESSION['fup1'] = md5(mt_rand().time().mt_rand());
+	
 	$dest = BASE_PATH.'/media/albums/'.$album_name;
 	if(!is_dir($dest)) 
 	{

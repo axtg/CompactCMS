@@ -37,14 +37,30 @@
 /* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
 if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
 
-// Start session
-session_start();
-
 // Define default location
 if (!defined('BASE_PATH')) die('BASE_PATH not defined!');
 
 // Load basic configuration
 /*MARKER*/require_once(BASE_PATH . '/lib/config.inc.php');
+
+function check_session_sidpatch()
+{
+	global $cfg;
+	
+	$getid = 'SID'.md5($cfg['authcode'].'x');
+	$sesid = session_id();
+	// bloody hack for FancyUpload FLASH component which doesn't pass along cookies:
+	if (!empty($_GET[$getid]) && empty($sesid))
+	{
+		$sesid = preg_replace('/[^A-Za-z0-9]/', 'X', $_GET[$getid]);
+		session_id($sesid);
+	}
+	return true;
+}
+
+// Start session
+check_session_sidpatch();
+session_start();
 
 // Load MySQL Class and initiate connection
 /*MARKER*/require_once(BASE_PATH . '/lib/class/mysql.class.php');

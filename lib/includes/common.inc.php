@@ -668,6 +668,9 @@ function SetAuthSafety()
 {
 	$_SESSION['host'] = md5($_SERVER['HTTP_HOST']);
 	$_SESSION['id']	= md5(session_id());
+	
+	unset($_SESSION['rc1']);
+	unset($_SESSION['rc2']);
 }
 
 
