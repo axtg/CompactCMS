@@ -310,7 +310,6 @@ $ccms['lang']['guestbook']['posted']	= "Comment has been posted!";
 	$ccms['lang']['backend']['startedittitle'] 	
 	$ccms['lang']['backend']['updatelist']		
 	$ccms['lang']['editor']['closeeditor']	
-	$ccms['lang']['forms']['filter_showing']	
 	$ccms['lang']['guestbook']['posted']	
 	$ccms['lang']['guestbook']['reaction']	
 	$ccms['lang']['guestbook']['removed'] 	
@@ -318,6 +317,7 @@ $ccms['lang']['guestbook']['posted']	= "Comment has been posted!";
 	$ccms['lang']['login']['provide']			
 	$ccms['lang']['system']['error_default']	
 	$ccms['lang']['system']['error_sitemap'] 	
+	$ccms['lang']['system']['tooriginal']		
        
          ----------------------------------------------------------
 	
@@ -333,6 +333,11 @@ $ccms['lang']['guestbook']['posted']	= "Comment has been posted!";
          ----------------------------------------------------------
       */
 	  
+$ccms['lang']['album']['please_wait'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['album']['please_wait']";
+$ccms['lang']['album']['regenalbumthumbs'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['album']['regenalbumthumbs']";
+$ccms['lang']['backend']['confirmthumbregen'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['confirmthumbregen']";
+$ccms['lang']['backend']['fullregenerated'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['fullregenerated']";
+$ccms['lang']['backend']['must_refresh'] = "Report this to the CompactCMS developers: unknown text for ccms['lang']['backend']['must_refresh']";
        
       /*
          ----------------------------------------------------------
