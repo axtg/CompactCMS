@@ -94,11 +94,11 @@ function confirmation()
 </head>
 <body>
 	<div class="module">
-		<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
+		<div class="center <?php echo (isset($_GET['status'])?htmlspecialchars($_GET['status']):null); ?>">
 			<?php 
-			if(isset($_GET['msg'])&&strlen($_GET['msg'])>2) 
+			if(!empty($_GET['msg'])) 
 			{ 
-				echo $_GET['msg']; 
+				echo htmlspecialchars($_GET['msg']); 
 			} 
 			?>
 		</div>

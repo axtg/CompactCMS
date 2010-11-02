@@ -103,7 +103,7 @@ function confirmation()
 		<?php 
 		if(isset($_GET['action'])) 
 		{ 
-			echo '<span class="ss_sprite ss_confirm">'.$_GET['action'].'</span>'; 
+			echo '<span class="ss_sprite ss_confirm">'.htmlspecialchars($_GET['action']).'</span>'; 
 		} 
 		?>
 	</div>

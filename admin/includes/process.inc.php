@@ -476,17 +476,13 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		// Set variables
 		if (!get_magic_quotes_gpc()) 
 		{
-	    		$pagetitle	= htmlspecialchars(addslashes($_POST['pagetitle']));
-	    		$pagetitle	= str_replace("'", "&#039;", $pagetitle);
-    		
-	    		$subheader	= htmlspecialchars(addslashes($_POST['subheader']));
-	    		$subheader	= str_replace("'", "&#039;", $subheader);
-    		
-	    		$description= htmlspecialchars(addslashes($_POST['description']));
-	    		$description= str_replace("'", "&#039;", $description);
+			$pagetitle	= htmlspecialchars($_POST['pagetitle']);
+			$subheader	= htmlspecialchars($_POST['subheader']);
+			$description = htmlspecialchars($_POST['description']);
 		} 
 		else 
 		{
+			// obsoleted?
 			$pagetitle = htmlspecialchars($_POST['pagetitle']);
 			$subheader = htmlspecialchars($_POST['subheader']);
 			$description = htmlspecialchars($_POST['description']);
@@ -1061,7 +1057,7 @@ function confirmation()
 	{
 		try
 		{
-			parent.MochaUI.closeWindow(parent.$('<?php echo $_GET['file']; ?>_ccms'));
+			parent.MochaUI.closeWindow(parent.$('<?php echo htmlspecialchars($_GET['file']); ?>_ccms'));
 		}
 		catch(e)
 		{
@@ -1335,8 +1331,8 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth())
 				<a href="../../<?php echo $name; ?>.html?preview=<?php echo $cfg['authcode'];?>" class="external" target="_blank"><?php echo $ccms['lang']['editor']['preview']; ?></a>		
 			</p>
 			<p>
-				<span class="ss_sprite ss_arrow_undo"><a href="process.inc.php?file=<?php echo $name; ?>&amp;action=edit&amp;restrict=<?php echo $_GET['restrict']; ?>&amp;active=<?php echo $active; ?>"><?php echo $ccms['lang']['editor']['backeditor']; ?></a></span>&nbsp;&nbsp;&nbsp;
-				<span class="ss_sprite ss_cross"><a href="#" onClick="parent.MochaUI.closeWindow(parent.$('<?php echo $_GET['page']; ?>_ccms'));" title="<?php echo $ccms['lang']['editor']['closewindow']; ?>"><?php echo $ccms['lang']['editor']['closewindow']; ?></a></span>
+				<span class="ss_sprite ss_arrow_undo"><a href="process.inc.php?file=<?php echo $name; ?>&amp;action=edit&amp;restrict=<?php echo htmlspecialchars($_GET['restrict']); ?>&amp;active=<?php echo $active; ?>"><?php echo $ccms['lang']['editor']['backeditor']; ?></a></span>&nbsp;&nbsp;&nbsp;
+				<span class="ss_sprite ss_cross"><a href="#" onClick="parent.MochaUI.closeWindow(parent.$('<?php echo $name; ?>_ccms'));" title="<?php echo $ccms['lang']['editor']['closewindow']; ?>"><?php echo $ccms['lang']['editor']['closewindow']; ?></a></span>
 			</p>
 			
 		</div>

@@ -96,8 +96,8 @@ function confirmation()
 <body>
 	<div class="module">
 		
-		<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
-			<?php if(isset($_GET['msg'])&&strlen($_GET['msg'])>2) { echo $_GET['msg']; } ?>
+		<div class="center <?php echo (isset($_GET['status'])?htmlspecialchars($_GET['status']):null); ?>">
+			<?php if(isset($_GET['msg'])&&strlen($_GET['msg'])>2) { echo htmlspecialchars($_GET['msg']); } ?>
 		</div>
 			
 		<div class="span-16 colborder">
@@ -124,7 +124,7 @@ function confirmation()
 					if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) 
 					{ 
 					?>
-						<span class="ss_sprite ss_cross small"><a onclick="return confirmation()" href="comment.Process.php?pageID=<?php echo $_GET['file'];?>&amp;commentID=<?php echo $rsComment->commentID;?>&amp;action=del-comment"><?php echo $ccms['lang']['guestbook']['delentry'];?></a></span>
+						<span class="ss_sprite ss_cross small"><a onclick="return confirmation()" href="comment.Process.php?pageID=<?php echo $pageID;?>&amp;commentID=<?php echo $rsComment->commentID;?>&amp;action=del-comment"><?php echo $ccms['lang']['guestbook']['delentry'];?></a></span>
 					<?php 
 					} 
 					?>
@@ -170,7 +170,7 @@ function confirmation()
 					
 					<p>
 						<?php echo ($db->HasRecords()?'<input type="hidden" name="cfgID" value="'.$rsCfg->cfgID.'" id="cfgID" />':null); ?>
-						<input type="hidden" name="pageID" value="<?php echo $_GET['file']; ?>" id="pageID" />
+						<input type="hidden" name="pageID" value="<?php echo $pageID; ?>" id="pageID" />
 						<button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button>
 					</p>
 				</form>
