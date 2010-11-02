@@ -496,7 +496,7 @@ function confirm_regen()
 				<div id="lightbox-fallback">
 					<form action="lightbox.Process.php?action=save-files" method="post" accept-charset="utf-8">
 						<?php echo $ccms['lang']['album']['singlefile']; ?>
-						<input id="lightbox-photoupload" type="file" name="ccms_file" />
+						<input id="lightbox-photoupload" type="file" name="Filedata" />
 						<p><button type="submit"><span class="ss_sprite ss_add"><?php echo $ccms['lang']['album']['upload']; ?></span></button></p>
 					</form>
 				</div>
