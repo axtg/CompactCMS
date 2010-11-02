@@ -73,7 +73,71 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth())
 	// Only if current user has the rights
 	if($_SESSION['ccms_userLevel']>=$perm['manageOwners']) 
 	{
+		/*
+		Since the number of items to process is PAGES x USERS, this number can become rather large, even for moderately small sites.
 		
+		Hence we do this in two phases: 
+		
+		1) first we collect the user=owner set per page in an associative array.
+		
+		2) next, we update the database for each page collected in phase 1.
+		
+		This is different from the original approach in that:
+		
+		a) it cuts down the number of queries by a factor of USERS
+		
+		b) it does NOT reset the ownership of ALL pages at the start with another query --> unmentioned pages don't change.
+		
+		Particularly (b) plays well into our hands when we expand the notion of 'filtered page sets' in the admin section, i.e.
+		an admin section which currently only shows a SUBSET of all the pages available on the site.
+		*/
+		
+		// If all empty, we're done here
+		if(empty($_POST['owner'])) {
+			header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
+			exit();
+		}
+	
+		// Otherwise, set the page owners (phase #1)
+		$ownership = array();
+		foreach ($_POST['owner'] as $value) 
+		{
+			// Split posted variable
+			$explode = explode("||",$value);
+		
+			// Set variables
+			$userID = filterParam4Number($explode[0]);
+			$pageID = filterParam4Number($explode[1]);
+			if (empty($userID) || empty($pageID))
+			{
+				die($ccms['lang']['system']['error_forged']);
+			}
+			$ownership[$pageID] .= '||' . $userID; // add user; we'll trim leading '||' in phase 2
+		}
+		
+		// now update page ownership in the database (phase #2); order doesn't matter
+		foreach($ownership as $page_id => $users)
+		{
+			$users = ltrim($users, '|');
+			
+			$values = array();
+			$values["user_ids"] = MySQL::SQLValue($users,MySQL::SQLVALUE_TEXT);
+		
+			if(!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id,MySQL::SQLVALUE_NUMBER)))) 
+			{
+				$db->Kill();
+			}
+		}	
+		
+		header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['success']);
+		exit();
+
+		
+		
+		
+		
+if (0) // old code - lots of queries.
+{	
 		// Set all values back to zero
 		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		$values["user_ids"] = 0;
@@ -93,24 +157,25 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth())
 				$explode = explode("||",$value);
 			
 				// Set variables
+				$userID = filterParam4Number($explode[0]);
 				$pageID = filterParam4Number($explode[1]);
-				$current = $db->QuerySingleValue("SELECT user_ids FROM ".$cfg['db_prefix']."pages WHERE page_id='".$pageID."'");
-				$users = $current.$explode[0].'||';
+				$current = $db->SelectSingleValue($cfg['db_prefix']."pages", array('page_id' => MySQL::SQLValue($pageID, MySQL::SQLVALUE_NUMBER)), array('user_ids'));
+				$users = $userID . '||' . $current; // concatenate user IDs with '||' between them!
 				$values = array(); // [i_a] make sure $values is an empty array to start with here
 				$values["user_ids"] = MySQL::SQLValue($users,MySQL::SQLVALUE_TEXT);
 			
-				if($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => "\"$pageID\""))) 
+				if($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id,MySQL::SQLVALUE_NUMBER)))) 
 				{
 					$i++;
 				}
-				
-				if($i==count($_POST['owner'])) 
-				{
-					header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['success']);
-					exit();
-				} 
-			}
+				else
+					$db->Kill();
+			}	
+			// within loop: if($i==count($_POST['owner']))     -- [i_a] very odd way of writing this end-of-loop bit... :-S   simplified now.
+			header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['success']);
+			exit();
 		}
+}
 	} else die($ccms['lang']['auth']['featnotallowed']);
 } else die("No external access to file");
 ?>
