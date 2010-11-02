@@ -241,10 +241,10 @@ window.addEvent('domready',function()
 						?>
 					</select>
 					<div>
-					<label><?php echo $ccms['lang']['users']['active']; ?></label>
+					<label><?php echo $ccms['lang']['users']['active']; /* [i_a] and make sure either yes or no are selected to begin with; pick 'no' as the default here */ ?></label>
 						<label for="userActive1" style="display:inline;font-weight:normal;"><?php echo $ccms['lang']['backend']['yes']; ?></label><input type="radio" class="validate-one-required" name="userActive" value="1" id="userActive1" />	
 						<img src="../../../img/spacer.gif" height="10" width="50" alt=" "/>
-						<label for="userActive0" style="display:inline;font-weight:normal;"><?php echo $ccms['lang']['backend']['no']; ?></label><input type="radio" name="userActive" value="0" id="userActive0" />
+						<label for="userActive0" style="display:inline;font-weight:normal;"><?php echo $ccms['lang']['backend']['no']; ?></label><input type="radio" name="userActive" value="0" id="userActive0" "checked" />
 					</div>
 					<hr class="space"/>
 					<p class="right"><button type="submit"><span class="ss_sprite ss_user_add"><?php echo $ccms['lang']['forms']['createbutton']; ?></span></button></p>
