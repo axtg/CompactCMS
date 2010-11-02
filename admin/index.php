@@ -84,7 +84,10 @@ if(empty($_SESSION['ccms_userID']) || empty($_SESSION['ccms_userName']) || !Chec
 	<script type="text/javascript" charset="utf-8">
 window.addEvent('domready',function()
 	{
-		new FormValidator($('addForm')); 
+		if ($('addForm')) /* [i_a] extra check due to permissions cutting out certain parts of the page */
+		{
+			new FormValidator($('addForm')); 
+		}
 	});
 </script>
 </head>
@@ -124,25 +127,25 @@ window.addEvent('domready',function()
 		<div id="advanced_res">
 			<ul>
 				<?php 
-				if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>='4') 
+				if($_SESSION['ccms_userLevel']>=4) 
 				{ 
 				?>
 					<li><span class="ss_sprite ss_group_key"><a id="sys-perm" href="./includes/modules/permissions/permissions.Manage.php" rel="<?php echo $ccms['lang']['backend']['permissions']; ?>" class="tabs"><?php echo $ccms['lang']['backend']['permissions']; ?></a></span></li>
 				<?php 
 				} 
-				if($perm['manageOwners']>0&&isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageOwners']) 
+				if($perm['manageOwners']>0 && $_SESSION['ccms_userLevel']>=$perm['manageOwners']) 
 				{ 
 				?>
 					<li><span class="ss_sprite ss_folder_user "><a id="sys-pow" href="./includes/modules/content-owners/content-owners.Manage.php" rel="<?php echo $ccms['lang']['backend']['contentowners']; ?>" class="tabs"><?php echo $ccms['lang']['backend']['contentowners']; ?></a></span></li>
 				<?php 
 				} 
-				if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageTemplate']) 
+				if($perm['manageTemplate']>0 && $_SESSION['ccms_userLevel']>=$perm['manageTemplate'])  // [i_a] template dialog would still appear when turned off in permissions --> error message in that window anyway.
 				{ 
 				?>
 					<li><span class="ss_sprite ss_color_swatch"><a id="sys-tmp" href="./includes/modules/template-editor/backend.php" rel="<?php echo $ccms['lang']['backend']['templateeditor']; ?>" class="tabs"><?php echo $ccms['lang']['backend']['templateeditor']; ?></a></span></li>
 				<?php 
 				} 
-				if($perm['manageUsers']>0) 
+				// if($perm['manageUsers']>0)    -- [i_a] we'll always be able to 'manage' ourselves; at least the users.manage page can cope with that scenario - plus it's in line with the rest of the admin behaviour IMHO
 				{ 
 				?>
 					<li><span class="ss_sprite ss_group"><a id="sys-usr" href="./includes/modules/user-management/backend.php" rel="<?php echo $ccms['lang']['backend']['usermanagement']; ?>" class="tabs"><?php echo $ccms['lang']['backend']['usermanagement']; ?></a></span></li>
@@ -164,7 +167,7 @@ window.addEvent('domready',function()
 	// Start main management section 
 	
 	// Create new page 
-	if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['managePages']) 
+	if($_SESSION['ccms_userLevel']>=$perm['managePages']) 
 	{ 
 	?>
 	<div id="createnew" class="span-9">
@@ -237,11 +240,31 @@ window.addEvent('domready',function()
 	<?php 
 	} 
 	else 
-		echo '<div id="createnew"><span class="toggle"></span><div id="form_wrapper"><form id="addForm" action=""></form></div></div>'; 
+	{
+	?>
+<!--
+	<div id="createnew" class="span-9">
+	<fieldset>
+		<legend><span class="ss_sprite ss_add">&#160;</span><a class="toggle" rel="form_wrapper" href="#"><?php echo $ccms['lang']['backend']['createpage']; ?></a></legend>
+		<div id="form_wrapper">
+		<p><?php echo $ccms['lang']['auth']['featnotallowed']; ?></p>
+		<form method="post" id="addForm" action="#">
+			<div id="fields">
+				<div id="editor-options">
+				</div>
+			</div>
+		</form>	
+		</div>
+	</fieldset>
+	</div>
+-->
+	<?php
+	}
+
 		
 	// Manage menu depths & languages 
 	
-	if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageMenu']) 
+	if($_SESSION['ccms_userLevel']>=$perm['manageMenu']) 
 	{ 
 	?>
 	<div id="menudepth" class="span-16">
@@ -277,7 +300,22 @@ window.addEvent('domready',function()
 	<?php 
 	} 
 	else 
-		echo '<div id="menu_wrapper"><span class="toggle"></span><div id="menuFields"><form id="menuForm" action=""></form></div></div>'; 
+	{
+	?>
+<!--
+	<div id="menudepth" class="span-16">
+	<fieldset>
+		<legend><span class="ss_sprite ss_text_list_bullets">&#160;</span> <a class="toggle" rel="menu_wrapper" href="#"><?php echo $ccms['lang']['backend']['managemenu']; ?></a></legend>
+		<div id="menu_wrapper">
+		<p><?php echo $ccms['lang']['auth']['featnotallowed']; ?></p>
+		<form method="post" id="menuForm" action="#">
+		</form>	
+		</div>
+	</fieldset>
+	</div>
+-->
+	<?php
+	}
 	
 
 		
@@ -300,7 +338,7 @@ window.addEvent('domready',function()
 				<th class="center span-2-1"><?php echo $ccms['lang']['forms']['printable']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['printable']; ?>">&#160;</span></th>
 				<th class="center span-2">
 					<?php 
-					if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageActivity']) 
+					if($_SESSION['ccms_userLevel']>=$perm['manageActivity']) 
 					{ 
 						echo $ccms['lang']['forms']['published']; 
 						?> 
@@ -311,7 +349,7 @@ window.addEvent('domready',function()
 				</th>
 				<th class="center span-2">
 					<?php
-					if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageVarCoding']) 
+					if($_SESSION['ccms_userLevel']>=$perm['manageVarCoding']) 
 					{ 
 						echo $ccms['lang']['forms']['iscoding']; 
 						?> 
@@ -330,7 +368,7 @@ window.addEvent('domready',function()
 		<table width="100%">
 			<tr>
 				<?php 
-				if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['managePages']) 
+				if($_SESSION['ccms_userLevel']>=$perm['managePages']) 
 				{ 
 				?>
 					<th class="span-11" style="text-align: left;">

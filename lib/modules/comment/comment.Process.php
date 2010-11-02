@@ -148,7 +148,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth()) 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) 
+	if($perm['manageModComment']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModComment']) 
 	{
 	
 		$values = array(); // [i_a] make sure $values is an empty array to start with here

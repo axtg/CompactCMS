@@ -154,26 +154,30 @@ window.addEvent('domready',function()
 						?>
 							<td>
 							<?php 
-							if($_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel&&$_SESSION['ccms_userID']!=$row->userID) 
+							if($perm['manageUsers']>0 && $_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel&&$_SESSION['ccms_userID']!=$row->userID) 
 							{ 
 							?>	
 								<input type="checkbox" name="userID[]" value="<?php echo $row->userID; ?>" id="userID" />
 							<?php 
 							} 
 							else 
+							{
 								echo "&#160;"; 
+							}
 							?>
 							</td>
 							<td>
 							<?php 
-							if($_SESSION['ccms_userID']==$row->userID||$_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) 
+							if($_SESSION['ccms_userID']==$row->userID||($perm['manageUsers']>0 && $_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel)) 
 							{ 
 							?>
 								<span class="ss_sprite ss_user_edit"><a href="user.Edit.php?userID=<?php echo $row->userID; ?>"><?php echo $row->userName; ?></a></span>
 							<?php 
 							} 
 							else 
+							{
 								echo $row->userName; 
+							}
 							?>
 							</td>
 							<td><?php echo substr($row->userFirst,0,1); ?>. <?php echo $row->userLast; ?></td>
@@ -189,7 +193,7 @@ window.addEvent('domready',function()
 				</table>
 				<hr class="space"/>
 				<?php 
-				if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
+				if($perm['manageUsers']>0 && $_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
 				{ 
 				?>
 					<button type="submit" onclick="return confirmation();" name="deleteUser"><span class="ss_sprite ss_user_delete"><?php echo $ccms['lang']['backend']['delete']; ?></span></button>
@@ -202,7 +206,7 @@ window.addEvent('domready',function()
 		<div class="span-6">
 			<h2><?php echo $ccms['lang']['users']['createuser']; ?></h2>
 			<?php 
-			if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
+			if($perm['manageUsers']>0 && $_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
 			{ 
 			?>
 				<form action="../../process.inc.php?action=add-user" method="post" id="addUser" accept-charset="utf-8">

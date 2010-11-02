@@ -77,7 +77,7 @@ $do_action	= getGETparam4IdOrNumber('action');
 if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "create-album") 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+	if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 	{
 		if($album_name!=null) 
 		{
@@ -121,7 +121,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "create-album")
 if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "del-album") 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+	if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 	{
 		if(empty($_POST['albumID'])) 
 		{
@@ -184,7 +184,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "del-album")
 if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "del-image") 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+	if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 	{
 		$album = getGETparam4Filename('album');
 		$image = getGETparam4Filename('image');
@@ -230,7 +230,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "del-image")
 if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "apply-album") 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+	if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 	{
 		if($album_name!=null) 
 		{
@@ -446,7 +446,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files")
 if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "confirm_regen") 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+	if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 	{
 		$album = (isset($_GET['album'])&&!empty($_GET['album'])?htmlspecialchars($_GET['album']):null);
 		

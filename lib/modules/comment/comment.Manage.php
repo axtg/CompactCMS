@@ -121,7 +121,7 @@ function confirmation()
 					<p><?php echo nl2br(strip_tags($rsComment->commentContent));?></p>
 					<p>
 					<?php 
-					if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) 
+					if($perm['manageModComment']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModComment']) 
 					{ 
 					?>
 						<span class="ss_sprite ss_cross small"><a onclick="return confirmation()" href="comment.Process.php?pageID=<?php echo $pageID;?>&amp;commentID=<?php echo $rsComment->commentID;?>&amp;action=del-comment"><?php echo $ccms['lang']['guestbook']['delentry'];?></a></span>
@@ -143,7 +143,7 @@ function confirmation()
 		<div class="span-6">
 			<h2>Configuration</h2>
 			<?php 
-			if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) 
+			if($perm['manageModComment']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModComment']) 
 			{ 
 				$rsCfg = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgcomment` WHERE pageID='$pageID'"); 
 				?>
