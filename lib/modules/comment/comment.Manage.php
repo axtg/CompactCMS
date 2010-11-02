@@ -117,7 +117,7 @@ function confirmation()
 					<img src="http://www.gravatar.com/avatar.php?gravatar_id=<?php echo md5($rsComment->commentEmail); ?>&amp;size=80&amp;rating=G" style="margin:4px;border:2px solid #000;" alt="<?php echo $ccms['lang']['guestbook']['avatar'];?>"/><br/><img src="./resources/<?php echo $rsComment->commentRate;?>-star.gif" alt="<?php echo $ccms['lang']['guestbook']['rating']." ".$rsComment->commentRate;?>"/>
 				</div>
 				<div class="span-17">
-					<strong><?php echo (!empty($rsComment->commentUrl)?'<a href="'.$rsComment->commentUrl.'" target="_blank">'.$rsComment->commentName.'</a>':$rsComment->commentName); echo ' '.$ccms['lang']['guestbook']['wrote']; ?>:</strong>
+					<p><strong><?php echo (!empty($rsComment->commentUrl)?'<a href="'.$rsComment->commentUrl.'" target="_blank">'.$rsComment->commentName.'</a>':$rsComment->commentName); echo ' '.$ccms['lang']['guestbook']['wrote']; ?>:</strong></p>
 					<p><?php echo nl2br(strip_tags($rsComment->commentContent));?></p>
 					<p>
 					<?php 

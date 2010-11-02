@@ -106,8 +106,8 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 				</div>
 				<div id="s-comment"><p><?php echo nl2br(strip_tags($rsComment->commentContent)); ?></p></div>
 				<div id="s-rating">
+					<img src="<?php echo $cfg['rootdir']; ?>lib/modules/comment/resources/<?php echo $rsComment->commentRate;?>-star.gif" alt="<?php echo $ccms['lang']['guestbook']['rating']." ".$rsComment->commentRate; ?>" />
 					<p>
-						<img src="<?php echo $cfg['rootdir']; ?>lib/modules/comment/resources/<?php echo $rsComment->commentRate;?>-star.gif" alt="<?php echo $ccms['lang']['guestbook']['rating']." ".$rsComment->commentRate; ?>" /><br/>
 						<?php echo htmlentities(strftime('%A %d %B %Y, %H:%M',strtotime($rsComment->commentTimestamp)));?>
 					</p>
 				</div>
@@ -133,8 +133,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 			} 
 			?>
 		</div>
-		<p>&#160;</p>
-
+		<!--<p>&#160;</p>-->
 	<?php 
 	} 
 	else 

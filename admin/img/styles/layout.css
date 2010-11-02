@@ -294,6 +294,8 @@ div.module
 	line-height:1.6em;
 	margin:15px;
 	
+	/* float: left; */
+	position: relative;
 }
 .module label{display:block;}
 .module h1,.module h2 {
