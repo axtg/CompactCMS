@@ -76,7 +76,8 @@ if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth())
 	<script type="text/javascript" src="../../../../lib/includes/js/mootools.js" charset="utf-8"></script>
 	<!-- Check form and post -->
 	<script type="text/javascript" charset="utf-8">
-	window.addEvent('domready', function(){
+	window.addEvent('domready', function()
+	{
 		new FormValidator($('userDetailForm'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}});
 		new FormValidator($('userPassForm'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}});
 		new FormValidator($('userLevelForm'), {onFormValidate: function(passed, form, event){if (passed) form.submit();}});
@@ -87,19 +88,25 @@ if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth())
 
 <body>
 	<div class="module">
-		<?php if(isset($_GET['status'])&&isset($_GET['action'])) { ?>
+		<?php if(isset($_GET['status'])&&isset($_GET['action'])) 
+		{ 
+		?>
 			<div class="<?php echo $_GET['status'];?> center"><strong><?php echo ucfirst($_GET['action']);?></strong></div>
-		<?php } ?>
+		<?php 
+		} 
+		?>
 		
 		<p class="clear right"><span class="ss_sprite ss_arrow_undo"><a href="backend.php"><?php echo $ccms['lang']['backend']['tooverview']; ?></a></span></p>
 		
 		<?php // Check authority 
-		if($_SESSION['ccms_userLevel']<$perm['manageUsers']||$row->userLevel>$_SESSION['ccms_userLevel']) {
+		if($_SESSION['ccms_userLevel']<$perm['manageUsers']||$row->userLevel>$_SESSION['ccms_userLevel']) 
+		{
 			if($_SESSION['ccms_userID']!=$userID) 
 			{
 				die("[ERR802] ".$ccms['lang']['auth']['featnotallowed']);
 			}
-		} ?>
+		} 
+		?>
 		
 		<div class="span-13 colborder">
 			<h2><?php echo $ccms['lang']['users']['editdetails']; ?></h2>
@@ -116,7 +123,10 @@ if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth())
 		</div>
 		
 		<div class="span-9">
-			<?php if($_SESSION['ccms_userID']==$row->userID||$_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) { ?>
+			<?php 
+			if($_SESSION['ccms_userID']==$row->userID||$_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) 
+			{ 
+			?>
 			<h2><?php echo $ccms['lang']['users']['editpassword']; ?></h2>
 			<div class="prepend-1">
 				<form action="../../process.inc.php?action=edit-user-password" id="userPassForm" method="post" accept-charset="utf-8">
@@ -134,19 +144,36 @@ if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth())
 			<hr/>
 			
 			<h2><?php echo $ccms['lang']['users']['accountcfg']; ?></h2>
-			<?php } if($_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) { ?>
+			<?php 
+			} 
+			if($_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) 
+			{ 
+			?>
 			<div class="prepend-1">
 				<form action="../../process.inc.php?action=edit-user-level" id="userLevelForm" method="post" accept-charset="utf-8">
 					<label for="userLevel"><?php echo $ccms['lang']['users']['userlevel']; ?></label>
 					<select name="userLevel" class="required" id="userLevel" size="1">
 						<option value="1" <?php echo ($row->userLevel==1?"selected='SELECTED'":null); ?>><?php echo $ccms['lang']['permission']['level1']; ?></option>
-						<?php if($_SESSION['ccms_userLevel']>1) { ?>
+						<?php 
+						if($_SESSION['ccms_userLevel'] > 1) 
+						{ 
+						?>
 							<option value="2" <?php echo ($row->userLevel==2?"selected='SELECTED'":null); ?>><?php echo $ccms['lang']['permission']['level2']; ?></option>
-						<?php } if($_SESSION['ccms_userLevel']>2) { ?>
+						<?php 
+						} 
+						if($_SESSION['ccms_userLevel'] > 2) 
+						{ 
+						?>
 							<option value="3" <?php echo ($row->userLevel==3?"selected='SELECTED'":null); ?>><?php echo $ccms['lang']['permission']['level3']; ?></option>
-						<?php } if($_SESSION['ccms_userLevel']>3) { ?>
-						<option value="4" <?php echo ($row->userLevel==4?"selected='SELECTED'":null); ?>><?php echo $ccms['lang']['permission']['level4']; ?></option>
-						<?php } ?>
+						<?php 
+						} 
+						if($_SESSION['ccms_userLevel'] > 3) 
+						{ 
+						?>
+							<option value="4" <?php echo ($row->userLevel==4?"selected='SELECTED'":null); ?>><?php echo $ccms['lang']['permission']['level4']; ?></option>
+						<?php 
+						} 
+						?>
 					</select>
 					<hr class="space"/>
 					<div>
@@ -173,4 +200,7 @@ if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth())
 	</div>
 </body>
 </html>
-<?php } else die("No external access to file");?>
+<?php 
+} 
+else 
+	die("No external access to file");

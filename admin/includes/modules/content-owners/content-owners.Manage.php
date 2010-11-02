@@ -76,14 +76,36 @@ if(checkAuth() && !empty($_SESSION['rc1']) && !empty($_SESSION['rc2']))
 	
 		<!-- Confirm close -->
 		<script type="text/javascript">
-		function confirmation(){var answer=confirm('<?php echo $ccms['lang']['editor']['confirmclose']; ?>');if(answer){try{parent.MochaUI.closeWindow(parent.$('sys-pow_ccms'));}catch(e){}}else{return false;}}
+function confirmation()
+{
+	var answer=confirm('<?php echo $ccms['lang']['editor']['confirmclose']; ?>');
+	if(answer)
+	{
+		try
+		{
+			parent.MochaUI.closeWindow(parent.$('sys-pow_ccms'));
+		}
+		catch(e)
+		{
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
 		</script>	
 	</head>
 <body>
 	<div class="module">
 
 	<div class="center <?php echo $status; ?>">
-		<?php if(isset($_GET['action'])) { echo '<span class="ss_sprite ss_confirm">'.$_GET['action'].'</span>'; } ?>
+		<?php 
+		if(isset($_GET['action'])) 
+		{ 
+			echo '<span class="ss_sprite ss_confirm">'.$_GET['action'].'</span>'; 
+		} 
+		?>
 	</div>
 	
 	<div>
@@ -94,33 +116,46 @@ if(checkAuth() && !empty($_SESSION['rc1']) && !empty($_SESSION['rc2']))
 		<tr>
 			<th><span class="ss_sprite ss_arrow_down"><?php echo $ccms['lang']['owners']['pages']; ?></span> \ <span class="ss_sprite ss_arrow_right"><?php echo $ccms['lang']['owners']['users']; ?></span></th>
 			<?php
-			for ($ar1=0; $ar1<count($users); $ar1++) { ?>
+			for ($ar1=0; $ar1<count($users); $ar1++) 
+			{ 
+			?>
 				<th class="center span-2" style="border-bottom:solid #AD8CCF 2px;">
-					<span class="ss_sprite ss_user_<?php echo ($users[$ar1]['userLevel']>='4'?'suit':'green'); ?>"><?php echo $users[$ar1]['userFirst'].' '.substr($users[$ar1]['userLast'],0,1); ?>.</span>
+					<span class="ss_sprite ss_user_<?php echo ($users[$ar1]['userLevel']>=4?'suit':'green'); ?>"><?php echo $users[$ar1]['userFirst'].' '.substr($users[$ar1]['userLast'],0,1); ?>.</span>
 				</th>
-			<?php } ?>
+			<?php 
+			} 
+			?>
 		</tr>
-		<?php for ($i=0; $i<count($pages); $i++) { ?>
+		<?php 
+		for ($i = 0; $i < count($pages); $i++) 
+		{ 
+		?>
 			<tr>			
-			<td class="span-4" style="padding-left:2px;background-color:<?php echo ($i%2!='1'?'#EAF3E2;':'#fff;'); ?>border-right:solid #AD8CCF 2px;">
+			<td class="span-4" style="padding-left:2px;background-color:<?php echo ($i%2!=1?'#EAF3E2;':'#fff;'); ?>border-right:solid #AD8CCF 2px;">
 				<span class="ss_sprite ss_page_white_world"><?php echo $pages[$i]['urlpage']; ?>.html</span>
 			</td>
 				<?php
-				for ($ar2=0; $ar2<count($users); $ar2++) { ?>
+				for ($ar2=0; $ar2<count($users); $ar2++) 
+				{ 
+				?>
 					<td class="hover center">
 						<label for="<?php echo $i.$ar2;?>"><span>
 						<input type="checkbox" name="owner[]" 
 						<?php 
-						if(strstr($pages[$i]['user_ids'], $users[$ar2]['userID'])!==false) {
+						if(strstr($pages[$i]['user_ids'], $users[$ar2]['userID'])!==false) 
+						{
 							echo 'checked';
 						} 
 						?> value="<?php echo $users[$ar2]['userID'].'||'.$pages[$i]['page_id'];?>" id="<?php echo $i.$ar2;?>" />
 						</span></label>
 					</td>
-				<?php } ?>
+				<?php 
+				} 
+				?>
 			</tr>
-		<?php } ?>
-
+		<?php 
+		} 
+		?>
 		</tr>
 		</table>
 		<hr/>
@@ -128,6 +163,5 @@ if(checkAuth() && !empty($_SESSION['rc1']) && !empty($_SESSION['rc2']))
 		</form>
 	</div>
 <?php
-	//} else die($ccms['lang']['auth']['featnotallowed']);
 } else die("No external access to file"); 
 ?>

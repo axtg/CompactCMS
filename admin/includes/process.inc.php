@@ -1,5 +1,5 @@
 <?php
- /**
+/**
  * Copyright (C) 2008 - 2010 by Xander Groesbeek (CompactCMS.nl)
  * 
  * Last changed: $LastChangedDate$
@@ -86,208 +86,356 @@ $modules = $db->QueryArray("SELECT * FROM `".$cfg['db_prefix']."modules` WHERE m
 $db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` ORDER BY `published`, `menu_id`, `toplevel` ASC, `sublevel` ASC");
 
 // Check whether the recordset is not empty
-if($db->HasRecords()) {
+if($db->HasRecords()) 
+{
 
-// Set the pointer to the first row
-$db->MoveFirst();
+	// Set the pointer to the first row
+	$db->MoveFirst();
 
 
-// Set the target for PHP processing
+	// Set the target for PHP processing
 	$target_form = getPOSTparam4IdOrNumber('form');
 
- /**
- *
- * Render the dynamic list with files
- *
- */
-if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
-{
-	$i = 0;
-	
-	echo '<table cellpadding="0" cellspacing="0">';
-	
-	// Get previously opened DB stream
-	$db->MoveFirst();
-	while (!$db->EndOfSeek()) {
-		
-    	// Fill $row with values
-		$row = $db->Row();
-		
-	// Check whether current user is owner, or no owners at all
-	$owner = @explode('||', $row->user_ids);
-	if($row->user_ids==0||$perm['manageOwners']==0||$_SESSION['ccms_userLevel']>='4'||in_array($_SESSION['ccms_userID'], $owner)) {
-				
-		// Determine file specific variables
-		if($row->module=="editor") {
-			$module = './includes/process.inc.php';
-		} else {
-			$module = '../lib/modules/'.$row->module.'/'.$row->module.'.Manage.php';
-		}
-		
-		// Define $isEven for alternate table coloring
-		if($i%2 != 1) {
-			if($row->published === "N") {
-				echo '<tr style="background-color: #F2D9DE;">';
-			} else echo '<tr style="background-color: #E6F2D9;">';
-		} else { 
-			if($row->published === "N") {
-				echo '<tr style="background-color: #EBC6CD;">';
-			} else echo '<tr>'; 
-		} ?>
-			<td style="padding-left:2px;" class="span-1">
-			<?php if($_SESSION['ccms_userLevel']<$perm['managePages'] || $row->urlpage == "home" || in_array($row->urlpage, $cfg['restrict'])) { ?>
-				<span class="ss_sprite ss_bullet_red" title="<?php echo $ccms['lang']['auth']['featnotallowed']; ?>"></span>
-			<?php } elseif($_SESSION['ccms_userLevel']>=$perm['managePages'] && $row->urlpage != "home" || !in_array($row->urlpage, $cfg['restrict'])) { ?>
-				<input type="checkbox" id="page_id_<?php echo $i;?>" name="page_id[]" value="<?php echo $_SESSION['rc1'].$_SESSION['rc2'].$row->page_id; ?>" />
-			<?php } ?>
-			</td>
-			<td class="span-3">
-				<label for="page_id_<?php echo $i;?>"><em><abbr title="<?php echo $row->urlpage; ?>.html"><?php echo substr($row->urlpage,0,25); ?></abbr></em></label>
-			</td>
-			<td class="span-4">
-				<span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="pagetitle"><?php echo $row->pagetitle; ?></span>
-			</td>
-			<td class="span-6">
-				<span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="subheader"><?php echo $row->subheader; ?></span>
-			</td>
-			<td class="span-2" style="text-align: center;">
-				<a href="#" id="printable-<?php echo $row->page_id; ?>" rel="<?php echo $row->printable; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php if($row->printable == "Y") { echo $ccms['lang']['backend']['yes']; } else echo $ccms['lang']['backend']['no']; ?></a>
-			</td>
-			<td class="span-2" style="text-align: center;">
-				<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageActivity']) { ?>
-					<a href="#" id="published-<?php echo $row->page_id; ?>" rel="<?php echo $row->published; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php if($row->published == "Y") { echo $ccms['lang']['backend']['yes']; } else echo $ccms['lang']['backend']['no']; ?></a>
-				<?php } ?>
-			</td>
-			<td class="span-2" style="text-align: center;">
-				<?php if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageVarCoding']) { ?>
-					<?php if($row->module=="editor") { ?>
-						<a href="#" id="iscoding-<?php echo $row->page_id; ?>" rel="<?php echo $row->iscoding; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php if($row->iscoding == "Y") { echo "<span style=\"color:#8F0000;font-weight:bold;\">".$ccms['lang']['backend']['yes']."</span>"; } else echo $ccms['lang']['backend']['no']; ?></a>
-					<?php } else echo "&ndash;"; ?>
-				<?php } ?>
-			</td>
-			<?php // Check for restrictions
-			if(!in_array($row->urlpage, $cfg['restrict'])||!in_array($row->page_id, $owners)) { ?>
-				<td class="span-5" style="text-align: right;">
-					<a id="<?php echo $row->urlpage;?>" href="<?php echo $module; ?>?file=<?php echo $row->urlpage; ?>&amp;action=edit&amp;restrict=<?php echo $row->iscoding; ?>&amp;active=<?php echo $row->published;?>" rel="Edit <?php echo $row->urlpage.'.html';?>" class="tabs sprite edit"><?php echo $ccms['lang']['backend']['editpage']; ?></a> | <a href="../<?php echo ($row->urlpage!="home")?$row->urlpage.'.html?preview='.$cfg['authcode']:'?preview='.$cfg['authcode']; ?>" class="external"><?php echo $ccms['lang']['backend']['previewpage']; ?></a>&#160;
-				</td>
-			<?php } else { ?>
-				<td class=\"span-3\" style=\"text-align: right;\">
-					<div style="margin: 2px;"><span class="ss_sprite ss_exclamation" title="<?php echo $ccms['lang']['backend']['restrictpage']; ?>"></span> <?php echo $ccms['lang']['backend']['restrictpage'];?></div>
-				</td>
-			<?php } ?>
-		</tr>
-		<?php if($i%2 != 1) {
-			if($row->published === "N") {
-				echo "<tr style=\"background-color: #F2D9DE;\">";
-			} else echo "<tr style=\"background-color: #E6F2D9;\">";
-		} else { 
-			if($row->published === "N") {
-				echo "<tr style=\"background-color: #EBC6CD;\">";
-			} else echo "<tr>"; 
-		} ?>
-			<td>&#160;</td>
-			<td colspan="5"><strong><?php echo $ccms['lang']['forms']['description']; ?></strong>: <span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="description"><?php echo ucfirst($row->description) ;?></span></td>
-			<td colspan="2" style="text-align: right; padding-right:5px;">
-				<?php if($row->module=="editor" && !empty($row->toplevel)) { ?>
-					<em><?php echo $ccms['lang']['backend']['inmenu']; ?>:</em> <?php echo "<strong>".strtolower($ccms['lang']['menu'][$row->menu_id])."</strong> | <em>".$ccms['lang']['backend']['item']." </em> <strong>".$row->toplevel.":".$row->sublevel."</strong>"; ?></td></tr>
-				<?php } elseif($row->module!="editor") { echo "<span class=\"ss_sprite ss_information\"><strong>".ucfirst($row->module)."</strong></span> ".strtolower($ccms['lang']['forms']['module']);} else echo "<em>".$ccms['lang']['backend']['notinmenu']."</em>"; ?>
-			</td>
-		</tr>
-	<?php
-		} 
-		// If user is not a page owner 
-		else { 
-			$i++;
-		} 
-	// Regular move on	
-	$i++;
-	} ?>
-	</table>
-<?php 
-}
-
- /**
- *
- * Render the entire menu list
- *
- */
-if($do_action == "renderlist" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) {
-	if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageMenu']) {
-		echo "<table class=\"span-15\" cellpadding=\"0\" cellspacing=\"0\">";
+	/**
+	 *
+	 * Render the dynamic list with files
+	 *
+	 */
+	if($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
+	{
 		$i = 0;
+		
+		echo '<table cellpadding="0" cellspacing="0">';
+		
 		// Get previously opened DB stream
-		while (!$db->EndOfSeek()) {
-	    	// Fill $row with values
+		$db->MoveFirst();
+		while (!$db->EndOfSeek()) 
+		{
+			// Fill $row with values
 			$row = $db->Row();
-			
-			// Define $isEven for alternate table coloring
-			$isEven = !($i % 2);
-			if($isEven != '1') {
-				echo "<tr style=\"background-color: #CDE6B3;\">";
-			} else { 
-				echo "<tr>"; } ?>
-				<td class="span-2">
-					<select class="span-2" name="menuid[<?php echo $row->page_id; ?>]">
-						<optgroup label="Menu">
-							<?php $y = 1; while($y<='5') { ?>
-							<option <?php echo ($row->menu_id==$y) ? "selected=\"selected\"" : ""; ?> value="<?php echo $y; ?>"><?php echo $ccms['lang']['menu'][$y]; ?></option>
-							<?php $y++; } ?>
-						</optgroup>
-					</select>
+				
+			// Check whether current user is owner, or no owners at all
+			$owner = @explode('||', $row->user_ids);
+			if($row->user_ids==0||$perm['manageOwners']==0||$_SESSION['ccms_userLevel']>=4||in_array($_SESSION['ccms_userID'], $owner)) 
+			{
+				// Determine file specific variables
+				if($row->module=="editor") 
+				{
+					$module = './includes/process.inc.php';
+				} 
+				else 
+				{
+					$module = '../lib/modules/'.$row->module.'/'.$row->module.'.Manage.php';
+				}
+				
+				// Define $isEven for alternate table coloring
+				if($i%2 != 1) 
+				{
+					if($row->published === "N") 
+					{
+						echo '<tr style="background-color: #F2D9DE;">';
+					} 
+					else 
+						echo '<tr style="background-color: #E6F2D9;">';
+				} 
+				else 
+				{ 
+					if($row->published === "N") 
+					{
+						echo '<tr style="background-color: #EBC6CD;">';
+					} 
+					else 
+						echo '<tr>'; 
+				} 
+				?>
+				<td style="padding-left:2px;" class="span-1">
+				<?php 
+				if($_SESSION['ccms_userLevel']<$perm['managePages'] || $row->urlpage == "home" || in_array($row->urlpage, $cfg['restrict'])) 
+				{ 
+				?>
+					<span class="ss_sprite ss_bullet_red" title="<?php echo $ccms['lang']['auth']['featnotallowed']; ?>"></span>
+				<?php 
+				} 
+				elseif($_SESSION['ccms_userLevel']>=$perm['managePages'] && $row->urlpage != "home" || !in_array($row->urlpage, $cfg['restrict'])) 
+				{ 
+				?>
+					<input type="checkbox" id="page_id_<?php echo $i;?>" name="page_id[]" value="<?php echo $_SESSION['rc1'].$_SESSION['rc2'].$row->page_id; ?>" />
+				<?php 
+				} 
+				?>
 				</td>
-				<td class="span-2">
-					<select class="span-2" name="template[<?php echo $row->page_id; ?>]">
-						<optgroup label="<?php echo $ccms['lang']['backend']['template'];?>">
-							<?php $x = 0; while($x<count($template)) { ?>
-							<option <?php echo ($row->variant==$template[$x]) ? "selected=\"selected\"" : ""; ?> value="<?php echo $template[$x]; ?>"><?php echo ucfirst($template[$x]); ?></option>
-							<?php $x++; } ?>
-						</optgroup>
-					</select>
-				</td>
-				<td class="span-2">&#160;
-					<select class="span-2" name="toplevel[<?php echo $row->page_id; ?>]">
-						<optgroup label="Toplevel">
-							<?php $z = 1; while($z <= $db->RowCount()) { ?>
-								<option <?php echo ($row->toplevel==$z) ? "selected=\"selected\"" : ""; ?> value="<?php echo $z; ?>"><?php echo $z; ?></option>
-							<?php $z++; } ?>
-						</optgroup>
-					</select>
-				</td>
-				<td class="span-2">
-					<select class="span-2" name="sublevel[<?php echo $row->page_id; ?>]">
-						<optgroup label="Sublevel">
-							<?php $y = 0; while($y+1 < $db->RowCount()) { ?>
-								<option <?php echo ($row->sublevel==$y) ? "selected=\"selected\"" : ""; ?> value="<?php echo $y; ?>"><?php echo $y; ?></option>
-							<?php $y++; } ?>
-						</optgroup>
-					</select>
-				</td>
-				<td class="span-1-1" id="td-islink-<?php echo $row->page_id; ?>">
-					<?php if($row->urlpage == "home") { ; ?>
-						<input type="checkbox" checked="checked" disabled="disabled" />
-					<?php } else { ?>
-						<input type="checkbox" name="islink" id="<?php echo $row->page_id; ?>" class="islink" <?php echo($row->islink==="Y")?'checked="checked"':null;?> />
-					<?php } ?>
+				<td class="span-3">
+					<label for="page_id_<?php echo $i;?>"><em><abbr title="<?php echo $row->urlpage; ?>.html"><?php echo substr($row->urlpage,0,25); ?></abbr></em></label>
 				</td>
 				<td class="span-4">
-					<?php echo $row->urlpage; ?><em>(.html)</em>
-					<input type="hidden" name="pageid[]" value="<?php echo $row->page_id; ?>" id="pageid"/>
+					<span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="pagetitle"><?php echo $row->pagetitle; ?></span>
 				</td>
-			</tr>
-		<?php $i++; } ?>
+				<td class="span-6">
+					<span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="subheader"><?php echo $row->subheader; ?></span>
+				</td>
+				<td class="span-2" style="text-align: center;">
+					<a href="#" id="printable-<?php echo $row->page_id; ?>" rel="<?php echo $row->printable; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php 
+						if($row->printable == "Y") 
+						{ 
+							echo $ccms['lang']['backend']['yes']; 
+						} 
+						else 
+							echo $ccms['lang']['backend']['no']; 
+						?></a>
+				</td>
+				<td class="span-2" style="text-align: center;">
+					<?php 
+					if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageActivity']) 
+					{ 
+					?>
+						<a href="#" id="published-<?php echo $row->page_id; ?>" rel="<?php echo $row->published; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php 
+							if($row->published == "Y") 
+							{ 
+								echo $ccms['lang']['backend']['yes']; 
+							} 
+							else 
+								echo $ccms['lang']['backend']['no']; 
+							?></a>
+					<?php 
+					} 
+					?>
+				</td>
+				<td class="span-2" style="text-align: center;">
+					<?php 
+					if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageVarCoding']) 
+					{ 
+					?>
+						<?php 
+						if($row->module=="editor") 
+						{ 
+						?>
+							<a href="#" id="iscoding-<?php echo $row->page_id; ?>" rel="<?php echo $row->iscoding; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php if($row->iscoding == "Y") { echo "<span style=\"color:#8F0000;font-weight:bold;\">".$ccms['lang']['backend']['yes']."</span>"; } else echo $ccms['lang']['backend']['no']; ?></a>
+						<?php 
+						} 
+						else 
+							echo "&ndash;"; 
+						?>
+					<?php 
+					} 
+					?>
+				</td>
+				<?php 
+				// Check for restrictions
+				if(!in_array($row->urlpage, $cfg['restrict'])||!in_array($row->page_id, $owners)) 
+				{ 
+				?>
+					<td class="span-5" style="text-align: right;">
+						<a id="<?php echo $row->urlpage;?>" href="<?php echo $module; ?>?file=<?php echo $row->urlpage; ?>&amp;action=edit&amp;restrict=<?php echo $row->iscoding; ?>&amp;active=<?php echo $row->published;?>" rel="Edit <?php echo $row->urlpage.'.html';?>" class="tabs sprite edit"><?php echo $ccms['lang']['backend']['editpage']; ?></a> | <a href="../<?php echo ($row->urlpage!="home")?$row->urlpage.'.html?preview='.$cfg['authcode']:'?preview='.$cfg['authcode']; ?>" class="external"><?php echo $ccms['lang']['backend']['previewpage']; ?></a>&#160;
+					</td>
+				<?php 
+				} 
+				else 
+				{ 
+				?>
+					<td class=\"span-3\" style=\"text-align: right;\">
+						<div style="margin: 2px;"><span class="ss_sprite ss_exclamation" title="<?php echo $ccms['lang']['backend']['restrictpage']; ?>"></span> <?php echo $ccms['lang']['backend']['restrictpage'];?></div>
+					</td>
+				<?php 
+				} 
+				?>
+				</tr>
+				
+				<?php 
+				if($i%2 != 1) 
+				{
+					if($row->published === "N") 
+					{
+						echo "<tr style=\"background-color: #F2D9DE;\">";
+					} 
+					else     
+					{
+						echo "<tr style=\"background-color: #E6F2D9;\">";
+					}
+				} 
+				else 
+				{ 
+					if($row->published === "N") 
+					{
+						echo "<tr style=\"background-color: #EBC6CD;\">";
+					} 
+					else 
+					{
+						echo "<tr>"; 
+					}
+				} 
+				?>
+				<td>&#160;</td>
+				<td colspan="5"><strong><?php echo $ccms['lang']['forms']['description']; ?></strong>: <span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="description"><?php echo ucfirst($row->description) ;?></span></td>
+				<td colspan="2" style="text-align: right; padding-right:5px;">
+					<?php 
+					if($row->module=="editor" && !empty($row->toplevel)) 
+					{ 
+					?>
+						<em><?php echo $ccms['lang']['backend']['inmenu']; ?>:</em> <?php echo "<strong>".strtolower($ccms['lang']['menu'][$row->menu_id])."</strong> | <em>".$ccms['lang']['backend']['item']." </em> <strong>".$row->toplevel.":".$row->sublevel."</strong>"; ?></td></tr>
+					<?php 
+					} 
+					elseif($row->module!="editor") 
+					{ 
+						echo "<span class=\"ss_sprite ss_information\"><strong>".ucfirst($row->module)."</strong></span> ".strtolower($ccms['lang']['forms']['module']);
+					} 
+					else 
+						echo "<em>".$ccms['lang']['backend']['notinmenu']."</em>"; 
+					?>
+				</td>
+				</tr>
+			<?php
+			} 
+			// If user is not a page owner 
+			else 
+			{
+				$i++;
+			} 
+			
+			// Regular move on	
+			$i++;
+		} 
+		?>
 		</table>
-<?php } else {
-	echo '<p class="center" style="padding-top:5px;"><span class="ss_sprite ss_delete">'.$ccms['lang']['auth']['featnotallowed'].'</span></p>';
-	} 
+	<?php 
+	}
+
+		
+	/**
+	 *
+	 * Render the entire menu list
+	 *
+	 */
+	if($do_action == "renderlist" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
+	{
+		if(isset($_SESSION['ccms_userLevel']) && $_SESSION['ccms_userLevel'] >= $perm['manageMenu']) 
+		{
+			echo "<table class=\"span-15\" cellpadding=\"0\" cellspacing=\"0\">";
+			
+			$i = 0;
+			// Get previously opened DB stream
+			while (!$db->EndOfSeek()) 
+			{
+				// Fill $row with values
+				$row = $db->Row();
+				
+				// Define $isEven for alternate table coloring
+				$isEven = !($i % 2);
+				if($isEven != '1') 
+				{
+					echo "<tr style=\"background-color: #CDE6B3;\">";
+				} 
+				else 
+				{ 
+					echo "<tr>"; 
+				} 
+				?>
+					<td class="span-2">
+						<select class="span-2" name="menuid[<?php echo $row->page_id; ?>]">
+							<optgroup label="Menu">
+								<?php 
+								$y = 1; 
+								while($y<='5') 
+								{ 
+								?>
+									<option <?php echo ($row->menu_id==$y) ? "selected=\"selected\"" : ""; ?> value="<?php echo $y; ?>"><?php echo $ccms['lang']['menu'][$y]; ?></option>
+									<?php 
+									$y++; 
+								} 
+								?>
+							</optgroup>
+						</select>
+					</td>
+					<td class="span-2">
+						<select class="span-2" name="template[<?php echo $row->page_id; ?>]">
+							<optgroup label="<?php echo $ccms['lang']['backend']['template'];?>">
+								<?php 
+								$x = 0; 
+								while($x<count($template)) 
+								{ 
+								?>
+									<option <?php echo ($row->variant==$template[$x]) ? "selected=\"selected\"" : ""; ?> value="<?php echo $template[$x]; ?>"><?php echo ucfirst($template[$x]); ?></option>
+									<?php 
+									$x++; 
+								} 
+								?>
+							</optgroup>
+						</select>
+					</td>
+					<td class="span-2">&#160;
+						<select class="span-2" name="toplevel[<?php echo $row->page_id; ?>]">
+							<optgroup label="Toplevel">
+								<?php 
+								$z = 1; 
+								while($z <= $db->RowCount()) 
+								{ 
+								?>
+									<option <?php echo ($row->toplevel==$z) ? "selected=\"selected\"" : ""; ?> value="<?php echo $z; ?>"><?php echo $z; ?></option>
+									<?php 
+									$z++; 
+								} 
+								?>
+							</optgroup>
+						</select>
+					</td>
+					<td class="span-2">
+						<select class="span-2" name="sublevel[<?php echo $row->page_id; ?>]">
+							<optgroup label="Sublevel">
+								<?php 
+								$y = 0; 
+								while($y+1 < $db->RowCount()) 
+								{ 
+								?>
+									<option <?php echo ($row->sublevel==$y) ? "selected=\"selected\"" : ""; ?> value="<?php echo $y; ?>"><?php echo $y; ?></option>
+									<?php 
+									$y++; 
+								} 
+								?>
+							</optgroup>
+						</select>
+					</td>
+					<td class="span-1-1" id="td-islink-<?php echo $row->page_id; ?>">
+						<?php 
+						if($row->urlpage == "home") 
+						{ 
+						?>
+							<input type="checkbox" checked="checked" disabled="disabled" />
+						<?php 
+						} 
+						else 
+						{ 
+						?>
+							<input type="checkbox" name="islink" id="<?php echo $row->page_id; ?>" class="islink" <?php echo($row->islink==="Y")?'checked="checked"':null;?> />
+						<?php 
+						} 
+						?>
+					</td>
+					<td class="span-4">
+						<?php echo $row->urlpage; ?><em>(.html)</em>
+						<input type="hidden" name="pageid[]" value="<?php echo $row->page_id; ?>" id="pageid"/>
+					</td>
+				</tr>
+				<?php 
+				$i++; 
+			} 
+			?>
+			</table>
+		<?php 
+		} 
+		else 
+		{
+			echo '<p class="center" style="padding-top:5px;"><span class="ss_sprite ss_delete">'.$ccms['lang']['auth']['featnotallowed'].'</span></p>';
+		} 
+	}
 }
 
- /**
+
+/**
  *
  * Process the request for new page creation
  *
  */
-if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-	
+if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
 	// Remove all none system friendly characters
 	$post_urlpage = filterParam4Filename($_POST['urlpage']); 
 	$post_urlpage = strtolower(str_replace(' ','-',$post_urlpage));
@@ -323,23 +471,27 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		}
 		exit(); // Prevent AJAX from continuing
 	}
-	else {
+	else 
+	{
 		// Set variables
-		if (!get_magic_quotes_gpc()) {
-    		$pagetitle	= htmlspecialchars(addslashes($_POST['pagetitle']));
-    		$pagetitle	= str_replace("'", "&#039;", $pagetitle);
+		if (!get_magic_quotes_gpc()) 
+		{
+	    		$pagetitle	= htmlspecialchars(addslashes($_POST['pagetitle']));
+	    		$pagetitle	= str_replace("'", "&#039;", $pagetitle);
     		
-    		$subheader	= htmlspecialchars(addslashes($_POST['subheader']));
-    		$subheader	= str_replace("'", "&#039;", $subheader);
+	    		$subheader	= htmlspecialchars(addslashes($_POST['subheader']));
+	    		$subheader	= str_replace("'", "&#039;", $subheader);
     		
-    		$description= htmlspecialchars(addslashes($_POST['description']));
-    		$description= str_replace("'", "&#039;", $description);
-		} else {
-    		$pagetitle = htmlspecialchars($_POST['pagetitle']);
-    		$subheader = htmlspecialchars($_POST['subheader']);
-    		$description = htmlspecialchars($_POST['description']);
-    	}
-    	
+	    		$description= htmlspecialchars(addslashes($_POST['description']));
+	    		$description= str_replace("'", "&#039;", $description);
+		} 
+		else 
+		{
+			$pagetitle = htmlspecialchars($_POST['pagetitle']);
+			$subheader = htmlspecialchars($_POST['subheader']);
+			$description = htmlspecialchars($_POST['description']);
+		}
+		
 		// Check radio button values
 		$printable_pref = getPOSTparam4boolYN('printable', 'Y');
 		$published_pref = getPOSTparam4boolYN('published', 'Y');
@@ -364,49 +516,64 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		$result = $db->InsertRow($cfg['db_prefix']."pages", $values);
 		
 		// Check for errors
-		if($result) {
-			
+		if($result) 
+		{
 			// Create the actual file
 			$filehandle = fopen("../../content/".$post_urlpage.".php", 'w');
 			if(!$filehandle) 
 			{
 				$db->TransactionRollback();
 				$errors[] = $ccms['lang']['system']['error_write'];
-			} else {
+			} 
+			else 
+			{
 				// Write default contents to newly created file
 				if($post_module==="editor") 
 				{
 					fwrite($filehandle, "<p>".$ccms['lang']['backend']['newfiledone']."</p>");
 				} 
 				// Write include_once tag to file (modname.Show.php)
-				elseif($post_module!=="editor") {
+				elseif($post_module!=="editor") 
+				{
 					fwrite($filehandle, "<?php include_once('./lib/modules/$post_module/$post_module.Show.php'); ?>");
-				} else die("[ERR048] ".$ccms['lang']['system']['error_general']);
+				}
+				else 
+					die("[ERR048] ".$ccms['lang']['system']['error_general']);
 			}
 			// Report success in notify area
-			if(fclose($filehandle)) {
+			if(fclose($filehandle)) 
+			{
 				echo "<p class=\"h1\"><span class=\"ss_sprite ss_accept\" title=\"".$ccms['lang']['backend']['success']."\"></span> ".$ccms['lang']['backend']['newfilecreated']."</p>".$ccms['lang']['backend']['starteditbody'];
-			} else die($ccms['lang']['system']['error_create']);
-		} elseif(mysql_errno() == "1062") {
+			} 
+			else 
+				die($ccms['lang']['system']['error_create']);
+		} 
+		elseif(mysql_errno() == "1062") 
+		{
 			die("<p class=\"h1\"><span class=\"ss_sprite ss_exclamation\" title=\"".$ccms['lang']['system']['error_general']."\"></span> ".$ccms['lang']['backend']['fileexists']."</p>- ".$ccms['lang']['system']['error_exists']); 
-		} else die($db->Error($ccms['lang']['system']['error_general'])); // Some error that has not been antipicated.
+		} 
+		else 
+			die($db->Error($ccms['lang']['system']['error_general'])); // Some error that has not been antipicated.
 	}
 }
 
- /**
+/**
  *
  * Process the request for page deletion
  *
  */
-if($target_form == "delete" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-
-	if(!empty($_POST['page_id'])) {
-	echo '<p class="h1"><span class="ss_sprite ss_accept" title="'.$ccms['lang']['backend']['success'].'"></span> '.$ccms['lang']['backend']['statusdelete'].'</p>';
+if($target_form == "delete" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
+	if(!empty($_POST['page_id'])) 
+	{
+		echo '<p class="h1"><span class="ss_sprite ss_accept" title="'.$ccms['lang']['backend']['success'].'"></span> '.$ccms['lang']['backend']['statusdelete'].'</p>';
 	
 		// Loop through all submitted page ids
-		foreach ($_POST['page_id'] as $index) {
-		$value = explode($_SESSION['rc2'], $index);
-			if(is_numeric($value[1])) {	
+		foreach ($_POST['page_id'] as $index) 
+		{
+			$value = explode($_SESSION['rc2'], $index);
+			if(is_numeric($value[1])) 
+			{	
 				// Select file name and module with given page_id
 				$correct_filename = $db->QuerySingleValue("SELECT `urlpage` FROM `".$cfg['db_prefix']."pages` WHERE `page_id` = ".$value[1]);
 				$module = $db->QuerySingleValue("SELECT `module` FROM `".$cfg['db_prefix']."pages` WHERE `page_id` = ".$value[1]);
@@ -425,24 +592,34 @@ if($target_form == "delete" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 					$delcfg = $db->DeleteRows($cfg['db_prefix']."cfg".$module, $filter);
 				}
 				
-				if ($result) {
+				if ($result) 
+				{
 					// Delete the actual file
-					if(@unlink("../../content/".$correct_filename.".php")) {
+					if(@unlink("../../content/".$correct_filename.".php")) 
+					{
 						echo '- '.ucfirst($correct_filename).' '.$ccms['lang']['backend']['statusremoved'].'<br/>';
-					} else die($ccms['lang']['system']['error_delete']);
-				} else die($db->Error($ccms['lang']['system']['error_general']));
-			} else die($ccms['lang']['system']['error_forged']);
+					} 
+					else 
+						die($ccms['lang']['system']['error_delete']);
+				} 
+				else 
+					die($db->Error($ccms['lang']['system']['error_general']));
+			} 
+			else 
+				die($ccms['lang']['system']['error_forged']);
 		}
-	} else echo '<p class="h1"><span class="ss_sprite ss_exclamation" title="'.$ccms['lang']['system']['error_general'].'"></span> '.$ccms['lang']['system']['error_correct'].'</p><span class="fault">- '.$ccms['lang']['system']['error_selection'].'</span>';
+	} 
+	else 
+		echo '<p class="h1"><span class="ss_sprite ss_exclamation" title="'.$ccms['lang']['system']['error_general'].'"></span> '.$ccms['lang']['system']['error_correct'].'</p><span class="fault">- '.$ccms['lang']['system']['error_selection'].'</span>';
 }
 
- /**
+/**
  *
  * Save the menu order, individual templating & menu allocation preferences
  *
  */
-if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-
+if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
 	$error = null;
 	
 	foreach ($_POST['pageid'] as $key => $page_id) 
@@ -467,9 +644,12 @@ if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 		}
 	}
 	
-	if(empty($error)) {
+	if(empty($error)) 
+	{
 		echo '<p class="h1"><span class="ss_sprite ss_accept" title="'.$ccms['lang']['backend']['success'].'"></span> '.$ccms['lang']['backend']['success'].'</p>'.$ccms['lang']['backend']['orderprefsaved'];
-	} else die($db->Error($ccms['lang']['system']['error_general']));
+	} 
+	else 
+		die($db->Error($ccms['lang']['system']['error_general']));
 }
 
  /**
@@ -477,7 +657,8 @@ if($target_form == "menuorder" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
  * Set actual hyperlink behind menu item to true/false
  *
  */
-if($do_action == "islink" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
+if($do_action == "islink" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
 	$page_id = getPOSTparam4Number('id');
 	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values["islink"] = MySQL::SQLValue($_POST['cvalue'], MySQL::SQLVALUE_Y_N);
@@ -490,13 +671,13 @@ if($do_action == "islink" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()
 		$db->Kill();
 }
 
- /**
+/**
  *
  * Edit print, publish or iscoding preference
  *
  */
-if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) {
-	
+if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
+{
 	// Explode variable with all necessary information
 	$page_id = explode("-", $_GET['id']);
 	
@@ -508,38 +689,54 @@ if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] != "POST" && checkA
 	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values["$action"] = MySQL::SQLValue($new,MySQL::SQLVALUE_Y_N);
 	
-	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id[1]))) {
-		if($new == "Y") { echo $ccms['lang']['backend']['yes']; } else echo $ccms['lang']['backend']['no'];
-	} else die($db->Error($ccms['lang']['system']['error_general']));
+	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id[1]))) 
+	{
+		if($new == "Y") 
+		{ 
+			echo $ccms['lang']['backend']['yes']; 
+		} 
+		else 
+			echo $ccms['lang']['backend']['no'];
+	} 
+	else 
+	} 
+	else 
+		die($db->Error($ccms['lang']['system']['error_general']));
 }
 
- /**
+/**
  *
  * Check latest version
  *
  */
 $version_recent = @file_get_contents("http://www.compactcms.nl/version/".$v.".txt");
-if(version_compare($version_recent, $v) != '1') { 
+if(version_compare($version_recent, $v) != '1') 
+{ 
 	$version = $ccms['lang']['backend']['uptodate']; 
-} else {
+} 
+else 
+{
 	$version = $ccms['lang']['backend']['outofdate']." <a href=\"http://www.compactcms.nl/changes.html\" class=\"external\" rel=\"external\">".$ccms['lang']['backend']['considerupdate']."</a>.";
 }
 
- /**
+/**
  *
  * Edit-in-place update action
  *
  */
-if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-	
-	if(!empty($_POST['content']) && strlen($_POST['content'])>=3 && strlen($_POST['content'])<=240) {
+if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
+	if(!empty($_POST['content']) && strlen($_POST['content'])>=3 && strlen($_POST['content'])<=240) 
+	{
 		if (!get_magic_quotes_gpc()) {
     		$content = htmlspecialchars(addslashes($_POST['content']), ENT_COMPAT, 'UTF-8');
     		$content = str_replace("'", "&#039;", $content); 
 		} else {
     		$content = htmlspecialchars($_POST['content'], ENT_COMPAT, 'UTF-8');
     	}
-	} else die($ccms['lang']['system']['error_value']);
+	} 
+	else 
+		die($ccms['lang']['system']['error_value']);
 	
 	// Continue with content update
 	$page_id		= getPOSTparam4Number('id');
@@ -547,63 +744,75 @@ if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values["$dest"]= MySQL::SQLValue($content,MySQL::SQLVALUE_TEXT);
 	
-	if (!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id))) $db->Kill();
-		if (!get_magic_quotes_gpc()) {
+	if (!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => $page_id))) 
+		$db->Kill();
+	if (!get_magic_quotes_gpc()) 
+	{
     		echo stripslashes($content);
-		} else {
-    		echo $content;
-    	}
+	} 
+	else 
+	{
+		echo $content;
+	}
     }
 }
 
- /**
+/**
  *
  * Save the edited template and check for authority
  *
  */
-if($do_action == "save-template" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-	
+if($do_action == "save-template" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageTemplate']) {
-	
+	if($_SESSION['ccms_userLevel']>=$perm['manageTemplate']) 
+	{
 		$filename	= "../../lib/templates/".htmlentities($_POST['template']);
 		$filenoext	= $_POST['template'];
 		$content	= $_POST['content'];
 		
-		if (is_writable($filename)) {
-		    if (!$handle = fopen($filename, 'w')) {
+		if (is_writable($filename)) 
+		{
+			if (!$handle = fopen($filename, 'w')) 
+			{
 				die("[ERR105] ".$ccms['lang']['system']['error_openfile']." (".$filename.").");
-		    }
-		    if (fwrite($handle, $content) === FALSE) {
-		        die("[ERR106] ".$ccms['lang']['system']['error_write']." (".$filename.").");
-		    }
-		// Do on success
-		fclose($handle);
-		header("Location: ./modules/template-editor/backend.php?status=notice&template=$filenoext");
-		exit();
-		
-		// Else throw relevant error(s)
-		} else {
+			}
+			if (fwrite($handle, $content) === FALSE) 
+			{
+				die("[ERR106] ".$ccms['lang']['system']['error_write']." (".$filename.").");
+			}
+			// Do on success
+			fclose($handle);
+			header("Location: ./modules/template-editor/backend.php?status=notice&template=$filenoext");
+			exit();
+		} 
+		else 
+		{
+			// Else throw relevant error(s)
 			die($ccms['lang']['system']['error_chmod']);
 		} 
-	} else die($ccms['lang']['auth']['featnotallowed']);
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
 }
 
- /**
+/**
  *
  * Create a new user as posted by an authorized user
  *
  */
-if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-	
+if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) {
-	
+	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
+	{
 		$i=0;
-		foreach ($_POST as $key => $value) {
-			$count[] = (strlen($value)>0?$i++:null);
+		foreach ($_POST as $key => $value) 
+		{
+			$count[] = (strlen($value) > 0 ? $i++ : null);
 		}
-		if($i<=6) {
+		if($i <= 6) 
+		{
 			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_tooshort']);
 			exit();
 		}
@@ -623,35 +832,41 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		$result = $db->InsertRow($cfg['db_prefix']."users", $values);
 		
 		// Check for errors
-		if($result) {
+		if($result) 
+		{
 			header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
 			exit();
-		} else $db->Kill();
-	} else die($ccms['lang']['auth']['featnotallowed']);
+		} 
+		else 
+			$db->Kill();
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
 }
 
- /**
+/**
  *
  * Edit user details as posted by an authorized user
  *
  */
-if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-	
+if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) {
-	
+	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) 
+	{
 		// Check length of values
-		if(strlen($_POST['first'])>2&&strlen($_POST['last'])>2&&strlen($_POST['email'])>6) {
-		
+		if(strlen($_POST['first'])>2&&strlen($_POST['last'])>2&&strlen($_POST['email'])>6) 
+		{
 			$userID = getPOSTparam4Number('userID');
 			$values = array(); // [i_a] make sure $values is an empty array to start with here
 			$values["userFirst"]= MySQL::SQLValue($_POST['first'],MySQL::SQLVALUE_TEXT);
 			$values["userLast"]	= MySQL::SQLValue($_POST['last'],MySQL::SQLVALUE_TEXT);
 			$values["userEmail"]= MySQL::SQLValue($_POST['email'],MySQL::SQLVALUE_TEXT);
 			
-			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) {
-				
-				if($userID==$_SESSION['ccms_userID']) {
+			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => "\"$userID\""))) 
+			{
+				if($userID==$_SESSION['ccms_userID']) 
+				{
 					$_SESSION['ccms_userFirst']	= htmlspecialchars($_POST['first']);
 					$_SESSION['ccms_userLast']	= htmlspecialchars($_POST['last']);
 				}
@@ -667,22 +882,24 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_tooshort']);
 			exit();
 		}
-	} else die($ccms['lang']['auth']['featnotallowed']);
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
 }
  
- /**
+/**
  *
  * Edit users' password as posted by an authorized user
  *
  */
  
-if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-	
+if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) {
-	
-		if(strlen($_POST['userPass'])>6&&md5($_POST['userPass'])===md5($_POST['cpass'])) {
-		
+	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) 
+	{
+		if(strlen($_POST['userPass'])>6&&md5($_POST['userPass'])===md5($_POST['cpass'])) 
+		{
 			$userID = getPOSTparam4Number('userID');
 			$values = array(); // [i_a] make sure $values is an empty array to start with here
 			$values["userPass"] = MySQL::SQLValue(md5($_POST['userPass'].$cfg['authcode']),MySQL::SQLVALUE_TEXT);
@@ -694,27 +911,33 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 			}
 			else
 				$db->Kill();
-		} elseif(strlen($_POST['userPass'])<=6) {
+		} 
+		elseif(strlen($_POST['userPass'])<=6) 
+		{
 			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passshort']);
 			exit();
-		} elseif(md5($_POST['userPass'])!==md5($_POST['cpass'])) {
+		} 
+		elseif(md5($_POST['userPass'])!==md5($_POST['cpass'])) 
+		{
 			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passnequal']);
 			exit();
 		}
-	} else die($ccms['lang']['auth']['featnotallowed']);
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
 }
 
- /**
+/**
  *
  * Edit user level as posted by an authorized user
  *
  */
  
-if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-	
+if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) {
-		
+	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
+	{
 		$userID = getPOSTparam4Number('userID');
 		$userLevel = getPOSTparam4Number('userLevel');
 		if (is_integer($userLevel))
@@ -743,19 +966,20 @@ if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && ch
 		die($ccms['lang']['auth']['featnotallowed']);
 }
 
- /**
+/**
  *
  * Delete a user as posted by an authorized user
  *
  */
-if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-	
+if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) {
-		
+	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
+	{
 		$total = count($_POST['userID']);
 		
-		if($total==0) {
+		if($total==0) 
+		{
 			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_selection']);
 			exit();
 		}
@@ -770,20 +994,25 @@ if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 			$i++;
 		}
 		// Check for errors
-		if($result&&$i==$total) {
+		if($result && $i == $total) 
+		{
 			header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['fullremoved']);
 			exit();
-		} else $db->Kill();
-	} else die($ccms['lang']['auth']['featnotallowed']);
+		} 
+		else 
+			$db->Kill();
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
 }
 
- /**
+/**
  *
  * Generate the WYSIWYG or code editor for editing purposes (prev. editor.php)
  *
  */
-if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) {
-	
+if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
+{
 	// Set the necessary variables
 	$name 		= getGETparam4Filename('file');
 	$iscoding	= getGETparam4boolYN('restrict', 'N');
@@ -792,13 +1021,16 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
 	
 	// Check for editor.css in template directory
 	$template	= $db->QuerySingleValue("SELECT `variant` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = ".MySQL::SQLValue($name, MySQL::SQLVALUE_TEXT));
-	if (is_file('../../lib/templates/'.$template.'/editor.css')) {
-	    $css = '../../lib/templates/'.$template.'/editor.css';
+	if (is_file('../../lib/templates/'.$template.'/editor.css')) 
+	{
+		$css = '../../lib/templates/'.$template.'/editor.css';
 	}
 	
 	// Check for filename	
-	if(!empty($filename)) {
-		if(@fopen("$filename", "r")) {
+	if(!empty($filename)) 
+	{
+		if(@fopen("$filename", "r")) 
+		{
 			$handle = fopen("$filename", "r");
 			// PHP5+ Feature
 			// $contents = stream_get_contents($handle);
@@ -806,7 +1038,9 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
 			$contents = fread($handle, filesize($filename));
 			$contents = str_replace("<br />", "<br>", $contents);
 			fclose($handle);
-		} else { 
+		} 
+		else 
+		{ 
 			die($ccms['lang']['system']['error_deleted']);
 		}
 	} 
@@ -819,10 +1053,31 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $cfg['language']; ?>">
 	<head>
 		<title>CompactCMS - <?php echo $ccms['lang']['editor']['editorfor']." ".$name; ?></title>
-		<script type="text/javascript">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['editor']['confirmclose']; ?>');if(answer){try{parent.MochaUI.closeWindow(parent.$('<?php echo $_GET['file']; ?>_ccms'));}catch(e){}}else{return false;}}</script>
+		<script type="text/javascript">
+function confirmation()
+{
+	var answer=confirm('<?php echo $ccms['lang']['editor']['confirmclose']; ?>');
+	if(answer)
+	{
+		try
+		{
+			parent.MochaUI.closeWindow(parent.$('<?php echo $_GET['file']; ?>_ccms'));
+		}
+		catch(e)
+		{
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+</script>
 		
-	<?php // Load TinyMCE (compressed for faster loading) 
-	if($cfg['wysiwyg']===true && $iscoding=="N") { 
+	<?php 
+	// Load TinyMCE (compressed for faster loading) 
+	if($cfg['wysiwyg']===true && $iscoding=="N") 
+	{ 
 		$cfg['language'] = (file_exists('./tiny_mce/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en';?>
 		
 		<!-- File uploader styles -->
@@ -841,22 +1096,127 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
 		<script type="text/javascript" src="./fancyupload/Source/Uploader/Fx.ProgressBar.js"></script>
 		<script type="text/javascript" src="./fancyupload/Source/Uploader/Swiff.Uploader.js"></script>
 		<script type="text/javascript" src="./fancyupload/Source/Uploader.js"></script>
-		<script type="text/javascript">FileManager.TinyMCE=function(options){return function(field,url,type,win){var manager=new FileManager($extend({onComplete:function(path){if(!win.document)return;win.document.getElementById(field).value='<?php echo $cfg['rootdir']; ?>'+path;if(win.ImageDialog)win.ImageDialog.showPreviewImage('<?php echo $cfg['rootdir']; ?>'+path,1);this.container.destroy();}},options(type)));manager.dragZIndex=400002;manager.SwiffZIndex=400003;manager.el.setStyle('zIndex',400001);manager.overlay.el.setStyle('zIndex',400000);document.id(manager.tips).setStyle('zIndex',400010);manager.show();return manager;};};FileManager.implement('SwiffZIndex',400003);var Dialog=new Class({Extends:Dialog,initialize:function(text,options){this.parent(text,options);this.el.setStyle('zIndex',400010);this.overlay.el.setStyle('zIndex',400009);}});</script>
+		<script type="text/javascript">
+FileManager.TinyMCE=function(options)
+{
+	return function(field,url,type,win)
+	{
+		var manager=new FileManager(
+			$extend(
+				{
+					onComplete:function(path)
+					{
+						if(!win.document)
+							return;
+						win.document.getElementById(field).value='<?php echo $cfg['rootdir']; ?>'+path;
+						if(win.ImageDialog)
+							win.ImageDialog.showPreviewImage('<?php echo $cfg['rootdir']; ?>'+path,1);
+						this.container.destroy();
+					}
+				},
+				options(type)
+			)
+		);
+		manager.dragZIndex=400002;
+		manager.SwiffZIndex=400003;
+		manager.el.setStyle('zIndex',400001);
+		manager.overlay.el.setStyle('zIndex',400000);
+		document.id(manager.tips).setStyle('zIndex',400010);
+		manager.show();
+		return manager;
+	};
+};
+FileManager.implement('SwiffZIndex',400003);
+var Dialog=new Class(
+	{
+		Extends:Dialog,
+		initialize:function(text,options)
+		{
+			this.parent(text,options);
+			this.el.setStyle('zIndex',400010);
+			this.overlay.el.setStyle('zIndex',400009);
+		}
+	});
+</script>
 		
 		<!-- GZ version of TinyMCE -->
-		<script type="text/javascript">	tinyMCE_GZ.init({plugins:'safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave',themes:'advanced',<?php echo "languages: '".$cfg['language']."',"; ?>disk_cache:true,debug:false});
+		<script type="text/javascript">	
+tinyMCE_GZ.init(
+	{
+		plugins:'safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave',
+		themes:'advanced',
+		<?php echo "languages: '".$cfg['language']."',"; ?>
+		disk_cache:true,
+		debug:false
+	});
 		</script>
 		
 		<script type="text/javascript">
-		tinyMCE.init({mode:"textareas",theme:"advanced",<?php echo 'language:"'.$cfg['language'].'",'; ?>skin:"o2k7",skin_variant:"silver",<?php echo (isset($css)&&!empty($css)?'content_css:"'.$css.'",':null);?>plugins:"safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave",theme_advanced_buttons1:"fullscreen,tinyautosave,print,formatselect,fontselect,fontsizeselect,|,justifyleft,justifycenter,justifyright,justifyfull,|,sub,sup,|,spellchecker,link,unlink,anchor,hr,image,media,|,charmap,code",theme_advanced_buttons2:"undo,redo,cleanup,|,bold,italic,underline,strikethrough,|,forecolor,backcolor,removeformat,|,cut,copy,paste,replace,|,bullist,numlist,outdent,indent,|,tablecontrols",theme_advanced_buttons3:"",theme_advanced_toolbar_location:"top",theme_advanced_toolbar_align:"left",theme_advanced_statusbar_location:"bottom",dialog_type:"modal",paste_auto_cleanup_on_paste:true,theme_advanced_resizing:true,relative_urls:true,convert_urls:false,remove_script_host:true,document_base_url:"../../",<?php if($cfg['iframe'] === true) { ?> extended_valid_elements:"iframe[align<bottom?left?middle?right?top|class|frameborder|height|id|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style|title|width]",<?php } ?>spellchecker_languages:"+English=en,Dutch=nl,German=de,Spanish=es,French=fr,Italian=it,Russian=ru",file_browser_callback:FileManager.TinyMCE(function(type){return{url:type=='image'?'./fancyupload/selectImage.php':'./fancyupload/manager.php',assetBasePath:'./fancyupload/Assets',language:'en',selectable:true,uploadAuthData:{session:'ccms_userLevel'}};})});
+tinyMCE.init(
+	{
+		mode:"textareas",
+		theme:"advanced",
+		<?php echo 'language:"'.$cfg['language'].'",'; ?>
+		skin:"o2k7",
+		skin_variant:"silver",
+		<?php echo (!empty($css)?'content_css:"'.$css.'",':null);?>
+		plugins:"safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave",
+		theme_advanced_buttons1:"fullscreen,tinyautosave,print,formatselect,fontselect,fontsizeselect,|,justifyleft,justifycenter,justifyright,justifyfull,|,sub,sup,|,spellchecker,link,unlink,anchor,hr,image,media,|,charmap,code",
+		theme_advanced_buttons2:"undo,redo,cleanup,|,bold,italic,underline,strikethrough,|,forecolor,backcolor,removeformat,|,cut,copy,paste,replace,|,bullist,numlist,outdent,indent,|,tablecontrols",
+		theme_advanced_buttons3:"",
+		theme_advanced_toolbar_location:"top",
+		theme_advanced_toolbar_align:"left",
+		theme_advanced_statusbar_location:"bottom",
+		dialog_type:"modal",
+		paste_auto_cleanup_on_paste:true,
+		theme_advanced_resizing:true,
+		relative_urls:true,
+		convert_urls:false,
+		remove_script_host:true,
+		document_base_url:"../../",
+		<?php if($cfg['iframe'] === true) { ?> 
+			extended_valid_elements:"iframe[align<bottom?left?middle?right?top|class|frameborder|height|id|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style|title|width]",
+		<?php } ?>
+		spellchecker_languages:"+English=en,Dutch=nl,German=de,Spanish=es,French=fr,Italian=it,Russian=ru",
+		file_browser_callback:FileManager.TinyMCE(
+			function(type)
+			{
+				return { /* ! '{" MUST be on same line as 'return' otherwise JS will see the newline as end-of-statement! */
+					url:type=='image'?'./fancyupload/selectImage.php':'./fancyupload/manager.php',
+					assetBasePath:'./fancyupload/Assets',
+					language:'en',
+					selectable:true,
+					uploadAuthData:
+					{
+						session:'ccms_userLevel'
+					}
+				};
+			})
+	});
 		</script>
 
-	<?php } // End TinyMCE. Start load Editarea for code editing
-	elseif($cfg['wysiwyg']===false || $iscoding=="Y") { 
-		$cfg['language'] = (file_exists('./edit_area/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en'; ?>
+	<?php 
+	} // End TinyMCE. Start load Editarea for code editing
+	elseif($cfg['wysiwyg']===false || $iscoding=="Y") 
+	{ 
+		$cfg['language'] = (file_exists('./edit_area/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en'; 
+		?>
 		<script type="text/javascript" src="./edit_area/edit_area_compressor.php"></script>
-		<script type="text/javascript">editAreaLoader.init({id:"content",is_multi_files:false,allow_toggle:false,word_wrap:true,start_highlight:true,<?php echo 'language:"'.$cfg['language'].'",'; ?>syntax:"html"});</script>
-	<?php } ?>
+		<script type="text/javascript">
+editAreaLoader.init(
+	{
+		id:"content",
+		is_multi_files:false,
+		allow_toggle:false,
+		word_wrap:true,
+		start_highlight:true,
+		<?php echo 'language:"'.$cfg['language'].'",'; ?>
+		syntax:"html"
+	});
+		</script>
+	<?php 
+	} 
+	?>
 	<link rel="stylesheet" type="text/css" href="../img/styles/base.css,layout.css,sprite.css" />
 	</head>
 	
@@ -882,28 +1242,31 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
 	</div>
 	</body>
 	</html>
-<?php }
+<?php 
+}
 
  /**
  *
  * Processing save page (prev. handler.inc.php)
  *
  */
-if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth()) {
-
+if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth()) 
+{
 	// Strip slashes for certain servers (DEPRECIATED for PHP6)
-	if (get_magic_quotes_gpc()) {
-	    function stripslashes_deep($value) {
-	        if(is_array($value)) {
-	        	$value = array_map('stripslashes_deep',$value);
-	        } else {
-	        	$value = stripslashes($value);
-	        }
-	        return $value;
-	    }
+	if (get_magic_quotes_gpc()) 
+	{
+		function stripslashes_deep($value) 
+		{
+			if(is_array($value)) {
+				$value = array_map('stripslashes_deep',$value);
+			} else {
+				$value = stripslashes($value);
+			}
+			return $value;
+		}
 	
-	    $_POST = array_map('stripslashes_deep', $_POST);
-	    $_GET = array_map('stripslashes_deep', $_GET);
+		$_POST = array_map('stripslashes_deep', $_POST);
+		$_GET = array_map('stripslashes_deep', $_GET);
 	}
 
 	$name 		= getGETparam4Filename('page');
@@ -913,18 +1276,19 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth())
 	$filename	= "../../content/$name.php";
 	$keywords	= htmlentities($_POST['keywords']);
 
-	if (is_writable($filename)) {
-	    if (!$handle = fopen($filename, 'w')) {
+	if (is_writable($filename)) 
+	{
+		if (!$handle = fopen($filename, 'w')) {
 			die("[ERR105] ".$ccms['lang']['system']['error_openfile']." (".$filename.").");
-	    }
-	    if (fwrite($handle, $content) === FALSE) {
-	        die("[ERR106] ".$ccms['lang']['system']['error_write']." (".$filename.").");
-	    }
+		}
+		if (fwrite($handle, $content) === FALSE) {
+			die("[ERR106] ".$ccms['lang']['system']['error_write']." (".$filename.").");
+		}
 		fclose($handle);
 	} else {
 		die($ccms['lang']['system']['error_chmod']);
 	}
-	    
+		
 	// Save keywords to database
 	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values["keywords"]= MySQL::SQLValue($keywords,MySQL::SQLVALUE_TEXT);
@@ -942,16 +1306,30 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth())
 	<body>
 		<div id="handler-wrapper" class="module">
 			
-			<?php if($active=="N") {?>
-			<p class="notice"><?php $msg = explode('::', $ccms['lang']['hints']['published']); echo $msg[0].": <strong>".strtolower($ccms['lang']['backend']['disabled'])."</strong>"; ?></p>
-			<?php } ?>
+			<?php 
+			if($active=="N") 
+			{
+			?>
+				<p class="notice"><?php $msg = explode('::', $ccms['lang']['hints']['published']); echo $msg[0].": <strong>".strtolower($ccms['lang']['backend']['disabled'])."</strong>"; ?></p>
+			<?php 
+			} 
+			?>
 			<p class="success"><?php echo $ccms['lang']['editor']['savesuccess']; ?><em><?php echo $name; ?>.html</em>.</p>
 			<hr/>
-			<?php if($type=="code") { ?>
+			<?php 
+			if($type=="code") 
+			{ 
+			?>
 				<p><pre><?php echo htmlentities(file_get_contents($filename)); ?></pre></p>
-			<?php } elseif($type=="text") { ?>
+			<?php 
+			} 
+			elseif($type=="text") 
+			{ 
+			?>
 				<p><?php echo file_get_contents($filename); ?></p>
-			<?php } ?>
+			<?php 
+			} 
+			?>
 			<hr/>
 			<p>
 				<a href="../../<?php echo $name; ?>.html?preview=<?php echo $cfg['authcode'];?>" class="external" target="_blank"><?php echo $ccms['lang']['editor']['preview']; ?></a>		

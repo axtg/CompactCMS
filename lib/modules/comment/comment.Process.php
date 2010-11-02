@@ -74,8 +74,8 @@ $do_action 	= getGETparam4IdOrNumber('action');
  * Show comments
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAuth()) {
-		
+if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAuth()) 
+{
 	// Pagination variables
 	$pageID	= getGETparam4Filename('page');
 	$rsCfg	= $db->QuerySingleValue("SELECT showMessage FROM `".$cfg['db_prefix']."cfgcomment` WHERE pageID='$pageID'");
@@ -91,10 +91,12 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modcomment` WHERE pageID='$pageID' ORDER BY `commentID` DESC LIMIT $limit");
 	
 	// Start switch for comments, select all the right details
-	if($db->HasRecords()) {
-		while (!$db->EndOfSeek()) {
-		$rsComment = $db->Row(); ?>
-	
+	if($db->HasRecords()) 
+	{
+		while (!$db->EndOfSeek()) 
+		{
+			$rsComment = $db->Row(); 
+			?>
 			<div id="s-display">
 				<div id="s-avatar">
 					<img src="http://www.gravatar.com/avatar.php?gravatar_id=<?php echo md5($rsComment->commentEmail);?>&amp;size=80&amp;rating=G" alt="<?php echo $ccms['lang']['guestbook']['avatar'];?>" /><br/>
@@ -110,22 +112,33 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 					</p>
 				</div>
 			</div>
-		<?php } ?>
+		<?php 
+		} 
+		?>
 		
 		<div class="pagination">
-			<?php $current = (isset($_GET['offset'])&&$_GET['offset']>0?$_GET['offset']:'0'); ?>
-			<?php for ($i=0; $i<$total; $i++) { 
+			<?php 
+			$current = (isset($_GET['offset'])&&$_GET['offset']>0?$_GET['offset']:'0'); 
+			for ($i=0; $i<$total; $i++) 
+			{ 
 				$linktext = ($i/$max>0?($i/$max)+1:1);
-				if($i%$max==0&&$current==($i/$max)) {
+				if($i%$max==0&&$current==($i/$max)) 
+				{
 					echo '<span class="current">'.$linktext.'</span>';
-				} elseif($i%$max==0&&$current!=($i/$max)) {
+				} 
+				elseif($i%$max==0&&$current!=($i/$max)) 
+				{
 					echo '<a href="?offset='.$i/$max.'">'.$linktext.'</a>';
 				}
-			} ?>
+			} 
+			?>
 		</div>
 		<p>&#160;</p>
 
-	<?php } else echo $ccms['lang']['guestbook']['noposts'];
+	<?php 
+	} 
+	else 
+		echo $ccms['lang']['guestbook']['noposts'];
 }
 
  /**
@@ -133,18 +146,24 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
  * Delete comment
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth()) {
-	
+if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth()) 
+{
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) {
+	if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) 
+	{
 	
 		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		$values['commentID'] = MySQL::SQLValue($commentID,MySQL::SQLVALUE_NUMBER);
-		if($db->DeleteRows($cfg['db_prefix']."modcomment", $values)) {
+		if($db->DeleteRows($cfg['db_prefix']."modcomment", $values)) 
+		{
 			header("Location: comment.Manage.php?status=notice&file=".$_GET['pageID']."&msg=".$ccms['lang']['backend']['fullremoved']);
 			exit();
-		} else die($ccms['lang']['auth']['featnotallowed']);
-	} else die($ccms['lang']['auth']['featnotallowed']);
+		} 
+		else 
+			die($ccms['lang']['auth']['featnotallowed']);
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
 }
 
  /**

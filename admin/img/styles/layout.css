@@ -172,7 +172,11 @@ a.edit, a.editinplace:hover {
 input[type="text"]{width: 200px;}
 button {margin-right: 15px;}
 optgroup option {padding-left: 10px;}
-#f_de {width: 200px;height: 50px;}
+#f_de 
+{
+	width: 200px;
+	height: 50px;
+}
 
 /* === 1. CORE === */
 /* === EDIT in PAGE === */
@@ -186,7 +190,8 @@ optgroup option {padding-left: 10px;}
 	background: #ECC6CD;
 	padding: 0 4px;
 	border: #D37A8A 2px solid;	
-	font: 90% 'Palatino Linotype', Palatino,Baskerville, 'Book Antiqua', Georgia,serif;
+	font-size: 90%;
+	font-family: "Palatino Linotype", Palatino, Baskerville, "Book Antiqua", Georgia, serif;
 	width: 85%;
 	height: 35px;
 }
@@ -257,7 +262,14 @@ div.tip-text {
 
 /* === 1. CORE === */
 /* === MODULES === */
-div.module{font:'Palatino Linotype',Palatino, Baskerville, 'Book Antiqua', Georgia,serif;color:#222;line-height:1.6em;margin:15px;}
+div.module
+{
+	font-family: "Palatino Linotype", Palatino, Baskerville, "Book Antiqua", Georgia, serif;
+	color:#222;
+	line-height:1.6em;
+	margin:15px;
+	
+}
 .module label{display:block;}
 .module h1,.module h2 {
 	font-size:1.2em;

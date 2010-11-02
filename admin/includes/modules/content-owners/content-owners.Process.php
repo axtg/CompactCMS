@@ -68,16 +68,17 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
  * Either INSERT or UPDATE preferences
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
-	
+if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageOwners']) {
+	if($_SESSION['ccms_userLevel']>=$perm['manageOwners']) 
+	{
 		
 		// Set all values back to zero
 		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		$values["user_ids"] = 0;
-		if($db->UpdateRows($cfg['db_prefix']."pages", $values)) {
-			
+		if($db->UpdateRows($cfg['db_prefix']."pages", $values))
+		{
 			// If all empty, we're done here
 			if(empty($_POST['owner'])) {
 				header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
@@ -86,7 +87,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 		
 			// Otherwise, set the page owners
 			$i=0;
-			foreach ($_POST['owner'] as $value) {
+			foreach ($_POST['owner'] as $value) 
+			{
 				// Split posted variable
 				$explode = explode("||",$value);
 			
@@ -97,11 +99,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) {
 				$values = array(); // [i_a] make sure $values is an empty array to start with here
 				$values["user_ids"] = MySQL::SQLValue($users,MySQL::SQLVALUE_TEXT);
 			
-				if($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => "\"$pageID\""))) {
+				if($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => "\"$pageID\""))) 
+				{
 					$i++;
 				}
 				
-				if($i==count($_POST['owner'])) {
+				if($i==count($_POST['owner'])) 
+				{
 					header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['success']);
 					exit();
 				} 

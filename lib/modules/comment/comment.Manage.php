@@ -72,7 +72,26 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>News module</title>
 		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,liquid.css,layout.css,sprite.css" />
-		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
+		<script type="text/javascript" charset="utf-8">
+function confirmation()
+{
+	var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');
+	if(answer)
+	{
+		try
+		{
+			return true;
+		}
+		catch(e)
+		{
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+</script>
 	</head>
 <body>
 	<div class="module">
@@ -88,63 +107,78 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			$db->Kill();
 	
 		// Start switch for news, select all the right details
-		if($db->HasRecords()) {
-			while (!$db->EndOfSeek()) {
-	    	$rsComment = $db->Row(); ?>
-			
-			<div class="span-5">
-				<img src="http://www.gravatar.com/avatar.php?gravatar_id=<?php echo md5($rsComment->commentEmail); ?>&amp;size=80&amp;rating=G" style="margin:4px;border:2px solid #000;" alt="<?php echo $ccms['lang']['guestbook']['avatar'];?>"/><br/><img src="./resources/<?php echo $rsComment->commentRate;?>-star.gif" alt="<?php echo $ccms['lang']['guestbook']['rating']." ".$rsComment->commentRate;?>"/>
-			</div>
-			<div class="span-17">
-				<strong><?php echo (!empty($rsComment->commentUrl)?'<a href="'.$rsComment->commentUrl.'" target="_blank">'.$rsComment->commentName.'</a>':$rsComment->commentName); echo ' '.$ccms['lang']['guestbook']['wrote']; ?>:</strong>
-				<p><?php echo nl2br(strip_tags($rsComment->commentContent));?></p>
-				<p>
-				<?php if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) { ?>
-					<span class="ss_sprite ss_cross small"><a onclick="return confirmation()" href="comment.Process.php?pageID=<?php echo $_GET['file'];?>&amp;commentID=<?php echo $rsComment->commentID;?>&amp;action=del-comment"><?php echo $ccms['lang']['guestbook']['delentry'];?></a></span>
-				<?php } ?>
-				<span class="ss_sprite ss_email small"><a href="mailto:<?php echo $rsComment->commentEmail;?>"><?php echo $ccms['lang']['guestbook']['sendmail'];?></a></span>
-				<span class="ss_sprite ss_world quiet small"><?php echo $rsComment->commentHost; ?></span>
-				<span class="ss_sprite ss_time quiet small"><?php echo date('Y-m-d G:i:s',strtotime($rsComment->commentTimestamp))?></span>
-				</p>
-			</div>
-			<hr class="space" />
-		<?php 
-		$i++; }
+		if($db->HasRecords()) 
+		{
+			while (!$db->EndOfSeek()) 
+			{
+				$rsComment = $db->Row(); 
+				?>
+				<div class="span-5">
+					<img src="http://www.gravatar.com/avatar.php?gravatar_id=<?php echo md5($rsComment->commentEmail); ?>&amp;size=80&amp;rating=G" style="margin:4px;border:2px solid #000;" alt="<?php echo $ccms['lang']['guestbook']['avatar'];?>"/><br/><img src="./resources/<?php echo $rsComment->commentRate;?>-star.gif" alt="<?php echo $ccms['lang']['guestbook']['rating']." ".$rsComment->commentRate;?>"/>
+				</div>
+				<div class="span-17">
+					<strong><?php echo (!empty($rsComment->commentUrl)?'<a href="'.$rsComment->commentUrl.'" target="_blank">'.$rsComment->commentName.'</a>':$rsComment->commentName); echo ' '.$ccms['lang']['guestbook']['wrote']; ?>:</strong>
+					<p><?php echo nl2br(strip_tags($rsComment->commentContent));?></p>
+					<p>
+					<?php 
+					if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) 
+					{ 
+					?>
+						<span class="ss_sprite ss_cross small"><a onclick="return confirmation()" href="comment.Process.php?pageID=<?php echo $_GET['file'];?>&amp;commentID=<?php echo $rsComment->commentID;?>&amp;action=del-comment"><?php echo $ccms['lang']['guestbook']['delentry'];?></a></span>
+					<?php 
+					} 
+					?>
+					<span class="ss_sprite ss_email small"><a href="mailto:<?php echo $rsComment->commentEmail;?>"><?php echo $ccms['lang']['guestbook']['sendmail'];?></a></span>
+					<span class="ss_sprite ss_world quiet small"><?php echo $rsComment->commentHost; ?></span>
+					<span class="ss_sprite ss_time quiet small"><?php echo date('Y-m-d G:i:s',strtotime($rsComment->commentTimestamp))?></span>
+					</p>
+				</div>
+				<hr class="space" />
+				<?php 
+				$i++; 
+			}
 		} else echo $ccms['lang']['guestbook']['noposts']; ?>
 		</div>
 	
 		<div class="span-6">
 			<h2>Configuration</h2>
-			<?php if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) { ?>
-			<?php $rsCfg = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgcomment` WHERE pageID='$pageID'"); ?>
-			<form action="comment.Process.php?action=save-cfg" method="post" accept-charset="utf-8">
-				
-				<label for="messages"><?php echo $ccms['lang']['news']['numbermess']; ?></label>
-				<input type="input" style="width:200px;" class="text" name="messages" value="<?php echo ($db->HasRecords()?$rsCfg->showMessage:null); ?>" id="messages" />
-				
-				<label for="locale"><?php echo $ccms['lang']['forms']['setlocale']; ?></label>
-				<select name="locale" class="text" id="locale" size="1">
-					<option value="eng" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='eng'?"selected":null); ?>>English</option>
-					<option value="esp" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='esp'?"selected":null); ?>>español</option>
-					<option value="fra" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='fra'?"selected":null); ?>>français</option>
-					<option value="deu" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='deu'?"selected":null); ?>>Deutsch</option>
-					<option value="nld" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='nld'?"selected":null); ?>>Nederlands</option>
-					<option value="ita" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='ita'?"selected":null); ?>>italiano</option>
-					<option value="dan" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='dan'?"selected":null); ?>>dansk</option>
-					<option value="fin" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='fin'?"selected":null); ?>>suomi</option>
-					<option value="nor" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='nor'?"selected":null); ?>>norsk</option>
-					<option value="rus" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='rus'?"selected":null); ?>>русский</option>
-					<option value="sve" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='sve'?"selected":null); ?>>svenska</option>
-					<option value="ind" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='ind'?"selected":null); ?>>Bahasa Indonesia</option>
-				</select>
-				
-				<p>
-					<?php echo ($db->HasRecords()?'<input type="hidden" name="cfgID" value="'.$rsCfg->cfgID.'" id="cfgID" />':null); ?>
-					<input type="hidden" name="pageID" value="<?php echo $_GET['file']; ?>" id="pageID" />
-					<button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button>
-				</p>
-			</form>
-			<?php } else echo $ccms['lang']['auth']['featnotallowed']; ?>			
+			<?php 
+			if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) 
+			{ 
+				$rsCfg = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgcomment` WHERE pageID='$pageID'"); 
+				?>
+				<form action="comment.Process.php?action=save-cfg" method="post" accept-charset="utf-8">
+					
+					<label for="messages"><?php echo $ccms['lang']['news']['numbermess']; ?></label>
+					<input type="input" style="width:200px;" class="text" name="messages" value="<?php echo $showmsg; ?>" id="messages" />
+					
+					<label for="locale"><?php echo $ccms['lang']['forms']['setlocale']; ?></label>
+					<select name="locale" class="text" id="locale" size="1">
+						<option value="eng" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='eng'?"selected":null); ?>>English</option>
+						<option value="esp" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='esp'?"selected":null); ?>>español</option>
+						<option value="fra" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='fra'?"selected":null); ?>>français</option>
+						<option value="deu" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='deu'?"selected":null); ?>>Deutsch</option>
+						<option value="nld" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='nld'?"selected":null); ?>>Nederlands</option>
+						<option value="ita" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='ita'?"selected":null); ?>>italiano</option>
+						<option value="dan" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='dan'?"selected":null); ?>>dansk</option>
+						<option value="fin" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='fin'?"selected":null); ?>>suomi</option>
+						<option value="nor" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='nor'?"selected":null); ?>>norsk</option>
+						<option value="rus" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='rus'?"selected":null); ?>>русский</option>
+						<option value="sve" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='sve'?"selected":null); ?>>svenska</option>
+						<option value="ind" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='ind'?"selected":null); ?>>Bahasa Indonesia</option>
+					</select>
+					
+					<p>
+						<?php echo ($db->HasRecords()?'<input type="hidden" name="cfgID" value="'.$rsCfg->cfgID.'" id="cfgID" />':null); ?>
+						<input type="hidden" name="pageID" value="<?php echo $_GET['file']; ?>" id="pageID" />
+						<button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button>
+					</p>
+				</form>
+			<?php 
+			} 
+			else 
+				echo $ccms['lang']['auth']['featnotallowed']; 
+			?>
 		</div>
 	</div>
 </body>

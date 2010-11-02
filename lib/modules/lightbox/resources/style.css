@@ -1,4 +1,11 @@
-#imagezoom_overlay {position: absolute;top: 0px;left: 0px;z-index: 9999996;}
+
+#imagezoom_overlay {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 9999996;
+}
+
 .imagezoom {
 	background-color: rgba(0,0,0,0.3);
 	border: 1px solid #C10;
@@ -22,7 +29,14 @@
 	margin-top: -16px;
 	margin-left: -16px;
 }
-.imagezoom .image {border:1px solid #fff;position: relative;z-index: 25;display: block;}
+
+.imagezoom .image {
+	border:1px solid #fff;
+	position: relative;
+	z-index: 25;
+	display: block;
+}
+
 .imagezoom .close {
 	width: 32px;
 	height: 32px;
@@ -37,7 +51,10 @@
 	z-index: 30;
 }
 .imagezoom .close:hover {background-position: bottom left;}
-.imagezoom .close span {display: none;}
+.imagezoom .close span {
+	display: none;
+}
+	
 .imagezoom .caption {
 	margin: 0px 0px;
 	margin-top: -30px;
@@ -50,6 +67,7 @@
 	position: relative;
 	z-index: 30;
 }
+	
 .imagezoom .caption p {
 	margin: 0px;
 	line-height: 22px;
@@ -72,12 +90,36 @@
 	cursor: pointer;
 	background-image: url(./prev.png) !important;
 }
-.imagezoom .caption .next {left: auto;right: 18px;background-image: url(./next.png) !important;}
+.imagezoom .caption .next {
+	left: auto;
+	right: 18px;
+	background-image: url(./next.png) !important;
+}
 
 /** Borders **/
-.imagezoom .s_tl, .imagezoom .s_tr, .imagezoom .s_bl, .imagezoom .s_br {width: 13px;height: 18px;position: absolute;}
-.imagezoom .s_top, .imagezoom .s_bottom {width: 100%;height: 18px;position: absolute;left: -1px;}
-.imagezoom .s_left, .imagezoom .s_right {width: 13px;height: 100%;position: absolute;top: -1px;}
+.imagezoom .s_tl, .imagezoom .s_tr, .imagezoom .s_bl, .imagezoom .s_br {
+	width: 13px;
+	height: 18px;
+	position: absolute;
+}
+.imagezoom .s_top, .imagezoom .s_bottom {
+	width: 100%;
+	height: 18px;
+	position: absolute;
+	left: -1px;
+}
+.imagezoom .s_left, .imagezoom .s_right {
+	width: 13px;
+	height: 100%;
+	position: absolute;
+	top: -1px;
+}
 
 /** front-end **/
-.album-item {float:left;width:90px;margin:10px 2px;text-align:center;}
+.album-item 
+{
+	float:left;
+	width:90px;
+	margin:10px 2px;
+	text-align:center;
+}
