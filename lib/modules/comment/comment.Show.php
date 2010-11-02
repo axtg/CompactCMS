@@ -43,8 +43,8 @@ $pageID	= getGETparam4Filename('page');
 ?>
 
 <!-- additional style and code -->
-<link rel="stylesheet" href="<?php echo $cfg['rootdir']; ?>lib/modules/comment/resources/style.css" type="text/css" media="screen" title="comments" charset="utf-8" />
-<script type="text/javascript" src="<?php echo $cfg['rootdir']; ?>lib/modules/comment/resources/script.js" charset="utf-8"></script>
+<link rel="stylesheet" href="./lib/modules/comment/resources/style.css" type="text/css" media="screen" title="comments" charset="utf-8" />
+<script type="text/javascript" src="./lib/modules/comment/resources/script.js" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
 window.addEvent(
 	'domready',
