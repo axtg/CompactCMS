@@ -180,12 +180,16 @@ if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth())
 					echo ucfirst($value)." ".$ccms['lang']['backend']['statusremoved'].".<br/>";
 				}
 				else 
-					die($ccms['lang']['auth']['featnotallowed']);
+				{
+					echo $ccms['lang']['auth']['featnotallowed'];
+				}
 			}
 			echo "</div>";
 		} 
 		else 
-			die($ccms['lang']['auth']['featnotallowed']);
+		{
+			echo "<div class=\"module error center\">".$ccms['lang']['auth']['featnotallowed']."</div>";
+		}
 	} 
 	else 
 	{
@@ -243,7 +247,7 @@ if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth())
 						        }
 						        echo '<td>'.$file.'</td>';
 						        echo '<td><span class="ss_sprite ss_package_green"><a href="../../../../media/files/'.$file.'" title="'.ucfirst($file).'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
-						        echo '</tr>';
+						        echo "</tr>\n";
 								$i++;
 							} 
 					    }
@@ -264,7 +268,14 @@ if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth())
 					echo $ccms['lang']['system']['noresults'];
 			} 
 			else 
-				echo $ccms['lang']['auth']['featnotallowed'];
+			{
+			?>
+				<div id="no-delete-action">
+					<h2><span class="ss_sprite ss_package_delete"><?php echo $ccms['lang']['backend']['delete'];?></span></h2>
+					<p><?php echo $ccms['lang']['auth']['featnotallowed']; ?></p>
+				</div>
+			<?php
+			}
 			?>
 			</form>
 		</div>
