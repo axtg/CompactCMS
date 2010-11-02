@@ -453,12 +453,13 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 // OPERATION MODE ==
 // 3) Start dynamic sitemap creation used by spiders and various webmaster tools.
 // e.g. You can use this function to submit a dynamic sitemap to Google Webmaster Tools.
-elseif($current == "sitemap.php" || $current == "sitemap.xml") 
+else /* if($current == "sitemap.php" || $current == "sitemap.xml") */   // [i_a] if() removed so the GET URL index.php?page=sitemap doesn't slip through the cracks.
 {
-	$dir = substr($_SERVER['SCRIPT_NAME'],0,-15);
-	
+	$dir = $cfg['rootdir'];   // [i_a] the original substr($_SERVER[]) var would fail when called with this req URL: index.php?page=sitemap
+
 	// Start generating sitemap
 	header ("content-type: text/xml");
+
 	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	?>
 	<urlset
@@ -468,18 +469,22 @@ elseif($current == "sitemap.php" || $current == "sitemap.xml")
 			http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 	<?php
 	// Select all published pages
-	if (!$db->Query("SELECT `urlpage`,`description` FROM `".$cfg['db_prefix']."pages` WHERE `published` = 'Y'")) $db->Kill();
+	if (!$db->Query("SELECT `urlpage`,`description`,`islink` FROM `".$cfg['db_prefix']."pages` WHERE `published` = 'Y'")) $db->Kill();
 
 	$db->MoveFirst();
 	while (!$db->EndOfSeek()) {
 		$row = $db->Row();
-		
+
 		// Do not include external links in sitemap
-		if(!regexUrl($row->description)) {
+		if(!regexUrl($db->SQLUnfix($row->description))) {
 			echo "<url>\n";
-				if($row->urlpage == "home") { 
+				if($row->urlpage == "home") {
 					echo "<loc>http://".$_SERVER['SERVER_NAME']."".$dir."</loc>\n";
 					echo "<priority>0.80</priority>\n";
+				} else if($row->islink == 'N') {
+					// [i_a] put pages which are not accessible through the menus (and thus the home/index page, at a higher scan priority.
+					echo "<loc>http://".$_SERVER['SERVER_NAME']."".$dir."".$row->urlpage.".html</loc>\n";
+					echo "<priority>0.70</priority>\n";
 				} else {
 					echo "<loc>http://".$_SERVER['SERVER_NAME']."".$dir."".$row->urlpage.".html</loc>\n";
 					echo "<priority>0.50</priority>\n";
@@ -489,6 +494,7 @@ elseif($current == "sitemap.php" || $current == "sitemap.xml")
 		}
 	}
 	echo "</urlset>";
+	exit(); // [i_a] exit now; no need nor want to run the XML through the template engine
 }
 
 
