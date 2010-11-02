@@ -1,25 +1,25 @@
 <?php
 /*
->> General tags
-- {%urlpage%}		| The current filename that is being shown
-- {%title%}		| Use this tag within you <title></title> tag for optimal SEO
-- {%pagetitle%}		| Displays the current pagetitle (good for a <h1> tag)
-- {%subheader%}		| A short slogan, descriptive text for the current page (<h2>)
-- {%sitename%}		| Use this anywhere you want to show your sitename 
-- {%desc%}		| An "extensive" description of the current page
-- {%keywords%}		| Keywords (tags) for the current page as specified per file
-- {%breadcrumb%} 	| Show the breadcrumb/pathway to the current file
-- {%printable%}		| Use as: {%IF printable (eq Y)%}<a href="print/{%urlpage%}.html">Print</a>{%/IF printable%}
-	
+>> General tags (replace '(' with '{' when using them - using the 'active' version within this comment will cause severe trouble, depending on the substituted content of the variables!)
+- (%urlpage%)       | The current filename that is being shown
+- (%title%)         | Use this tag within your <title></title> tag for optimal SEO
+- (%pagetitle%)     | Displays the current pagetitle (good for a <h1> tag)
+- (%subheader%)     | A short slogan, descriptive text for the current page (<h2>)
+- (%sitename%)      | Use this anywhere you want to show your sitename
+- (%desc%)          | An "extensive" description of the current page
+- (%keywords%)      | Keywords (tags) for the current page as specified per file
+- (%breadcrumb%)    | Show the breadcrumb/pathway to the current file
+- (%printable%)     | Use as: (%IF printable (eq Y)%)<a href="print/(%urlpage%).html">Print</a>(%/IF printable%)
+    
 >> Menu items
-- {%mainmenu%}		| Prints an ordered list (<ul>) with all files in specified menu
-- {%leftmenu%}		| ''
-- {%rightmenu%}		| '' 
-- {%footermenu%}	| ''
-- {%extramenu%}		| ''
-	
+- (%mainmenu%)      | Prints an ordered list (<ul>) with all files in specified menu
+- (%leftmenu%)      | ''
+- (%rightmenu%)     | ''
+- (%footermenu%)    | ''
+- (%extramenu%)     | ''
+    
 >> Content tag
-- {%content%}		| The content from the current file that is being requested
+- (%content%)       | The content from the current file that is being requested
 
 See below for a simple example that uses all of the tags listed above.
 */
@@ -81,4 +81,4 @@ if(!defined("COMPACTCMS_CODE")) die('Illegal entry point!');
 	<!-- That's it! Of course you're free to show off CompactCMS anywhere on your website -->
 
 </body>
-</html>				
+</html>
