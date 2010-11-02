@@ -174,10 +174,10 @@ if($db->HasRecords())
 					<label for="page_id_<?php echo $i;?>"><em><abbr title="<?php echo $row->urlpage; ?>.html"><?php echo substr($row->urlpage,0,25); ?></abbr></em></label>
 				</td>
 				<td class="span-4">
-					<span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="pagetitle"><?php echo $row->pagetitle; ?></span>
+					<span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="pagetitle"><?php echo $db->SQLUnfix($row->pagetitle); ?></span>
 				</td>
 				<td class="span-6">
-					<span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="subheader"><?php echo $row->subheader; ?></span>
+					<span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="subheader"><?php echo $db->SQLUnfix($row->subheader); ?></span>
 				</td>
 				<td class="span-2" style="text-align: center;">
 					<a href="#" id="printable-<?php echo $row->page_id; ?>" rel="<?php echo $row->printable; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php 
@@ -512,12 +512,13 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		$iscoding_pref	= getPOSTparam4boolYN('iscoding', 'N');
 		
 		// Insert new page into database
+		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		// $arrayVariable["column name"] = formatted SQL value
 		$values['urlpage']		= MySQL::SQLValue($post_urlpage,MySQL::SQLVALUE_TEXT);
 		$values['module']		= MySQL::SQLValue($post_module,MySQL::SQLVALUE_TEXT);
 		$values['toplevel']		= MySQL::SQLValue('1',MySQL::SQLVALUE_NUMBER);
 		$values['sublevel']		= MySQL::SQLValue('0',MySQL::SQLVALUE_NUMBER);
-		$values['menu_id']		= MySQL::SQLValue('5',MySQL::SQLVALUE_NUMBER);
+		$values['menu_id']		= MySQL::SQLValue('1',MySQL::SQLVALUE_NUMBER); // [i_a] set to the same value as the DEFAULT as specced in the SQL DB
 		$values['pagetitle']	= MySQL::SQLValue($pagetitle,MySQL::SQLVALUE_TEXT);
 		$values['subheader']	= MySQL::SQLValue($subheader,MySQL::SQLVALUE_TEXT);
 		$values['description']	= MySQL::SQLValue($description,MySQL::SQLVALUE_TEXT);
@@ -546,10 +547,10 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 				{
 					fwrite($filehandle, "<p>".$ccms['lang']['backend']['newfiledone']."</p>");
 				} 
-				// Write include_once tag to file (modname.Show.php)
+				// Write require_once tag to file (modname.Show.php)
 				else 
 				{
-					fwrite($filehandle, "<?php include_once('./lib/modules/$post_module/$post_module.Show.php'); ?>");
+					fwrite($filehandle, "<?php require_once(BASE_PATH . '/lib/modules/$post_module/$post_module.Show.php'); ?>");
 				}
 			}
 			// Report success in notify area
@@ -584,11 +585,12 @@ if($target_form == "delete" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		foreach ($_POST['page_id'] as $index) 
 		{
 			$value = explode($_SESSION['rc2'], $index);
-			if(is_numeric($value[1])) 
-			{	
+			if(is_numeric($value[1]) && $value[0] == $_SESSION['rc1']) 	// [i_a] complete validation check: test both rc1 and rc2 in the explode+if()
+			{
 				// Select file name and module with given page_id
-				$correct_filename = $db->QuerySingleValue("SELECT `urlpage` FROM `".$cfg['db_prefix']."pages` WHERE `page_id` = ".$value[1]);
-				$module = $db->QuerySingleValue("SELECT `module` FROM `".$cfg['db_prefix']."pages` WHERE `page_id` = ".$value[1]);
+				$pagerow = $db->SelectSingleRowArray($cfg['db_prefix'].'pages', array('page_id' => MySQL::SQLValue($value[1],MySQL::SQLVALUE_NUMBER)), array('urlpage', 'module'));
+				$correct_filename = $pagerow['urlpage'];
+				$module = $pagerow['module'];
 				
 				// Delete details from the database
 				$values = array(); // [i_a] make sure $values is an empty array to start with here
@@ -688,22 +690,27 @@ if($do_action == "islink" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()
  * Edit print, publish or iscoding preference
  *
  */
-if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth()) 
+if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] == "GET" && checkAuth()) 
 {
 	// Explode variable with all necessary information
-	$page_id = explode("-", $_GET['id']);
+	$page_id = explode("-", getGETparam4IdOrNumber('id'), 2); // [i_a] fix for page_id's which have dashes in their own name...
 	
 	// Set the action for this call
 	if($page_id[0] == "printable" || $page_id[0] == "published" || $page_id[0] == "iscoding") {
 		$action	 = $page_id[0];
-	} else die($ccms['lang']['system']['error_forged']);
-	if($_GET['s'] == "Y") { $new = "N"; } elseif($_GET['s'] == "N") { $new = "Y"; }
+	} 
+	else 
+		die($ccms['lang']['system']['error_forged']);
+	
+	// [i_a] and the value of $new is when the else is not correct? "Y" I take it, or "" empty string?
+	//if(htmlspecialchars($_GET['s']) == "Y") { $new = "N"; } else { $new = "Y"; }
+	//      anyway, the new code decodes the boolean and ! negates it in one line below...
 	$values = array(); // [i_a] make sure $values is an empty array to start with here
-	$values["$action"] = MySQL::SQLValue($new,MySQL::SQLVALUE_Y_N);
+	$values[$action] = MySQL::SQLValue(!getGETparam4boolean('s'),MySQL::SQLVALUE_Y_N);
 	
 	if ($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id[1],MySQL::SQLVALUE_NUMBER)))) 
 	{
-		if($new == "Y") 
+		if($values[$action] == "Y")
 		{ 
 			echo $ccms['lang']['backend']['yes']; 
 		} 
@@ -754,7 +761,7 @@ if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	$page_id		= getPOSTparam4Number('id');
 	$dest			= getGETparam4IdOrNumber('part');
 	$values = array(); // [i_a] make sure $values is an empty array to start with here
-	$values["$dest"]= MySQL::SQLValue($content,MySQL::SQLVALUE_TEXT);
+	$values[$dest] = MySQL::SQLValue($content,MySQL::SQLVALUE_TEXT);
 	
 	if (!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id,MySQL::SQLVALUE_NUMBER))))
 		$db->Kill();
@@ -1059,7 +1066,7 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth())
 	} 
 	
 	// Get keywords for current file
-	$keywords = $db->QuerySingleValue("SELECT `keywords` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '$name'");
+	$keywords = $db->SQLUnfix($db->QuerySingleValue("SELECT `keywords` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '$name'"));
 	
 	?>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -1089,9 +1096,9 @@ function confirmation()
 		
 	<?php 
 	// Load TinyMCE (compressed for faster loading) 
-	if($cfg['wysiwyg']===true && $iscoding=="N") 
-	{ 
-		$cfg['language'] = (file_exists('./tiny_mce/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en';?>
+	if($cfg['wysiwyg'] === true && $iscoding != 'Y')
+	{
+	?>
 		
 		<!-- File uploader styles -->
 		<link rel="stylesheet" media="all" type="text/css" href="./fancyupload/Assets/manager.css" />
@@ -1158,7 +1165,7 @@ tinyMCE_GZ.init(
 	{
 		plugins:'safari,table,advlink,advimage,media,inlinepopups,print,fullscreen,paste,searchreplace,visualchars,spellchecker,tinyautosave',
 		themes:'advanced',
-		<?php echo "languages: '".$cfg['language']."',"; ?>
+		<?php echo "languages: '".$cfg['tinymce_language']."',"; ?>
 		disk_cache:true,
 		debug:false
 	});
@@ -1169,7 +1176,7 @@ tinyMCE.init(
 	{
 		mode:"textareas",
 		theme:"advanced",
-		<?php echo 'language:"'.$cfg['language'].'",'; ?>
+		<?php echo 'language:"'.$cfg['tinymce_language'].'",'; ?>
 		skin:"o2k7",
 		skin_variant:"silver",
 		<?php echo (!empty($css)?'content_css:"'.$css.'",':null);?>
@@ -1212,8 +1219,7 @@ tinyMCE.init(
 	} // End TinyMCE. Start load Editarea for code editing
 	else 
 	{ 
-		$cfg['language'] = (file_exists('./edit_area/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en'; 
-		?>
+	?>
 		<script type="text/javascript" src="./edit_area/edit_area_compressor.php"></script>
 		<script type="text/javascript">
 editAreaLoader.init(
@@ -1223,7 +1229,7 @@ editAreaLoader.init(
 		allow_toggle:false,
 		word_wrap:true,
 		start_highlight:true,
-		<?php echo 'language:"'.$cfg['language'].'",'; ?>
+		<?php echo 'language:"'.$cfg['tinymce_language'].'",'; ?>
 		syntax:"html"
 	});
 		</script>
@@ -1285,7 +1291,7 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth())
 	$name 		= getGETparam4Filename('page');
 	$active		= getGETparam4boolYN('active', 'N');
 	$type		= (isset($_POST['code'])&&$_POST['code']>0?"code":"text");
-	$content	= $_POST['content'];
+	$content	= $_POST['content']; // [i_a] must be RAW HTML, no htmlspecialchars(). Filtering required if malicious input risk expected.
 	$filename	= "../../content/$name.php";
 	$keywords	= htmlentities($_POST['keywords']);
 
@@ -1320,7 +1326,7 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth())
 		<div id="handler-wrapper" class="module">
 			
 			<?php 
-			if($active=="N") 
+			if($active!='Y') 
 			{
 			?>
 				<p class="notice"><?php $msg = explode('::', $ccms['lang']['hints']['published']); echo $msg[0].": <strong>".strtolower($ccms['lang']['backend']['disabled'])."</strong>"; ?></p>
