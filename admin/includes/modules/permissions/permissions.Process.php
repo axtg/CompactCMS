@@ -76,7 +76,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST) && checkAuth())
 		// Execute either INSERT or UPDATE
 		if($db->UpdateRows($cfg['db_prefix']."cfgpermissions", $_POST)) 
 		{
-			header("Location: permissions.Manage.php?status=notice&msg=".$ccms['lang']['backend']['settingssaved']);
+			header("Location: permissions.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
 			exit();
 		} 
 		else 

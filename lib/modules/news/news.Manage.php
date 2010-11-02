@@ -98,7 +98,7 @@ function confirmation()
 			<?php 
 			if(!empty($_GET['msg'])) 
 			{ 
-				echo htmlspecialchars($_GET['msg']); 
+				echo htmlspecialchars(rawurldecode($_GET['msg'])); 
 			} 
 			?>
 		</div>
