@@ -102,6 +102,13 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 	if ($db->ErrorNumber()) 
 		$db->Kill();
 	$limit = getGETparam4Number('offset') * $max;
+	// feature: if a comment 'bookmark' was specified, jump to the matching 'page'...
+	$commentID = getGETparam4Number('commentID');
+	if ($commentID > 0)
+	{
+		$limit = $commentID - 1;
+		$limit -= $limit % $max;
+	}
 	if ($limit >= $total)
 		$limit = $total - 1;
 	if ($limit < 0)
