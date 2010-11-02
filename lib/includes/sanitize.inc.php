@@ -7,6 +7,59 @@ if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
 /////////////////////////////////////////////
 // input sanitizer function - 10/2009 by LDM
 
+/*
+From another place and time, someone else has been wondering as well:
+
+---
+
+In PHPMailer-FE version 4.0.5, we added the ability to sanitize or clean up
+user-submitted form data.
+
+The file responsible for this is: _lib/inc.sanitize.php
+
+This script is not entirely of our making. The core of the script is authored
+by someone else ... and we have no idea who. We would like to attribute this
+excellent work to the rightful author. If anyone recognizes who the author is
+please contact us so that we can attribute this work and recognize the author.
+All we have is one single line in the script that says:
+// input sanitizer function - LDM 2008
+
+We have modified this script to function with PHPMailer-FE.
+
+In essence, it will "clean-up" or sanitize the data users type into the form.
+
+The specific functionality is (in no specific order):
+
+- will remove hex values
+- will stop directory traversal
+- will stop MySQL injections and MySQL comments
+- will stop base64 encoding
+- will remove null characters
+- will do basic HTML entities checks and conversion
+- will convert all tabs to spaces
+- will convert all PHP tags to safe HTML entities
+- will convert all XML tags to safe HTML entities
+- will convert all Javascript (and other script) tags to safe HTML entities
+- will compact all exploded words
+- will remove all Javascript (and other scripts) from links and images
+- will sanitize all bad HTML code
+- will sanitize all bad script code
+
+Essentially, if enabled, it will eliminiate and/or minimize the impact of
+hacker access to forms to generate cross site scripting attacks, database
+injection or attacks, and javascript/vbscript (etc) malicious use.
+
+The sanitize utility is not intended to be used for data validation or
+formatting.
+
+Enjoy!
+Andy Prevost (codeworxtech)
+
+----
+
+Postscript: 'LDM' is still an unknown entity apparently.
+*/
+
 function sanitize($dtype, $dlen, $data){
 
 // dtype 1: allow numbers, space, and '-' 
