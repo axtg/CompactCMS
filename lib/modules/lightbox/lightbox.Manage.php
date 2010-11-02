@@ -217,21 +217,21 @@ function confirmation()
 	</head>
 <body>
 	<div class="module">
-		<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
+		<div class="center <?php echo (isset($_GET['status'])?htmlspecialchars($_GET['status']):null); ?>">
 			<?php 
-			if(isset($_GET['msg'])&&strlen($_GET['msg'])>2) 
+			if(!empty($_GET['msg'])) 
 			{ 
-				echo $_GET['msg']; 
+				echo htmlspecialchars(rawurldecode($_GET['msg'])); 
 			} 
 			?>
 		</div>
 		
 		<div class="span-14 colborder">
 		<?php 
-		// 
-		$album_path = (isset($_GET['album'])&&!empty($_GET['album'])?BASE_PATH.'/media/albums/'.$_GET['album']:null);
-		$album_path = (is_dir($album_path)?$album_path:null);
-		if($album_path==null) 
+		// more secure: only allow showing specific albums if they are in the known list; if we change that set any time later, this code will not let undesirable items slip through
+		$album = (isset($_GET['album'])&&!empty($_GET['album'])?htmlspecialchars($_GET['album']):null);
+		$album_path = (in_array($album, $albums) ? BASE_PATH.'/media/albums/'.$album : null);
+		if($album==null) 
 		{ 
 		?>
 			<form action="lightbox.Process.php?action=del-album" method="post" accept-charset="utf-8">
@@ -307,7 +307,7 @@ function confirmation()
 			{
 				foreach($images as $index => $file) 
 				{
-					$imagethumbs[$index] = '../../../media/albums/'.$_GET['album'].'/_thumbs/'.$file;
+					$imagethumbs[$index] = '../../../media/albums/'.$album.'/_thumbs/'.$file;
 					$thumb_path = $album_path.'/_thumbs/'.$file;
 					$img_path = $album_path.'/'.$file;
 					$imginfo[$index] = calc_thumb_padding($img_path, $thumb_path);
@@ -320,7 +320,7 @@ function confirmation()
 			{ 
 				if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 				{
-					echo '<a onclick="return confirmation();" href="lightbox.Process.php?album=' . $_GET['album'] . '&amp;image=' . $value . '&amp;action=del-image" title="' . $ccms['lang']['backend']['delete'] . ': ' . $value . '">';
+					echo '<a onclick="return confirmation();" href="lightbox.Process.php?album=' . $album . '&amp;image=' . $value . '&amp;action=del-image" title="' . $ccms['lang']['backend']['delete'] . ': ' . $value . '">';
 				} 
 
 				echo '<img src="' . $imagethumbs[$key] . '" class="thumbview" alt="Thumbnail of ' . $value . '" ' . $imginfo[$key]['style'] . ' />';
@@ -344,7 +344,7 @@ function confirmation()
 		<div class="span-8">
 			
 		<?php 
-		if(!isset($_GET['album'])&&empty($_GET['album'])) 
+		if(empty($album)) 
 		{ 
 		?>
 			<h2><?php echo $ccms['lang']['album']['newalbum']; ?></h2>
@@ -366,8 +366,8 @@ function confirmation()
 		<?php 
 		} 
 		else 
-		{ 
-			$lines = @file(BASE_PATH.'/media/albums/'.$_GET['album'].'/info.txt'); 
+		{
+			$lines = @file($album_path.'/info.txt'); 
 			?>
 			<h2><?php echo $ccms['lang']['album']['settings']; ?></h2>
 			<form action="lightbox.Process.php?action=apply-album" method="post" accept-charset="utf-8">
@@ -388,12 +388,12 @@ function confirmation()
 					$desc = '';
 					for ($x=1; $x<count($lines); $x++) 
 					{
-    						$desc = trim($desc.' '.htmlspecialchars($lines[$x]));
+						$desc = trim($desc.' '.$lines[$x]); // [i_a] double invocation of htmlspecialchars, together with the form input (lightbox.Process.php)
 					}
 				?>
 				<label for="description"><?php echo $ccms['lang']['album']['description']; ?></label>
 				<textarea name="description" rows="3" cols="40" style="height:50px;width:290px;" id="description"><?php echo trim($desc);?></textarea>
-				<input type="hidden" name="album" value="<?php echo $_GET['album']; ?>" id="album" />
+				<input type="hidden" name="album" value="<?php echo $album; ?>" id="album" />
 				<p class="prepend-5"><button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button></p>
 			</form>
 		<?php 
@@ -414,7 +414,7 @@ function confirmation()
 					foreach ($albums as $value) 
 					{ 
 					?>
-						<option <?php echo (isset($_GET['album'])&&$_GET['album']===$value?"selected":null); ?> value="<?php echo $value; ?>"><?php echo $value; ?></option>
+						<option <?php echo ($album===$value?"selected":null); ?> value="<?php echo $value; ?>"><?php echo $value; ?></option>
 					<?php 
 					} 
 					?>
