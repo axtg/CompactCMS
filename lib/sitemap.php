@@ -279,23 +279,34 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 	// Parse contents function
 	function ccmsContent($page,$published) 
 	{
-		global $ccms, $cfg;
-		$msg = explode(' ::', $ccms['lang']['hints']['published']); 
+		/*
+		Add every item which we have around here and want present in the module page being loaded in here.
+		-->
+		We want the db connection and the config ($cfg) and content ($ccms) arrays available anywhere inside the require_once()'d content.
+		*/
+		global $ccms, $cfg, $db, $modules, $v;
+		
+		$msg = explode(' ::', $ccms['lang']['hints']['published']);
 		ob_start();
 			// Check for preview variable
 			$preview = getGETparam4IdOrNumber('preview');
 			// Warning message when page is disabled and authcode is correct
-			echo ($preview==$cfg['authcode']&&$ccms['published']=='N')?"<p style=\"clear:both;padding:.8em;margin-bottom:1em;background:#FBE3E4;color:#8a1f11;border:2px solid #FBC2C4;\">".$msg['0'].": <strong>".strtolower($ccms['lang']['backend']['disabled'])."</strong></p>":null;
-			
+			if ($preview==$cfg['authcode'] && $published=='N') 
+			{ 
+				echo "<p style=\"clear:both;padding:.8em;margin-bottom:1em;background:#FBE3E4;color:#8a1f11;border:2px solid #FBC2C4;\">".$msg[0].": <strong>".strtolower($ccms['lang']['backend']['disabled'])."</strong></p>";
+			}
+
 			// Parse content for active or preview mode
 			if($published=='Y' || $preview==$cfg['authcode']) 
 			{
 				/*MARKER*/require_once(BASE_PATH. "/content/".$page.".php");
 			}
 			// Parse 403 contents (disabled and no preview token)
-			elseif($published=='N') 
-			{
-				echo file_get_contents(BASE_PATH. "/content/403.php");
+			else  // [i_a] superfluous check removed
+			{ 
+				// [i_a] prevent errors in non-published-marked previews (which would trigger the 403): preview a non-published item, then click on the breadcrumb link to same page and boom!
+				/*MARKER*/require_once(BASE_PATH. "/content/403.php");
+				//echo file_get_contents(BASE_PATH. "/content/403.php");
 			}
 			// All parsed function contents to $content variable
 			$content = ob_get_contents();
@@ -322,70 +333,90 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 
 		// Content variables
 		$ccms['language']   = $cfg['language'];
+		$ccms['tinymce_language']   = $cfg['language'];
+		$ccms['editarea_language']   = $cfg['language'];
 		$ccms['sitename']   = $cfg['sitename'];
 		$ccms['rootdir']    = (substr($cfg['rootdir'],-1)!=='/'?$cfg['rootdir'].'/':$cfg['rootdir']);
 		$ccms['urlpage']    = $row->urlpage;
-		$ccms['pagetitle'] 	= $row->pagetitle;
-		$ccms['subheader'] 	= $row->subheader;
-		$ccms['desc']		= $row->description;
-		$ccms['keywords']	= $row->keywords;
+		$ccms['pagetitle']  = $db->SQLUnfix($row->pagetitle);
+		$ccms['subheader']  = $db->SQLUnfix($row->subheader);
+		$ccms['desc']       = $db->SQLUnfix($row->description);
+		$ccms['keywords']   = $db->SQLUnfix($row->keywords);
 		$ccms['title']      = ucfirst($ccms['pagetitle'])." - ".$ccms['sitename']." | ".$ccms['subheader'];
 		$ccms['printable']  = $row->printable;
 		$ccms['content']    = ccmsContent($ccms['urlpage'],$ccms['published']);
 
 		// TEMPLATING ==
-		// Set the template variable for current page
-		$templatefile = BASE_PATH . '/lib/templates/'.$row->variant.'.tpl.html';
-	
 		// Check whether template exists, specify default or throw "no templates" error.
-		if(file_exists($templatefile)) 
+		$ccms['template'] = DetermineTemplateName($row->variant, $ccms['printing']);
+
+		$ccms['module']      = $row->module;
+		// create a plugin/module instance tailored to this particular page
+		if($row->module != "editor" && is_object($modules[$row->module]) && method_exists($modules[$row->module], 'getInstance')) 
 		{
-			$ccms['template'] = $row->variant;
-		} 
-		elseif(count($template)>"0") 
-		{
-			$ccms['template'] = $template['0'];
-		} 
-		elseif(count($template)=="0") 
-		{
-			die($ccms['lang']['system']['error_notemplate']);
+			$ccms['module_instance'] = $modules[$row->module]->getInstance($ccms);
+			if (!is_object($ccms['module_instance']))
+			{
+				die('FATAL: module ' . $row->module . ' failed to initialize for page ' . $row->urlpage);
+			}
 		}
-	
+		
 		// BREADCRUMB ==
-		// Set default breadcrumb
-		$ccms['breadcrumb'] = null;
-	
 		// Create breadcrumb for the current page
 		if($row->urlpage=="home") 
 		{
-			$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir']."\" title=\"".ucfirst($cfg['sitename'])." Home\">Home</a>";
+			$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir']."\" title=\"".ucfirst($cfg['sitename'])." Home\">Home</a></span>";
 		}
-		if($row->urlpage!="home" && $row->sublevel=='0') 
-		{
-			$ccms['breadcrumb'] .= " &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
+		else {
+			// [i_a] these branches didn't include the span which was included by the 'home' if(...) above.
+			if($row->sublevel=='0') 
+			{
+				$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$db->SQLUnfix($row->subheader)."\">".$db->SQLUnfix($row->pagetitle)."</a></span>";
+			}
+			else 
+			{ 
+				// sublevel page
+				$subpath = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `toplevel` = '".$row->toplevel."' AND `sublevel`='0'");
+				if (!subpath) $db->Kill();
+				$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir'].$subpath->urlpage.".html\" title=\"".$db->SQLUnfix($subpath->subheader)."\">".$db->SQLUnfix($subpath->pagetitle)."</a> &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$db->SQLUnfix($row->subheader)."\">".$db->SQLUnfix($row->pagetitle)."</a></span>";
+			}
 		}
-		if($row->sublevel>'0') 
-		{
-			if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `toplevel` = '".$row->toplevel."' AND `sublevel`='0'")) $db->Kill();
-			$subpath = $db->Row();
-			$ccms['breadcrumb'] .= " &raquo; <a href=\"".$cfg['rootdir'].$subpath->urlpage.".html\" title=\"".$subpath->subheader."\">".$subpath->pagetitle."</a> &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
-		}
-		$ccms['breadcrumb']	.= "</span>";
-	
+
 	} 
 	else 
 	{
 		// ERROR 404
 		// Or if DB query returns zero, show error 404: file does not exist
 
+		$ccms['module']      = 'error';
+		$ccms['module_path'] = null;
+
+		$ccms['language']   = $cfg['language'];
+		$ccms['tinymce_language']   = $cfg['language'];
+		$ccms['editarea_language']   = $cfg['language'];
 		$ccms['sitename']   = $cfg['sitename'];
 		$ccms['pagetitle']  = $ccms['lang']['system']['error_404title'];
 		$ccms['subheader']  = $ccms['lang']['system']['error_404header'];
 		$ccms['title']      = ucfirst($ccms['pagetitle'])." - ".$ccms['sitename']." | ".$ccms['subheader'];
+		ob_start();
+			// [i_a] 
+			/*MARKER*/require_once(BASE_PATH. "/content/404.php");
+			$ccms['content'] = ob_get_contents();
+		ob_end_clean();
 		//$ccms['content']    = file_get_contents(BASE_PATH. "/content/404.php");
 		$ccms['printable']  = "N";
 		$ccms['published']  = "Y";
+		// [i_a] fix: close <span> here as well
 		$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"./\" title=\"".ucfirst($cfg['sitename'])." Home\">Home</a> &raquo ".$ccms['lang']['system']['error_404title']."</span>";
+		$ccms['iscoding']   = "N";
+		$ccms['rootdir']    = (substr($cfg['rootdir'],-1)!=='/'?$cfg['rootdir'].'/':$cfg['rootdir']);
+		$ccms['urlpage']    = "404";
+		$ccms['desc']       = $ccms['lang']['system']['error_404title'];
+		$ccms['keywords']   = "";
+
+		$ccms['template'] = DetermineTemplateName(null, $ccms['printing']);
+	}
+
 		
 		if(count($template)>"0") 
 		{
@@ -402,63 +433,91 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 	
 	// Start menu generation
 	for($i=1; $i<=5; $i++) { 
-		
+
 		// Count total active menu items in database
 		$ct = $db->QuerySingleRow("SELECT COUNT(`page_id`) AS num, MIN(`toplevel`) AS mtl FROM `".$cfg['db_prefix']."pages` WHERE `published`='Y' AND `menu_id`='$i' GROUP BY `menu_id`");
-		
+
 		// Loop through menu generator for all items
 		if(!empty($ct->num)) {
 			// Start menu parent item
 			$ccms['structure'.$i] = "<ul>";
-			
-			for ($index=1; $index<=$ct->num; $index++) { 
+
+			for ($index=1; $index<=$ct->num; $index++) {
 				// Select all items for given menu and process hierarchy
 				$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `published`='Y' AND `menu_id`='$i' AND `toplevel`='".$ct->mtl."' ORDER BY `toplevel` ASC, `sublevel` ASC");
-				
+
 				// Next toplevel
 				$ct->mtl++;
-				
+
 				// Check whether the recordset is not empty
 				if($db->HasRecords()) {
-					
+
 					// Set the pointer to the first row
 					$db->MoveFirst();
-					
+
 					// Go through all rows found for the current toplevel
 					while (!$db->EndOfSeek()) {
-		    			$row = $db->Row();
-		    			
-		    			// Specify special link attributes if applicable
-		    			$current_class 	= ($row->urlpage==$curr_page)?'class="current"':null;
-		    			$current_link	= ($row->islink=="N"?'#':null);
-		    			$current_link 	= (empty($current_link)&&regexUrl($row->description)?$row->description:$current_link);
-		    			$current_link	= (empty($current_link)&&$row->urlpage=="home"?$cfg['rootdir']:$current_link);
-		    			$current_link	= (empty($current_link)?$cfg['rootdir'].$row->urlpage.'.html':$current_link);
-		    			
-		    			// What text to show for the links
-		    			$link_text		= ucfirst($row->pagetitle);
+						$row = $db->Row();
+
+						// Specify special link attributes if applicable
+						$current_class = '';
+						$current_extra = '';
+						$current_link = '';
+						if ($row->urlpage == $pagereq)
+						{
+							$current_class = 'class="current"';
+						}
+						if ($row->islink == "N")
+						{
+							$current_link = '#';
+						}
+						else if (regexUrl($db->SQLUnfix($row->description)))
+						{
+							$msg = explode(' ::', $db->SQLUnfix($row->description));
+							$current_link = $msg[0];
+							$current_extra = $msg[1];
+							$current_class = 'class="to_external_url"';
+						}
+						else if ($row->urlpage == "home")
+						{
+							$current_link = $cfg['rootdir'];
+						}
+						else 
+						{
+							$current_link = $cfg['rootdir'] . $row->urlpage . '.html';
+						}
 						
-		    			// Specifying the position of the current item in the menu
-		    			if($row->sublevel==0 && $db->RowCount()==1) {
-		    				$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($row->subheader).'">'.$link_text.'</a></li>';
-		    			}
-		    			if($row->sublevel==0 && $db->RowCount()>1) {
-				    		$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($row->subheader).'">'.$link_text.'</a>';
-				    		$ccms['structure'.$i] .= '<ul class="sublevel">';
-				    	}
-				    	if($row->sublevel>0 && $db->SeekPosition()!=$db->RowCount()) {
-				    		$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($row->subheader).'">'.$link_text.'</a></li>';
-				    	}
-				    	if($row->sublevel>0 && $db->SeekPosition()==$db->RowCount()) {
-				    		$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($row->subheader).'">'.$link_text.'</a></li>';
-				    		$ccms['structure'.$i] .= '</ul></li>';
-				    	}
+						if (!empty($current_extra))
+						{
+							$current_extra = '<br/>' . $current_extra;
+						}
+
+						// What text to show for the links
+						$link_text      = ucfirst($db->SQLUnfix($row->pagetitle));
+
+						// Specifying the position of the current item in the menu
+						if($row->sublevel==0 && $db->RowCount()==1) {
+							$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($db->SQLUnfix($row->subheader)).'">'.$link_text.'</a>'.$current_extra.'</li>';
+						}
+						else if($row->sublevel==0 && $db->RowCount()>1) {
+							$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($db->SQLUnfix($row->subheader)).'">'.$link_text.'</a>'.$current_extra;
+							$ccms['structure'.$i] .= '<ul class="sublevel">';
+						}
+						else if($row->sublevel>0 && $db->SeekPosition()!=$db->RowCount()) {
+							$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($db->SQLUnfix($row->subheader)).'">'.$link_text.'</a>'.$current_extra.'</li>';
+						}
+						else if($row->sublevel>0 && $db->SeekPosition()==$db->RowCount()) {
+							$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($db->SQLUnfix($row->subheader)).'">'.$link_text.'</a>'.$current_extra.'</li>';
+							$ccms['structure'.$i] .= '</ul></li>';
+						}
+						else die('internal error in menu generator');
 					}
 				}
 			}
 			$ccms['structure'.$i] .= "</ul>";
 		}
-	} 	
+	}
+
 }
 
 // OPERATION MODE ==

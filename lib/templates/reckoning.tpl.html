@@ -50,7 +50,7 @@ Modified   : For CompactCMS.nl 1.4.0+
 <div id="page">
 	<div id="content">
 	<h2 class="title">{%subheader%}</h2>
-		<p style="clear:both;text-align:right;" class="date">{%breadcrumb%}</p>
+		<p style="clear:both;text-align:right;" class="breadcrumb">{%breadcrumb%}{%IF printable (eq Y)%}<span class=\"breadcrumb-print\"> &raquo <a href="{%rootdir%}{%urlpage%}.print">{%lang:template:print%}</a></span>{%/IF printable%}</p>
 		<div class="entry">
 			<p>{%content%}</p>
 		</div>
@@ -75,6 +75,25 @@ Modified   : For CompactCMS.nl 1.4.0+
 
 <div id="footer">
 		<p>&copy; <?php echo date('Y'); ?> {%sitename%} | Maintained with <a href="http://www.compactcms.nl">CompactCMS</a></p>
+		<p class="dbstats"><?php 
+			/*
+			An example of $db access in the template itself: thanks to the extended 'global' statement in sitemap.php
+			we can now freely access $db, $cfg, $ccms, etc. within the template.
+			
+			Here we dump all database statistics collected during this one request execution:
+			*/
+			$dbstats = $db->GetStatistics();
+			if (!is_array($dbstats)) $db->Kill();
+			$i = 0;
+			foreach ($dbstats as $key => $value)
+			{
+				if ($i++)
+				{
+					echo ' &#8212; ';
+				}
+				echo $key . ': ' . $value;
+			}
+		?></p>
 </div>
 <!-- end #footer -->
 </div>
