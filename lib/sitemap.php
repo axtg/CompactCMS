@@ -261,6 +261,8 @@ else
 // [i_a] moved to common.inc.php
 
 
+// Fill active module array and load the plugin code
+$modules = $db->QueryArray("SELECT * FROM `".$cfg['db_prefix']."modules` WHERE modActive='1'");
 
 
 
@@ -417,22 +419,211 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 		$ccms['template'] = DetermineTemplateName(null, $ccms['printing']);
 	}
 
+
+	// OPERATION MODE ==
+	// 2) Start site structure generation to a default maximum of MENU_TARGET_COUNT menus
+	// Use the various menu item variables to get a dynamic structured list (ul). Current item marked with class="current".
+
+	// more flexible approach than before; fewer queries (1 instead of 6..10) to boot.
+	// flexibility in the sense that when user has assigned same top/sub numbers to multiple entries, this version will not b0rk
+	// but dump the items in alphabetic order instead.
+	// Also, when sub menu items with a top# that has no entry itself, is found, such an item will be assigned a 'dummy' top node.
+	$menu_in_set = '1';
+	for($i = 2; $i <= MENU_TARGET_COUNT; $i++) 
+	{
+		$menu_in_set .= ',' . $i;
+	}
+	$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `published`='Y' AND `menu_id` IN ($menu_in_set) ORDER BY `menu_id` ASC, `toplevel` ASC, `sublevel` ASC, `page_id` ASC");
+
+	if($db->HasRecords()) 
+	{
+		$current_menuID = 0;
+		$current_top = 0;
+		$current_structure = null;
+		$top_idx = 0;
+		$sub_idx = 0;
+		$sub_done = false;
+		$dummy_top_written = false;
 		
-		if(count($template)>"0") 
+		$db->MoveFirst();
+
+		/*
+		When a submenu item is located which doesn't have a proper topmenu item set up as well, a dummy top is written.
+		
+		To simplify the flow within the loop, the loop is executed /twice/ for such elements: the first time through,
+		the top item will be written (as if it existed in the database), the next time through the subitem itself is
+		generated.
+		
+		The same re-cycling mode is used to switch from one menu to the next (note the 'continue;' in there).
+		*/
+		while ($dummy_top_written || !$db->EndOfSeek()) 
 		{
-			$ccms['template'] = $template['0'];
-		} 
-		elseif(count($template)=="0") 
+			if (!$dummy_top_written)
+			{
+				$row = $db->Row();
+			}
+			$dummy_top_written = false;
+
+			// whether we have found the (expectedly) accompanying toplevel menu item.
+			$top_done = ($row->sublevel != 0 && $row->toplevel == $current_top && $row->menu_id == $current_menuID);
+			
+			if ($row->menu_id != $current_menuID)
+			{
+				if ($current_top > 0)
+				{
+					// terminate generation of previous menu
+					if ($sub_done)
+					{
+						$ccms[$current_structure] .= "</li></ul>\n";
+					}
+					$ccms[$current_structure] .= "</li></ul>\n";
+				}
+				
+				// forward to next menu...
+				$current_menuID = $row->menu_id;
+				$current_top = 0;
+				$current_structure = 'structure' . $current_menuID;
+				$top_idx = 0;
+				$sub_idx = 0;
+				$sub_done = false;
+				
+				// Start this menu root item: UL
+				$ccms[$current_structure] = '<ul>';
+			
+				// prevent loading the next record on the next round through the loop:
+				$dummy_top_written = true;
+				continue;
+			}
+			else if ($row->toplevel != $current_top || $row->sublevel == 0)
+			{
+				// terminate generation of previous submenu
+				if ($current_top > 0)
+				{
+					if ($sub_done)
+					{
+						$ccms[$current_structure] .= "</li></ul>\n";
+					}
+					$ccms[$current_structure] .= "</li>\n";
+				}
+				
+				$current_top = $row->toplevel;
+				$top_idx++;
+				$sub_idx = 0;
+				$sub_done = false;
+				
+				if (!$top_done && $row->sublevel != 0)
+				{
+					// write a dummy top
+					$dummy_top_written = true;
+				}
+			}
+			else if ($row->sublevel != 0)
+			{
+				if ($sub_done)
+				{
+					$ccms[$current_structure] .= "</li>\n";
+				}
+				else
+				{
+					$ccms[$current_structure] .= "\n<ul class=\"sublevel\">\n";
+				}
+				$sub_idx++;
+				$sub_done = true;
+			}
+			
+			// Specify special link attributes if applicable
+			$current_class = '';
+			$current_extra = '';
+			$current_link = '';
+			if ($row->urlpage == $pagereq || (empty($pagereq) && $row->urlpage == "home"))
+			{
+				// 'home' has a pagereq=='', but we still want to see the 'current' class for that one.
+				// (The original code didn't do this, BTW!)
+				$current_class = 'current';
+			}
+			
+			$menu_item_class = '';
+			if ($dummy_top_written)
+			{
+				$current_class = '';
+				$menu_item_class = 'menu_item_dummy';
+			}
+			else if ($row->islink != "Y")
+			{
+				$current_link = '#';
+				$menu_item_class = 'menu_item_nolink';
+			}
+			else if (regexUrl($db->SQLUnfix($row->description)))
+			{
+				$msg = explode(' ::', $db->SQLUnfix($row->description));
+				$current_link = $msg[0];
+				$current_extra = $msg[1];
+				$current_class = 'to_external_url';
+				$menu_item_class = 'menu_item_extref';
+			}
+			else if ($row->urlpage == "home")
+			{
+				$current_link = $cfg['rootdir'];
+				$menu_item_class = 'menu_item_home';
+			}
+			else 
+			{
+				$current_link = $cfg['rootdir'] . $row->urlpage . '.html';
+			}
+			
+			if (!empty($current_extra))
+			{
+				$current_extra = "\n<br/>\n" . $current_extra;
+			}
+			
+
+			// What text to show for the links
+			$link_text = ucfirst($db->SQLUnfix($row->pagetitle));
+			$link_title = ucfirst($db->SQLUnfix($row->subheader));
+
+			$current_link_classes = trim($current_class . ' ' . $menu_item_class);
+			if (!empty($current_link_classes))
+			{
+				$current_link_classes = 'class="' . $current_link_classes . '"';
+			}
+			$menu_item_text = '<a '.$current_link_classes.' href="'.$current_link.'" title="'.$link_title.'">'.$link_text.'</a>'.$current_extra;
+			
+			$menu_top_class = 'menu_item' . ($top_idx % 2);
+			$menu_sub_class = 'menu_item' . ($sub_idx % 2);
+			
+			if ($dummy_top_written)
+			{
+				$menu_item_text = '<span ' . $current_link_classes . '>-</span>';
+				$ccms[$current_structure] .= '<li class="' . /* $current_class . ' ' . */ $menu_top_class . ' ' . $menu_item_class . '">' . $menu_item_text;
+			}
+			else if ($row->sublevel != 0)
+			{
+				$ccms[$current_structure] .= '<li class="' . $current_class . ' ' . $menu_sub_class . ' ' . $menu_item_class . '">' . $menu_item_text;
+			}
+			else
+			{
+				$ccms[$current_structure] .= '<li class="' . $current_class . ' ' . $menu_top_class . ' ' . $menu_item_class . '">' . $menu_item_text;
+			}
+		}
+		
+		// now that we're done in the loop, terminate the last menu:
+		if ($current_top > 0)
 		{
-			die($ccms['lang']['system']['error_notemplate']);
+			// terminate generation of previous menu
+			if ($sub_done)
+			{
+				$ccms[$current_structure] .= '</li></ul>';
+			}
+			$ccms[$current_structure] .= '</li></ul>';
 		}
 	}
-	// OPERATION MODE ==
-	// 2) Start site structure generation to a default maximum of five ($i <= '5').
-	// Use the various menu item variables to get a dynamic structured list (ul). Current item marked with class="current".
+	
+	// old code:
+	if (false)
+	{
 	
 	// Start menu generation
-	for($i=1; $i<=5; $i++) { 
+	for($i=1; $i<=MENU_TARGET_COUNT; $i++) {
 
 		// Count total active menu items in database
 		$ct = $db->QuerySingleRow("SELECT COUNT(`page_id`) AS num, MIN(`toplevel`) AS mtl FROM `".$cfg['db_prefix']."pages` WHERE `published`='Y' AND `menu_id`='$i' GROUP BY `menu_id`");
@@ -517,6 +708,8 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 			$ccms['structure'.$i] .= "</ul>";
 		}
 	}
+
+	} // false
 
 }
 
