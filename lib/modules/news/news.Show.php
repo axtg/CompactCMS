@@ -150,14 +150,16 @@ if($db->HasRecords())
 						</p>
 					<?php 
 					} 
+					?>
+				<?php 
 				} 
-				elseif(isset($_GET['id'])&&!empty($_GET['id'])) 
+				else
 				{ 
 				?>
 					<h1><?php echo $rsNews->newsTitle; ?></h1>
 					<p><strong><?php echo $rsNews->newsTeaser; ?></strong></p>
 					<p><?php echo $rsNews->newsContent; ?></p>
-		
+					
 					<?php 
 					if($showAuthor==1||$showDate==1) 
 					{ 

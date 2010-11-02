@@ -177,7 +177,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAut
 	$values['commentName']	= MySQL::SQLValue($_POST['name'], MySQL::SQLVALUE_TEXT);
 	$values['commentEmail']	= MySQL::SQLValue($_POST['email'], MySQL::SQLVALUE_TEXT);
 	$values['commentUrl']	= MySQL::SQLValue($_POST['website'], MySQL::SQLVALUE_TEXT);
-	$values['commentRate']	= MySQL::SQLValue($_POST['rating'], MySQL::SQLVALUE_NUMBER);
+	$values['commentRate']	= MySQL::SQLValue($_POST['rating'], MySQL::SQLVALUE_NUMBER); // 'note the 'tricky' comment in the MySQL::SQLValue() member: we MUST have quotes around this number as mySQL enums are quoted :-(
 	$values['commentContent'] = MySQL::SQLValue(strip_tags($_POST['comment']), MySQL::SQLVALUE_TEXT);
 	$values['commentHost']	= MySQL::SQLValue($_SERVER['REMOTE_ADDR'], MySQL::SQLVALUE_TEXT);
 	
@@ -195,7 +195,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="save-cfg" && checkAuth()
 
 	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values['pageID'] = MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
-	$values['showMessage'] = MySQL::SQLValue(getPOSTparam4Number('messages']), MySQL::SQLVALUE_NUMBER);
+	$values['showMessage'] = MySQL::SQLValue(getPOSTparam4Number('messages'), MySQL::SQLVALUE_NUMBER);
 	$values['showLocale'] = MySQL::SQLValue($_POST['locale'], MySQL::SQLVALUE_TEXT);
 
 	// Insert or update configuration

@@ -183,4 +183,3 @@ function confirmation()
 	</div>
 </body>
 </html>
-<?php } else die("No external access to file");?>

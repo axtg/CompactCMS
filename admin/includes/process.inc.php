@@ -138,7 +138,9 @@ if($db->HasRecords())
 						echo '<tr style="background-color: #F2D9DE;">';
 					} 
 					else 
+					{
 						echo '<tr style="background-color: #E6F2D9;">';
+					}
 				} 
 				else 
 				{ 
@@ -147,7 +149,9 @@ if($db->HasRecords())
 						echo '<tr style="background-color: #EBC6CD;">';
 					} 
 					else 
+					{
 						echo '<tr>'; 
+					}
 				} 
 				?>
 				<td style="padding-left:2px;" class="span-1">
@@ -158,7 +162,7 @@ if($db->HasRecords())
 					<span class="ss_sprite ss_bullet_red" title="<?php echo $ccms['lang']['auth']['featnotallowed']; ?>"></span>
 				<?php 
 				} 
-				elseif($_SESSION['ccms_userLevel']>=$perm['managePages'] && $row->urlpage != "home" || !in_array($row->urlpage, $cfg['restrict'])) 
+				else 
 				{ 
 				?>
 					<input type="checkbox" id="page_id_<?php echo $i;?>" name="page_id[]" value="<?php echo $_SESSION['rc1'].$_SESSION['rc2'].$row->page_id; ?>" />
@@ -177,12 +181,14 @@ if($db->HasRecords())
 				</td>
 				<td class="span-2" style="text-align: center;">
 					<a href="#" id="printable-<?php echo $row->page_id; ?>" rel="<?php echo $row->printable; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php 
-						if($row->printable == "Y") 
+						if($row->printable == "Y")
 						{ 
 							echo $ccms['lang']['backend']['yes']; 
 						} 
 						else 
+						{
 							echo $ccms['lang']['backend']['no']; 
+						}
 						?></a>
 				</td>
 				<td class="span-2" style="text-align: center;">
@@ -196,7 +202,9 @@ if($db->HasRecords())
 								echo $ccms['lang']['backend']['yes']; 
 							} 
 							else 
+							{
 								echo $ccms['lang']['backend']['no']; 
+							}
 							?></a>
 					<?php 
 					} 
@@ -281,7 +289,9 @@ if($db->HasRecords())
 						echo "<span class=\"ss_sprite ss_information\"><strong>".ucfirst($row->module)."</strong></span> ".strtolower($ccms['lang']['forms']['module']);
 					} 
 					else 
+					{
 						echo "<em>".$ccms['lang']['backend']['notinmenu']."</em>"; 
+					}
 					?>
 				</td>
 				</tr>
@@ -311,7 +321,7 @@ if($db->HasRecords())
 	{
 		if(isset($_SESSION['ccms_userLevel']) && $_SESSION['ccms_userLevel'] >= $perm['manageMenu']) 
 		{
-			echo "<table class=\"span-15\" cellpadding=\"0\" cellspacing=\"0\">";
+			echo '<table class="span-15" cellpadding="0" cellspacing="0">';
 			
 			$i = 0;
 			// Get previously opened DB stream
@@ -336,7 +346,7 @@ if($db->HasRecords())
 							<optgroup label="Menu">
 								<?php 
 								$y = 1; 
-								while($y<='5') 
+								while($y<=MENU_TARGET_COUNT) 
 								{ 
 								?>
 									<option <?php echo ($row->menu_id==$y) ? "selected=\"selected\"" : ""; ?> value="<?php echo $y; ?>"><?php echo $ccms['lang']['menu'][$y]; ?></option>
@@ -445,9 +455,6 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 	// Check for non-empty module variable
 	$post_module = strtolower(filterParam4Filename($_POST['module'], "editor"));
 	
-	// Filter $_GET for bad hack coding
-	isset($_GET['page']) ? mysql_real_escape_string($_GET['page']) : null;
-	
 	// Start with a clean sheet
 	$errors=null;
 	
@@ -461,7 +468,7 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		{ $errors[] = "- ".$ccms['lang']['system']['error_subtitle']; }
 	if ($_POST['description']=='' || strlen($_POST['description'])<3)
 		{ $errors[] = "- ".$ccms['lang']['system']['error_description']; }
-	if ($post_urlpage=='403' || $post_urlpage=='404' || $post_urlpage=='sitemap')
+	if ($post_urlpage=='403' || $post_urlpage=='404' || $post_urlpage=='sitemap' /* || $post_urlpage=='home' */)
 		{ $errors[] = "- ".$ccms['lang']['system']['error_reserved']; }
 	
 	if(is_array($errors))
@@ -531,12 +538,10 @@ if($target_form == "create" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 					fwrite($filehandle, "<p>".$ccms['lang']['backend']['newfiledone']."</p>");
 				} 
 				// Write include_once tag to file (modname.Show.php)
-				elseif($post_module!=="editor") 
+				else 
 				{
 					fwrite($filehandle, "<?php include_once('./lib/modules/$post_module/$post_module.Show.php'); ?>");
 				}
-				else 
-					die("[ERR048] ".$ccms['lang']['system']['error_general']);
 			}
 			// Report success in notify area
 			if(fclose($filehandle)) 
@@ -915,7 +920,7 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passshort']);
 			exit();
 		} 
-		elseif(md5($_POST['userPass'])!==md5($_POST['cpass'])) 
+		else 
 		{
 			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passnequal']);
 			exit();
@@ -1019,6 +1024,7 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth())
 	
 	// Check for editor.css in template directory
 	$template	= $db->QuerySingleValue("SELECT `variant` FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = ".MySQL::SQLValue($name, MySQL::SQLVALUE_TEXT));
+	$css = "";
 	if (is_file('../../lib/templates/'.$template.'/editor.css')) 
 	{
 		$css = '../../lib/templates/'.$template.'/editor.css';
@@ -1027,9 +1033,9 @@ if($do_action == "edit" && $_SERVER['REQUEST_METHOD'] != "POST" && checkAuth())
 	// Check for filename	
 	if(!empty($filename)) 
 	{
-		if(@fopen("$filename", "r")) 
+		$handle = @fopen("$filename", "r");
+		if ($handle) 
 		{
-			$handle = fopen("$filename", "r");
 			// PHP5+ Feature
 			// $contents = stream_get_contents($handle);
 			// PHP4 Compatibility
@@ -1195,7 +1201,7 @@ tinyMCE.init(
 
 	<?php 
 	} // End TinyMCE. Start load Editarea for code editing
-	elseif($cfg['wysiwyg']===false || $iscoding=="Y") 
+	else 
 	{ 
 		$cfg['language'] = (file_exists('./edit_area/langs/'.$cfg['language'].'.js'))?$cfg['language']:'en'; 
 		?>
@@ -1321,7 +1327,7 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth())
 				<p><pre><?php echo htmlentities(file_get_contents($filename)); ?></pre></p>
 			<?php 
 			} 
-			elseif($type=="text") 
+			else /* if($type=="text") */
 			{ 
 			?>
 				<p><?php echo file_get_contents($filename); ?></p>
