@@ -266,7 +266,7 @@ function confirmation()
 					<label for="newsModified"><?php echo $ccms['lang']['news']['date']; ?></label><input type="text" class="required text" style="width:120px;" name="newsModified" value="<?php echo (isset($news)?date('Y-m-d G:i',strtotime($news->newsModified)):date('Y-m-d G:i'));?>" id="newsModified">
 				</div>
 				<div class="span-2">
-					<label for="newsPublished"><?php echo $ccms['lang']['news']['published']; ?></label><input type="checkbox" name="newsPublished" <?php echo (isset($news)&&$news->newsPublished=="1"?"checked":null); ?>  value="1" id="newsPublished" />
+					<label for="newsPublished"><?php echo $ccms['lang']['news']['published']; ?></label><input type="checkbox" name="newsPublished" <?php echo (isset($news)&&$news->newsPublished?"checked":null); ?>  value="1" id="newsPublished" />
 				</div>
 				<label class="clear" for="newsTeaser"><?php echo $ccms['lang']['news']['teaser']; ?></label>
 				<textarea name="newsTeaser" id="newsTeaser" style="height:50px;width:98%;" class="minLength:3 text" rows="4" cols="40"><?php echo (isset($news)?$news->newsTeaser:null);?></textarea>

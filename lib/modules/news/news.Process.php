@@ -89,11 +89,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkA
 		$values["newsTitle"]  = MySQL::SQLValue($_POST['newsTitle'], MySQL::SQLVALUE_TEXT);
 		$values["newsTeaser"]  = MySQL::SQLValue($_POST['newsTeaser'], MySQL::SQLVALUE_TEXT);
 		$values["newsContent"]  = MySQL::SQLValue($_POST['newsContent'], MySQL::SQLVALUE_TEXT);
-		$values["newsModified"]  = MySQL::SQLValue($_POST['newsModified'], MySQL::SQLVALUE_TEXT);
-		$values["newsPublished"]  = MySQL::SQLValue($newsPublished);
+		$values["newsModified"]  = MySQL::SQLValue($_POST['newsModified'], MySQL::SQLVALUE_DATETIME);
+		$values["newsPublished"]  = MySQL::SQLValue($newsPublished, MySQL::SQLVALUE_BOOLEAN);
 	
 		// Execute either INSERT or UPDATE based on $newsID
-		if($db->AutoInsertUpdate($cfg['db_prefix']."modnews", $values, array("newsID" => $newsID))) 
+		if($db->AutoInsertUpdate($cfg['db_prefix']."modnews", $values, array("newsID" => MySQL::BuildSQLValue($newsID)))) 
 		{
 			header("Location: news.Manage.php?file=$pageID&status=notice&msg=".rawurlencode($ccms['lang']['backend']['itemcreated']));
 			exit();
@@ -167,7 +167,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="cfg-news" && checkAuth()
 		$values["showTeaser"] 	= MySQL::SQLValue(htmlspecialchars($_POST['show_teaser']), MySQL::SQLVALUE_BOOLEAN);
 
 		// Execute the insert or update for current page
-		if($db->AutoInsertUpdate($cfg['db_prefix']."cfgnews", $values, array("cfgID" => $cfgID))) 
+		if($db->AutoInsertUpdate($cfg['db_prefix']."cfgnews", $values, array("cfgID" => MySQL::BuildSQLValue($cfgID)))) 
 		{
 			header("Location: news.Manage.php?file=$pageID&status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
 			exit();
