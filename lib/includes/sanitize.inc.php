@@ -60,7 +60,7 @@ Andy Prevost (codeworxtech)
 Postscript: 'LDM' is still an unknown entity apparently.
 */
 
-function sanitize($dtype, $dlen, $data){
+function sanitize($dtype, $dlen, $data, $charset = "UTF-8"){
 
 // dtype 1: allow numbers, space, and '-' 
 // dtype 2: allow alpha and spaces only
@@ -105,8 +105,12 @@ function sanitize($dtype, $dlen, $data){
 // Just in case stuff like this is submitted:
 // <a href="http://%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D">Google</a>
 // Note: Normally urldecode() would be easier but it removes plus signs
-    $data = preg_replace("/%u0([a-z0-9]{3})/i", "&#x\\1;", $data);
-    $data = preg_replace("/%([a-z0-9]{2})/i", "&#x\\1;", $data);		
+//
+// See also RFC 3986 / http://en.wikipedia.org/wiki/Percent-encoding
+// about the _rejected_ %uxxxx encoding checked for here; can't be sure 
+// browsers/servers don't accept it, so better keep it here:
+    $data = preg_replace("/%u([a-f0-9]{4})/i", "&#x\\1;", $data);
+    $data = preg_replace("/%([a-f0-9]{2})/i", "&#x\\1;", $data);		
 				
 
 // Convert character entities to ASCII
