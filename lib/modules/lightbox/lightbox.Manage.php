@@ -441,8 +441,46 @@ function confirm_regen()
 			if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 			{
 			?>
-			<form action="./lightbox.Process.php?action=save-files" method="post" enctype="multipart/form-data" id="lightboxForm">
-	
+			<form action="./lightbox.Process.php?<?php 
+				/* 
+				FancyUpload 3.0 uses a Flash object, which doesn't pass the session ID cookie, hence it BREAKS the session.
+				Given that we now finally DO check the session variables, FancyUpload suddenly b0rks with timeout errors as
+				lightbox.Process.php didn't produce ANY output in such circumstances.
+				
+				We need to make sure the Flash component forwards the session ID anyway. Use SID for that. See also:
+				
+					http://www.php.net/manual/en/function.session-id.php
+					http://devzone.zend.com/article/1312
+					http://www.php.net/manual/en/session.idpassing.php
+				*/
+				$_SESSION['fup1'] = md5(mt_rand().time().mt_rand());
+
+				$sesid = null;
+				if (defined('SID'))
+				{
+					$sesid = SID;
+				}
+				
+				if (!empty($sesid))
+				{
+					echo $sesid;
+				}
+				else
+				{
+					echo 'SID' . md5($cfg['authcode'].'x') . '=' . session_id();
+				}
+				
+				/*
+				Because sessions are long-lived, we need to add an extra check as well, which will ensure that the current
+				form display will only produce a single permitted upload request; we can do this using a few random values
+				which may be stored in the session, but we MUST DESTROY those values once we've handled the corresponding
+				'save-files' action resulting from a form submit.
+				*/
+				$_SESSION['fup1'] = md5(mt_rand().time().mt_rand());
+				echo '&SIDCHK=' . $_SESSION['fup1'];
+
+				/* whitespace is important here... */ ?>&action=save-files" method="post" enctype="multipart/form-data" id="lightboxForm">
+		
 				<label for="album" style="margin-right:5px;display:inline;"><?php echo $ccms['lang']['album']['toexisting']; ?></label>
 				<select name="album" id="album" class="text" style="width:130px;" size="1">
 					<?php 
@@ -491,7 +529,10 @@ function confirm_regen()
 		<?php 
 		} 
 		?>
+			
+		<div id="lightbox-pending" class="lightbox-spinner-bg">
+			<p class="loading-img" ><?php echo $ccms['lang']['album']['please_wait']; ?></p>
+		</div>
 	</div>
-
 </body>
 </html>
