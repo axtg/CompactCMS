@@ -321,6 +321,19 @@ window.addEvent('domready',function()
 		
 	// Manage current files 
 
+	function gen_span4pagelist_filterheader($name, $title)
+	{
+		global $ccms;
+		
+		if (!empty($name) && !empty($_SESSION[$name]))
+		{
+			echo '<span class="sprite livefilter livefilter_active" rel="' . $name . '" title="' . ucfirst($ccms['lang']['forms']['add_remove']) . ' ' . $title . ' -- ' . $ccms['lang']['forms']['filter_showing'] . ': \'' . htmlspecialchars($_SESSION[$name]) . '\'">&#160;</span>';
+		}
+		else
+		{
+			echo '<span class="sprite livefilter livefilter_add" rel="' . $name . '" title="' . ucfirst($ccms['lang']['forms']['add_remove']) . ' ' . $title . '">&#160;</span>';
+		}
+	}
 
 	?>
 	<div id="manage" class="span-25">
@@ -332,9 +345,9 @@ window.addEvent('domready',function()
 		<table id="table_manage">
 			<tr>
 				<th style="padding-left: 5px;" class="span-1"></th>
-				<th class="span-3"><?php echo $ccms['lang']['forms']['filename']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['filename']; ?>">&#160;</span></th>
-				<th class="span-4"><?php echo $ccms['lang']['forms']['pagetitle']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['pagetitle']; ?>">&#160;</span></th>
-				<th class="span-6"><?php echo $ccms['lang']['forms']['subheader']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['subheader']; ?>">&#160;</span></th>
+				<th class="span-3"><?php gen_span4pagelist_filterheader('filter_pages_name', 'name filter'); echo $ccms['lang']['forms']['filename']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['filename']; ?>">&#160;</span></th>
+				<th class="span-4"><?php gen_span4pagelist_filterheader('filter_pages_title', 'title filter');  echo $ccms['lang']['forms']['pagetitle']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['pagetitle']; ?>">&#160;</span></th>
+				<th class="span-6"><?php gen_span4pagelist_filterheader('filter_pages_subheader', 'subheader filter'); echo $ccms['lang']['forms']['subheader']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['subheader']; ?>">&#160;</span></th>
 				<th class="center span-2-1"><?php echo $ccms['lang']['forms']['printable']; ?> <span class="ss_sprite ss_help" title="<?php echo $ccms['lang']['hints']['printable']; ?>">&#160;</span></th>
 				<th class="center span-2">
 					<?php 
