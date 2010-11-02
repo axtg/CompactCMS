@@ -37,46 +37,58 @@ if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
 $album_path	= BASE_PATH.'/media/albums';
 $album_url	= $cfg['rootdir'].'media/albums';
 
+$pageID	= getGETparam4Filename('page');
+$imgID	= getGETparam4Filename('id');
+
 // Read through selected album, get first and count all
 function fileList($d)
 {
-	foreach(array_diff(scandir($d),array('.','..','index.html','info.txt')) as $f) 
+	$l = array();
+	foreach(array_diff(scandir($d),array('.','..','index.html','info.txt','_thumbs')) as $f) 
 	{
 		if(is_file($d.'/'.$f)) 
 		{
-			$l[] = $f;
+			$ext = strtolower(substr($f, strrpos($f, '.') + 1));
+			if ($ext=="jpg"||$ext=="jpeg"||$ext=="png"||$ext=="gif") 
+			{
+				$l[] = $f;
+			}
    		}
    	} 
+	sort($l, SORT_STRING);
 	return $l;
 } 
 
 // Get all the albums in the default media/albums location
+$albums = array();
 if($handle = opendir($album_path)) 
 {
 	while (false !== ($file = readdir($handle))) 
 	{
-		if ($file != "." && $file != ".." && $file != "index.html" && $file != "info.txt") 
+		if ($file != "." && $file != ".." && $file != "index.html" && $file != "info.txt" && is_dir($album_path . '/' . $file)) 
 		{
 			$albums[] = $file;
     		}
 	} 
 	closedir($handle);
+	sort($albums, SORT_STRING);
 }
 
 // Get specified album for current page
 $singleShow = false;
-if(isset($albums)&&count($albums)>0) 
+$spec_album = array();
+if(count($albums)>0) 
 {
 	foreach ($albums as $file) 
 	{
 		$lines = @file($album_path.'/'.$file.'/info.txt');
-		if($lines>0&&@preg_match('/'.$_GET['page'].'/',$lines[0])) 
+		if($lines > 0 && @preg_match('/'.$pageID.'/',$lines[0])) 
 		{
 			$spec_album[] = $file;
 		}
 	}
 	// Define single show
-	$singleShow = (((isset($spec_album) && count($spec_album) == 1)||count($albums)==1)&&!empty($_GET['id']));
+	$singleShow = (count($spec_album) == 1 || count($albums) == 1 || !empty($imgID));
 }
 ?>
 
@@ -91,18 +103,93 @@ window.addEvent("domready", function() {
 
 <!-- lay-out -->
 <?php 
-if(empty($_GET['id'])&&isset($albums)&&count($albums)>1&&$singleShow==false) 
+
+function calc_thumb_padding($img_path, $thumb_path = null, $max_height = 80, $max_width = 80)
+{
+	$show_thumb = 0;
+	$height = null;
+	$width = null;
+	$aspect_ratio = null;
+	if(!empty($thumb_path) && file_exists($thumb_path))
+	{
+		$imginfo = @getimagesize($thumb_path);
+		if (!empty($imginfo[0]))
+		{
+			$height = floatval($imginfo[1]);
+			$width = floatval($imginfo[0]);
+			$aspect_ratio = (floatval($height)/floatval($width));
+		
+			$show_thumb = 1;
+		}
+	}
+	if ($show_thumb != 1)
+	{
+		$thumb_path = $img_path;
+		if(file_exists($thumb_path)) 
+		{
+			$imginfo = @getimagesize($thumb_path);
+			if (!empty($imginfo[0]))
+			{
+				$height = floatval($imginfo[1]);
+				$width = floatval($imginfo[0]);
+				$aspect_ratio = (floatval($height)/floatval($width));
+				
+				$show_thumb = 2;
+			}
+		}
+	}
+	
+	if ($show_thumb == 0)
+	{
+		return null;
+	}
+	
+	// Resize thumbnail to approx 80 x 80
+	$newheight = $height;
+	$newwidth = $width;
+	if ($newwidth > $max_width)
+	{
+		$newwidth = $max_width;
+		$newheight = intval($aspect_ratio * $newwidth);
+	}
+	if ($newheight > $max_height)
+	{
+		$newheight = $max_height;
+		$newwidth = intval($newheight / $aspect_ratio);
+	}
+	
+	// calc padding to fill box up to max_h x max_w
+	$pad_height = $max_height - $newheight;
+	$pad_width = $max_width - $newwidth;
+	
+	$rv = array();
+	$rv['h'] = $newheight;
+	$rv['w'] = $newwidth;
+	$rv['show'] = $show_thumb;
+	$rv['ph1'] = intval($pad_height / 2);
+	$pad_height -= $rv['ph1'];
+	$rv['ph2'] = $pad_height;
+	$rv['pw1'] = intval($pad_width / 2);
+	$pad_width -= $rv['pw1'];
+	$rv['pw2'] = $pad_width;
+	
+	$rv['style'] = 'style="padding:' . $rv['ph1'] . 'px ' . $rv['pw2'] . 'px ' . $rv['ph2'] . 'px ' . $rv['pw1'] . 'px;"';
+	
+	return $rv;
+}
+
+if(count($albums)>1 && $singleShow==false) 
 {
 	if(!empty($albums)) 
 	{
-		foreach ($albums as $i => $file) 
+		foreach ($albums as $i => $album) 
 		{
-			if (isset($spec_album) && count($spec_album) > 0)
+			if (count($spec_album) > 0)
 			{
 				$show_this_one = false;
-				foreach ($spec_album as $j => $spec) 
+				foreach ($spec_album as $spec) 
 				{
-					if ($spec == $file)
+					if ($spec == $album)
 					{
 						$show_this_one = true;
 						break;
@@ -113,45 +200,60 @@ if(empty($_GET['id'])&&isset($albums)&&count($albums)>1&&$singleShow==false)
 			}
 			
 			// Get the images in an album
-			$image = @fileList($album_path.'/'.$file);
+			$images = fileList($album_path.'/'.$album);
 			
 			// If album is not empty and thumbnail is found
-			if(file_exists($album_path.'/'.$file.'/_thumbs/'.$image[0])&&count($image)>0) 
+			$show_thumb = 0;
+			if (count($images)>0)
 			{
-				echo "<div class=\"album-item\">";
-				echo "<a href=\"".$cfg['rootdir'].$_GET['page']."/".$file.".html\">";
-				echo "<img src=\"$album_url/$file/_thumbs/".$image[0]."\" height=\"80\" width=\"80\"/><br/>";
-				echo ucfirst($file)." (".count($image).")</a></div>";	
-			} 
-			// If album does exist, but no contents (empty album)
-			elseif(count($image)==0) 
+				$thumb_path = $album_path.'/'.$album.'/_thumbs/'.$images[0];
+				$img_path = $album_path.'/'.$album.'/'.$images[0];
+				$imginfo = calc_thumb_padding($img_path, $thumb_path);
+				if(is_array($imginfo))
+				{
+					$show_thumb = $imginfo['show'];
+				}
+			}
+			switch ($show_thumb)
 			{
-				echo "<div class=\"album-item\">";
-				echo "<img src=\"".$cfg['rootdir']."lib/modules/lightbox/resources/empty.png\" height=\"80\" width=\"80\" /><br/>";
-				echo ucfirst($file)." (0)</div>";	
-			} 
-			// Otherwise show the first image of non-empty album and scale it to 80x80
-			else 
-			{
-				echo "<div class=\"album-item\">";
-				echo "<a href=\"".$cfg['rootdir'].$_GET['page']."/".$file.".html\">";
-				echo "<img src=\"".$album_url."/".$file."/".$image[0]."\" height=\"80\" width=\"80\"/><br/>";
-				echo ucfirst($file)." (".count($image).")</a></div>";	
+			case 1:
+				echo "\n<div class=\"album-item\">";
+				echo "<a href=\"".$cfg['rootdir'].$pageID."/".$album.".html\">";
+				echo "<img src=\"".$album_url."/".$album."/_thumbs/".$images[0]."\" " . $imginfo['style'] . " /><br/>";
+				echo ucfirst($album)." (".count($images).")</a></div>\n";	
+				break;
+				
+			case 0:
+			default:
+				// If album does exist, but no contents (empty album)
+				echo "\n<div class=\"album-item\">";
+				$thumb_path = BASE_PATH . "lib/modules/lightbox/resources/empty.png";
+				$imginfo = calc_thumb_padding($thumb_path);
+				echo "<img src=\"".$cfg['rootdir']."lib/modules/lightbox/resources/empty.png\" " . $imginfo['style'] . " /><br/>";
+				echo ucfirst($album)." (0)</div>\n";
+				break;
+				
+			case 2:
+				// Otherwise show the first image of non-empty album and scale it to 80x80
+				echo "\n<div class=\"album-item\">";
+				echo "<a href=\"".$cfg['rootdir'].$pageID."/".$album.".html\">";
+				echo "<img src=\"".$album_url."/".$album."/".$images[0]."\" " . $imginfo['style'] . " /><br/>";
+				echo ucfirst($album)." (".count($images).")</a></div>\n";
+				break;
 			}
 		} 
 	} 
 	else 
 		echo $ccms['lang']['album']['noalbums'];
 } 
-elseif(isset($singleShow)&&$singleShow=='1') 
+elseif($singleShow==true) 
 {
-	$album = (isset($_GET['id'])?htmlentities($_GET['id']):$albums[0]);
-	$album = (isset($spec_album)?$spec_album[0]:$album);
+	$album = (!empty($imgID) ? $imgID : (count($spec_album) > 0 ? $spec_album[0] : $albums[0])); // [i_a] PHP evaluates nested ?: from RIGHT-TO-LEFT! Without the braces, you'ld get the wrong result.
 	
 	echo "<h3>".$ccms['lang']['album']['album']." ".ucfirst($album)."</h3>";
-	if(isset($_GET['id'])) 
-	{ 
-		echo "<p style=\"text-align:right\"><a href=\"".$cfg['rootdir'].$_GET['page'].".html\"\">".$ccms['lang']['backend']['tooverview']."</a></p>"; 
+	if(!empty($imgID)) 
+	{
+		echo "<p style=\"text-align:right\"><a href=\"".$cfg['rootdir'].$pageID.".html\"\">".$ccms['lang']['backend']['tooverview']."</a></p>"; 
 	}
 
 	$desc = null;
@@ -162,36 +264,63 @@ elseif(isset($singleShow)&&$singleShow=='1')
 	} 
 	echo "<p>$desc</p>";
 
-	if($handle = @opendir($album_path.'/'.$album)) 
+	// Get the images in an album
+	$images = fileList($album_path.'/'.$album);
+	
+	// If album is not empty and thumbnail is found
+	if (count($images)>0)
 	{
-		while (false !== ($content = readdir($handle))) 
+		foreach($images as $content) 
 		{
-			if ($content != "." && $content != ".." && $content != "_thumbs" && $content != "info.txt") 
+			$caption = substr($content, 0, strrpos($content, '.')); 
+			$caption = ucfirst(str_replace('_', ' ', $caption));
+			
+			// If album is not empty and thumbnail is found
+			$show_thumb = 0;
+			$thumb_path = $album_path.'/'.$album.'/_thumbs/'.$content;
+			$img_path = $album_path.'/'.$album.'/'.$content;
+			$imginfo = calc_thumb_padding($img_path, $thumb_path);
+			if(is_array($imginfo))
 			{
-				$caption = substr($content, 0, strrpos($content, '.')); 
-				$caption = ucfirst(str_replace('_', ' ', $caption));
-				if(file_exists($album_path.'/'.$album.'/_thumbs/'.$content)) 
-				{
-					echo "<div class=\"album-item\">";
-					echo "<a rel=\"imagezoom[$album]\" href=\"$album_url/$album/$content\" title=\"$caption\"><img src=\"$album_url/$album/_thumbs/$content\" height=\"80\" width=\"80\" alt=\"\" /></a>";
-					echo "</div>";
-				} 
-				else 
-				{
-					echo "<div class=\"album-item\">";
-					echo "<a rel=\"imagezoom[$album]\" href=\"$album_url/$album/$content\" title=\"$caption\"><img src=\"$album_url/$album/$content\" height=\"80\" width=\"80\" alt=\"\" /></a>";
-					echo "</div>";
-				}
+				$show_thumb = $imginfo['show'];
+			}
+			switch ($show_thumb)
+			{
+			case 1:
+				echo "\n<div class=\"album-item\">";
+				echo "<a rel=\"imagezoom[$album]\" href=\"$album_url/$album/$content\" title=\"$caption\">";
+				echo "<img src=\"".$album_url."/".$album."/_thumbs/".$content."\" " . $imginfo['style'] . " />";
+				echo "</a></div>\n";	
+				break;
+				
+			case 0:
+			default:
+				// If album does exist, but no contents (empty album)
+				echo "\n<div class=\"album-item\">";
+				$thumb_path = BASE_PATH . "lib/modules/lightbox/resources/empty.png";
+				$imginfo = calc_thumb_padding($thumb_path);
+				echo "<img src=\"".$cfg['rootdir']."lib/modules/lightbox/resources/empty.png\" " . $imginfo['style'] . " />";
+				echo "</div>\n";
+				break;
+				
+			case 2:
+				// Otherwise show the first image of non-empty album and scale it to 80x80
+				echo "\n<div class=\"album-item\">";
+				echo "<a rel=\"imagezoom[$album]\" href=\"$album_url/$album/$content\" title=\"$caption\">";
+				echo "<img src=\"".$album_url."/".$album."/".$content."\" " . $imginfo['style'] . " />";
+				echo "</div>\n";
+				break;
 			}
 		} 
-		closedir($handle);
 	} 
 	else 
+	{
 		echo "<p>&#160;</p><p>".$ccms['lang']['system']['error_value']."</p>";
-
-	if(isset($_GET['id'])) 
+	}
+	
+	if(!empty($imgID))
 	{ 
-		echo "<p style=\"text-align:right;clear:both;\"><a href=\"".$cfg['rootdir'].$_GET['page'].".html\">".$ccms['lang']['backend']['tooverview']."</a></p>"; 
+		echo "<p style=\"text-align:right;clear:both;\"><a href=\"".$cfg['rootdir'].$pageID.".html\">".$ccms['lang']['backend']['tooverview']."</a></p>"; 
 	}
 } 
 else 
