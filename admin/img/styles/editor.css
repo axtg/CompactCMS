@@ -296,7 +296,13 @@ div.mochaToolbarWrapper.bottom {border: 0;border-bottom: 1px solid #d9d9d9;}
 }
 * html .iconWrapper {padding: 1px;border: 0;}
 .iconWrapper img {cursor: pointer;margin: 0;padding: 3px;}
-.iconWrapper:hover {border: 1px solid #a0a0a0;-moz-border-radius: 3px;}
+.iconWrapper:hover 
+{
+	border: 1px solid #a0a0a0;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
 
 #spinnerWrapper {
     width: 16px;

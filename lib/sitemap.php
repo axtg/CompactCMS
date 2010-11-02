@@ -1,5 +1,5 @@
 <?php
- /**
+/**
  * Copyright (C) 2008 - 2010 by Xander Groesbeek (CompactCMS.nl)
  * 
  * Last changed: $LastChangedDate$
@@ -184,7 +184,8 @@ if(in_array("admin",$location))
 
 // DATABASE ==
 // All set! Now this statement will connect to the database
-if(!$db->Open($cfg['db_name'], $cfg['db_host'], $cfg['db_user'], $cfg['db_pass'])) {
+if(!$db->Open($cfg['db_name'], $cfg['db_host'], $cfg['db_user'], $cfg['db_pass'])) 
+{
 	$db->Kill($ccms['lang']['system']['error_database']);
 }
 
@@ -193,7 +194,7 @@ if(!$db->Open($cfg['db_name'], $cfg['db_host'], $cfg['db_user'], $cfg['db_pass']
 $current	= basename(htmlspecialchars($_SERVER['REQUEST_URI']));
 $curr_page	= isset($_GET['page'])?mysql_real_escape_string($_GET['page']):null;
 
-// This files' current version 
+// This files' current version
 $v = "1.4.1";
 
 // TEMPLATES ==
@@ -236,6 +237,7 @@ else
 
 
 
+
 // only execute the remainder of this file's code if we aren't running a 'minimal' run...
 if (!defined('CCMS_PERFORM_MINIMAL_INIT'))
 {
@@ -245,10 +247,11 @@ if (!defined('CCMS_PERFORM_MINIMAL_INIT'))
 // 1) Start normal operation mode (if sitemap.php is not requested directly).
 // This will fill all variables based on the requested page, or throw a 403/404 error when applicable.
 $pagereq = (isset($_GET['page'])&&!empty($_GET['page']))?htmlspecialchars($_GET['page']):null;
-if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitemap") {
-	
+if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitemap") 
+{
 	// Parse contents function
-	function ccmsContent($page,$published) {
+	function ccmsContent($page,$published) 
+	{
 		global $ccms, $cfg;
 		$msg = explode(' ::', $ccms['lang']['hints']['published']); 
 		ob_start();
@@ -258,11 +261,13 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 			echo ($preview==$cfg['authcode']&&$ccms['published']=='N')?"<p style=\"clear:both;padding:.8em;margin-bottom:1em;background:#FBE3E4;color:#8a1f11;border:2px solid #FBC2C4;\">".$msg['0'].": <strong>".strtolower($ccms['lang']['backend']['disabled'])."</strong></p>":null;
 			
 			// Parse content for active or preview mode
-			if($published=='Y' || $preview==$cfg['authcode']) {
+			if($published=='Y' || $preview==$cfg['authcode']) 
+			{
 				/*MARKER*/require_once(BASE_PATH. "/content/".$page.".php");
 			}
 			// Parse 403 contents (disabled and no preview token)
-			elseif($published=='N') {
+			elseif($published=='N') 
+			{
 				echo file_get_contents(BASE_PATH. "/content/403.php");
 			}
 			// All parsed function contents to $content variable
@@ -270,7 +275,7 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 		ob_end_clean();
 		return $content;
 	}
-	
+
 	// Select the appropriate statement (home page versus specified page)
 	if(!empty($pagereq)) {
 		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '$curr_page'")) $db->Kill();
@@ -279,74 +284,88 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 	}
 
 	// Start switch for pages, select all the right details
-	if($db->HasRecords()) {
-		
-	$db->MoveFirst();
-    $row = $db->Row();
+	if($db->HasRecords()) 
+	{
+		$db->MoveFirst();
+		$row = $db->Row();
+
+		// Internal reference
+		$ccms['published']  = $row->published;
+		$ccms['iscoding']   = $row->iscoding;
+
+		// Content variables
+		$ccms['language']   = $cfg['language'];
+		$ccms['sitename']   = $cfg['sitename'];
+		$ccms['rootdir']    = (substr($cfg['rootdir'],-1)!=='/'?$cfg['rootdir'].'/':$cfg['rootdir']);
+		$ccms['urlpage']    = $row->urlpage;
+		$ccms['pagetitle'] 	= $row->pagetitle;
+		$ccms['subheader'] 	= $row->subheader;
+		$ccms['desc']		= $row->description;
+		$ccms['keywords']	= $row->keywords;
+		$ccms['title']      = ucfirst($ccms['pagetitle'])." - ".$ccms['sitename']." | ".$ccms['subheader'];
+		$ccms['printable']  = $row->printable;
+		$ccms['content']    = ccmsContent($ccms['urlpage'],$ccms['published']);
+
+		// TEMPLATING ==
+		// Set the template variable for current page
+		$templatefile = BASE_PATH . '/lib/templates/'.$row->variant.'.tpl.html';
 	
-    // Internal reference
-	$ccms['published']	= $row->published;
-	$ccms['iscoding']	= $row->iscoding;
-    
-	// Content variables
-    $ccms['language']	= $cfg['language'];
-	$ccms['sitename'] 	= $cfg['sitename'];
-	$ccms['rootdir']	= (substr($cfg['rootdir'],-1)!=='/'?$cfg['rootdir'].'/':$cfg['rootdir']);
-	$ccms['urlpage']	= $row->urlpage;
-	$ccms['pagetitle'] 	= $row->pagetitle;
-	$ccms['subheader'] 	= $row->subheader;
-	$ccms['desc']		= $row->description;
-	$ccms['keywords']	= $row->keywords;
-	$ccms['title'] 		= ucfirst($ccms['pagetitle'])." - ".$ccms['sitename']." | ".$ccms['subheader'];
-	$ccms['printable']	= $row->printable;
-	$ccms['content']	= ccmsContent($ccms['urlpage'],$ccms['published']);
-	
-	// TEMPLATING ==
-	// Set the template variable for current page
-	$templatefile = BASE_PATH . '/lib/templates/'.$row->variant.'.tpl.html';
-	
-	// Check whether template exists, specify default or throw "no templates" error.
-	if(file_exists($templatefile)) {
-		$ccms['template'] = $row->variant;
-	} elseif(count($template)>"0") {
-		$ccms['template'] = $template['0'];
-	} elseif(count($template)=="0") {
-		die($ccms['lang']['system']['error_notemplate']);
-	}
-	
-	// BREADCRUMB ==
-	// Set default breadcrumb
-	$ccms['breadcrumb'] = null;
-	
-	// Create breadcrumb for the current page
-	if($row->urlpage=="home") {
-		$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir']."\" title=\"".ucfirst($cfg['sitename'])." Home\">Home</a>";
-	}
-	if($row->urlpage!="home" && $row->sublevel=='0') {
-		$ccms['breadcrumb'] .= " &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
-	}
-	if($row->sublevel>'0') {
-		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `toplevel` = '".$row->toplevel."' AND `sublevel`='0'")) $db->Kill();
-		$subpath = $db->Row();
-		$ccms['breadcrumb'] .= " &raquo; <a href=\"".$cfg['rootdir'].$subpath->urlpage.".html\" title=\"".$subpath->subheader."\">".$subpath->pagetitle."</a> &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
-	}
-	$ccms['breadcrumb']	.= "</span>";
-	
-	// ERROR 404
-	// Or if DB query returns zero, show error 404: file does not exist
-	} else {
-		$ccms['sitename'] 	= $cfg['sitename'];
-		$ccms['pagetitle']	= $ccms['lang']['system']['error_404title'];
-		$ccms['subheader']	= $ccms['lang']['system']['error_404header'];
-		$ccms['title']		= ucfirst($ccms['pagetitle'])." - ".$ccms['sitename']." | ".$ccms['subheader'];
-		$ccms['content']	= file_get_contents(BASE_PATH. "/content/404.php");
-		$ccms['printable']	= "N";
-		$ccms['published']	= "Y";
-		$ccms['breadcrumb']	= "<span class=\"breadcrumb\">&raquo; <a href=\"./\" title=\"".ucfirst($cfg['sitename'])." Home\">Home</a> &raquo ".$ccms['lang']['system']['error_404title'];
-		
-		if(count($template)>"0") {
+		// Check whether template exists, specify default or throw "no templates" error.
+		if(file_exists($templatefile)) 
+		{
+			$ccms['template'] = $row->variant;
+		} 
+		elseif(count($template)>"0") 
+		{
 			$ccms['template'] = $template['0'];
-		} elseif(count($template)=="0") {
+		} 
+		elseif(count($template)=="0") 
+		{
+			die($ccms['lang']['system']['error_notemplate']);
+		}
+	
+		// BREADCRUMB ==
+		// Set default breadcrumb
+		$ccms['breadcrumb'] = null;
+	
+		// Create breadcrumb for the current page
+		if($row->urlpage=="home") 
+		{
+			$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir']."\" title=\"".ucfirst($cfg['sitename'])." Home\">Home</a>";
+		}
+		if($row->urlpage!="home" && $row->sublevel=='0') 
+		{
+			$ccms['breadcrumb'] .= " &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
+		}
+		if($row->sublevel>'0') 
+		{
+			if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `toplevel` = '".$row->toplevel."' AND `sublevel`='0'")) $db->Kill();
+			$subpath = $db->Row();
+			$ccms['breadcrumb'] .= " &raquo; <a href=\"".$cfg['rootdir'].$subpath->urlpage.".html\" title=\"".$subpath->subheader."\">".$subpath->pagetitle."</a> &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a>";
+		}
+		$ccms['breadcrumb']	.= "</span>";
+	
+	} 
+	else 
+	{
+		// ERROR 404
+		// Or if DB query returns zero, show error 404: file does not exist
+
+		$ccms['sitename']   = $cfg['sitename'];
+		$ccms['pagetitle']  = $ccms['lang']['system']['error_404title'];
+		$ccms['subheader']  = $ccms['lang']['system']['error_404header'];
+		$ccms['title']      = ucfirst($ccms['pagetitle'])." - ".$ccms['sitename']." | ".$ccms['subheader'];
+		//$ccms['content']    = file_get_contents(BASE_PATH. "/content/404.php");
+		$ccms['printable']  = "N";
+		$ccms['published']  = "Y";
+		$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"./\" title=\"".ucfirst($cfg['sitename'])." Home\">Home</a> &raquo ".$ccms['lang']['system']['error_404title']."</span>";
+		
+		if(count($template)>"0") 
+		{
+			$ccms['template'] = $template['0'];
+		} 
+		elseif(count($template)=="0") 
+		{
 			die($ccms['lang']['system']['error_notemplate']);
 		}
 	}
@@ -418,7 +437,8 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 // OPERATION MODE ==
 // 3) Start dynamic sitemap creation used by spiders and various webmaster tools.
 // e.g. You can use this function to submit a dynamic sitemap to Google Webmaster Tools.
-elseif($current == "sitemap.php" || $current == "sitemap.xml") {
+elseif($current == "sitemap.php" || $current == "sitemap.xml") 
+{
 	$dir = substr($_SERVER['SCRIPT_NAME'],0,-15);
 	
 	// Start generating sitemap
@@ -429,7 +449,7 @@ elseif($current == "sitemap.php" || $current == "sitemap.xml") {
 		xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+			http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 	<?php
 	// Select all published pages
 	if (!$db->Query("SELECT `urlpage`,`description` FROM `".$cfg['db_prefix']."pages` WHERE `published` = 'Y'")) $db->Kill();

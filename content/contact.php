@@ -12,10 +12,13 @@ if($action_type=='send' && !empty($_POST) && $_POST['verification']==$_SESSION['
 	$subject = $_POST['subject'];
 	$message = $_POST['message'];
 	$headers = 'From: '.$_POST['name'].' <'.$_POST['email'].'>' . "\r\n";
-	if(mail("<YOUR_ADDRESS_HERE>",$subject,$message,$headers)) {
+	if(mail("<YOUR_ADDRESS_HERE>",$subject,$message,$headers)) 
+	{
 		echo "<p class=\"success center\">Your message has been sent. Thanks!</p>";
 		exit();
-	} else die("<p class=\"error center\">Error while processing your e-mail</p>");
+	} 
+	else 
+		die("<p class=\"error center\">Error while processing your e-mail</p>");
 }
 else 
 {

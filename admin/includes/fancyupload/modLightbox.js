@@ -124,7 +124,5 @@ window.addEvent('domready', function() { // wait for the content
 					alert('To enable the embedded uploader, install the latest Adobe Flash plugin.')
 			}
 		}
-		
 	});
-	
 });
