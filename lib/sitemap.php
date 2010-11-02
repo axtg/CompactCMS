@@ -207,8 +207,18 @@ if(!$db->Open($cfg['db_name'], $cfg['db_host'], $cfg['db_user'], $cfg['db_pass']
 
 // ENVIRONMENT ==
 // Some variables to help this file orientate on its environment
-$current	= basename(htmlspecialchars($_SERVER['REQUEST_URI']));
-$curr_page	= isset($_GET['page'])?mysql_real_escape_string($_GET['page']):null;
+$current = basename(filterParam4FullFilePath($_SERVER['REQUEST_URI']));
+
+
+// [i_a] $curr_page was identical (enough) to $pagereq before
+$pagereq = getGETparam4Filename('page');
+$ccms['pagereq'] = $pagereq;
+
+$ccms['printing'] = filterParam4IdOrNumber($_GET['printing']);
+if ($ccms['printing'] != 'Y')
+{
+	$ccms['printing'] = 'N';
+}
 
 // This files' current version
 $v = "1.4.1";
@@ -262,7 +272,8 @@ if (!defined('CCMS_PERFORM_MINIMAL_INIT'))
 // OPERATION MODE ==
 // 1) Start normal operation mode (if sitemap.php is not requested directly).
 // This will fill all variables based on the requested page, or throw a 403/404 error when applicable.
-$pagereq = (isset($_GET['page'])&&!empty($_GET['page']))?htmlspecialchars($_GET['page']):null;
+//
+// [i_a] $pagereq = (isset($_GET['page'])&&!empty($_GET['page']))?htmlspecialchars($_GET['page']):null;
 if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitemap") 
 {
 	// Parse contents function
@@ -294,7 +305,7 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 
 	// Select the appropriate statement (home page versus specified page)
 	if(!empty($pagereq)) {
-		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = '$curr_page'")) $db->Kill();
+		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = " . MySQL::SQLValue($pagereq, MySQL::SQLVALUE_TEXT))) $db->Kill();
 	} else {
 		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = 'home'")) $db->Kill();
 	}
