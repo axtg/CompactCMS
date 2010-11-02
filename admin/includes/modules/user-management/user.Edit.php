@@ -91,7 +91,7 @@ if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth())
 		<?php if(isset($_GET['status'])&&isset($_GET['action'])) 
 		{ 
 		?>
-			<div class="<?php echo $_GET['status'];?> center"><strong><?php echo ucfirst($_GET['action']);?></strong></div>
+			<div class="<?php echo htmlspecialchars($_GET['status']);?> center"><strong><?php echo ucfirst(htmlspecialchars($_GET['action']));?></strong></div>
 		<?php 
 		} 
 		?>
@@ -204,3 +204,4 @@ if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth())
 } 
 else 
 	die("No external access to file");
+?>

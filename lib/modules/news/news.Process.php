@@ -161,10 +161,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="cfg-news" && checkAuth()
 		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		$values["pageID"]		= MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
 		$values["showLocale"]	= MySQL::SQLValue(getPOSTparam4IdOrNumber('locale'), MySQL::SQLVALUE_TEXT);
-		$values["showMessage"]	= MySQL::SQLValue($_POST['messages']);
-		$values["showAuthor"]	= MySQL::SQLValue($_POST['author']);
-		$values["showDate"]		= MySQL::SQLValue($_POST['show_modified']);
-		$values["showTeaser"] 	= MySQL::SQLValue($_POST['show_teaser']);
+		$values["showMessage"]	= MySQL::SQLValue(htmlspecialchars($_POST['messages']), MySQL::SQLVALUE_NUMBER);
+		$values["showAuthor"]	= MySQL::SQLValue(htmlspecialchars($_POST['author']), MySQL::SQLVALUE_BOOLEAN);
+		$values["showDate"]		= MySQL::SQLValue(htmlspecialchars($_POST['show_modified']), MySQL::SQLVALUE_BOOLEAN);
+		$values["showTeaser"] 	= MySQL::SQLValue(htmlspecialchars($_POST['show_teaser']), MySQL::SQLVALUE_BOOLEAN);
 
 		// Execute the insert or update for current page
 		if($db->AutoInsertUpdate($cfg['db_prefix']."cfgnews", $values, array("cfgID" => $cfgID))) 
