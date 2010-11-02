@@ -97,7 +97,7 @@ function confirmation()
 		<?php 
 		if(isset($_GET['msg'])) 
 		{ 
-			echo '<span class="ss_sprite ss_confirm">'.$_GET['msg'].'</span><br/><span class="ss_sprite ss_exclamation">'.$ccms['lang']['backend']['must_refresh'].'</span>'; 
+			echo '<span class="ss_sprite ss_confirm">'.htmlspecialchars(rawurldecode($_GET['msg'])).'</span><br/><span class="ss_sprite ss_exclamation">'.$ccms['lang']['backend']['must_refresh'].'</span>'; 
 		} 
 		?>
 	</div>

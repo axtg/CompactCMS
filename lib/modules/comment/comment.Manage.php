@@ -97,7 +97,7 @@ function confirmation()
 	<div class="module">
 		
 		<div class="center <?php echo (isset($_GET['status'])?htmlspecialchars($_GET['status']):null); ?>">
-			<?php if(isset($_GET['msg'])&&strlen($_GET['msg'])>2) { echo htmlspecialchars($_GET['msg']); } ?>
+			<?php if(isset($_GET['msg'])&&strlen($_GET['msg'])>2) { echo htmlspecialchars(rawurldecode($_GET['msg'])); } ?>
 		</div>
 			
 		<div class="span-16 colborder">
