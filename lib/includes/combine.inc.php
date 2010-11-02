@@ -29,6 +29,51 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/***************************************************************
+Optimizer invocation added oct/2010, Ger Hobbelt 
+
+The idea is this: before this feature was added in here, CompactCMS had 
+quite a few 'optimized' CSS and JS files floating around.
+Which is a big bother when you're trying to develop stuff as debuggers and
+other diagnostic tools can't cope well with such materials. So from a
+development point of view it is best to have the development sources 
+(which are nicely formatted for HUMAN perusal) available on the site under
+construction.
+
+From there, there are two ways towards a 'release':
+
+1) pack/optimize everything so its filesize is reduced and put that on 
+   the 'release' server.
+   
+2) pack/optimize 'on the fly'.
+
+#1 has the significant drawback that any 'live' checks/diagnostics are hampered
+to the point of becoming infeasible tasks, while #2 has the drawback of
+implied significantly raised server load.
+
+The way out of this conundrum is already in here: 
+  the CSS/JS cache!
+By enahncing its use to include EVERY JS and CSS file on the site, we have
+enabled a cache for all these. This seems pretty useless for single file fetches,
+but wait until you add 'on the fly compression/optimization'... Then it
+turns out to be pretty handy to feed every JS and CSS load through this baby:
+we can optimize/compress each of those JS/CSS files ONCE, cache them in
+compressed format (which would cut on further CPU load due to recompression on
+each fetch, as well) and thus arrive at a very nicely workable option #2:
+have your development code on the server as-is and still benefit from high-speed,
+cached, transfers.
+
+All it takes is three bits of work:
+
+a) Augment the Rewrite rules to point all JS and CSS URLs to me.
+
+b) Adapt this code so it doesn't REQUIRE the JS and CSS files to sit in a specific
+   directory.
+   
+c) Install and invoke the appropriate compressor/optimizer for each file type
+   on the server: this means adding CSS and JS optimizers (written in PHP) to the
+   source tree and calling them when the need arrises.
+****************************************************************/
 
 /* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
 if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
@@ -55,8 +100,16 @@ if (!defined('BASE_PATH'))
 
 $cache		= true;
 $cachedir	= BASE_PATH . '/lib/includes/cache';
+$jsdir		= getGETparam4FullFilePath('jsdir');
+if (empty($jsdir)) 
 	$jsdir = BASE_PATH . '/lib/includes/js';
+else if (substr($jsdir, 0, 1) != '/') 
+	$jsdir = BASE_PATH . '/' . $jsdir;
+$cssdir		= getGETparam4FullFilePath('cssdir');
+if (empty($cssdir)) 
 	$cssdir = BASE_PATH . '/admin/img/styles';
+else if (substr($cssdir, 0, 1) != '/') 
+	$cssdir = BASE_PATH . '/' . $cssdir;
 
 // Determine the directory and type we should use
 $type = getGETparam4IdOrNumber('type');
@@ -103,7 +156,7 @@ while (list(,$element) = each($elements))
 }
 
 // Send Etag hash
-$hash = $lastmodified . '-' . md5($_GET['files']);
+$hash = $lastmodified . '-' . md5($base . '::' . $_GET['files']);
 header("Etag: \"" . $hash . "\"");
 
 if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && 
@@ -154,7 +207,7 @@ else
 	
 				fpassthru($fp);
 				fclose($fp);
-				exit;
+				exit();
 			}
 		}
 	}
@@ -168,6 +221,7 @@ else
 		$contents .= "\n\n" . file_get_contents($path);
 	}
 
+	// invoke the apropriate optimizer for the given type:
 	
 	
 	// Send Content-Type
