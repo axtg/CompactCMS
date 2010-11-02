@@ -182,10 +182,6 @@ if ($handle = opendir(BASE_PATH.'/media/albums/'))
 	}
 }
 
-
-
-if(checkAuth() && isset($_SESSION['rc1']) && !empty($_SESSION['rc2'])) 
-{ 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
@@ -301,7 +297,7 @@ function confirmation()
 			</form>
 		<?php 
 		} 
-		elseif($album_path!=null) 
+		else
 		{ 
 			// Load all images
 			$images = fileList($album_path);
@@ -369,7 +365,7 @@ function confirmation()
 			<hr class="space" />
 		<?php 
 		} 
-		elseif(isset($_GET['album'])&&!empty($_GET['album'])) 
+		else 
 		{ 
 			$lines = @file(BASE_PATH.'/media/albums/'.$_GET['album'].'/info.txt'); 
 			?>
@@ -464,8 +460,3 @@ function confirmation()
 
 </body>
 </html>
-<?php 
-} 
-else 
-	die("No external access to file");
-?>
