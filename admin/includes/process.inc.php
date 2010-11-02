@@ -275,7 +275,15 @@ if($db->HasRecords())
 				} 
 				?>
 				<td>&#160;</td>
-				<td colspan="5"><strong><?php echo $ccms['lang']['forms']['description']; ?></strong>: <span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="description"><?php echo ucfirst($row->description) ;?></span></td>
+				<?php 
+				// [i_a] make sure URLs in descriptions are not damaged by UCfirst() 
+				$description = $db->SQLUnfix($row->description);
+				if (!regexUrl($description))                 
+				{
+					$description = ucfirst($description);
+				}
+				?>
+				<td colspan="5"><strong><?php echo $ccms['lang']['forms']['description']; ?></strong>: <span id="<?php echo $row->page_id; ?>" class="sprite-hover liveedit" rel="description"><?php echo $description; ?></span></td>
 				<td colspan="2" style="text-align: right; padding-right:5px;">
 					<?php 
 					if($row->module=="editor" && !empty($row->toplevel)) 
