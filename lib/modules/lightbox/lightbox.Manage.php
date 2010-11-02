@@ -436,7 +436,7 @@ function confirm_regen()
 					}
 					?>
 					<label for="description"><?php echo $ccms['lang']['album']['description']; ?></label>
-					<textarea name="description" rows="3" cols="40" style="height:50px;width:290px;" id="description"><?php echo trim($desc);?></textarea>
+					<textarea name="description" rows="3" cols="40" style="height:50px;width:290px;" id="description"><?php echo $desc; ?></textarea>
 					<input type="hidden" name="album" value="<?php echo $album; ?>" id="album" />
 					<p class="prepend-5"><button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button></p>
 				</form>

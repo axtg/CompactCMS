@@ -84,7 +84,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "create-album")
 			$dest = BASE_PATH.'/media/albums/'.$album_name;
 			if(!is_dir($dest)) 
 			{
-				if(mkdir($dest)&&mkdir($dest.'/_thumbs')&&fopen($dest.'/info.txt', "w")) 
+				if(@mkdir($dest)&&@mkdir($dest.'/_thumbs')&&@fopen($dest.'/info.txt', "w")) 
 				{
 					header("Location: lightbox.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['itemcreated'])."&album=$album_name");
 					exit();
@@ -195,7 +195,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "del-image")
 			$thumb	= BASE_PATH.'/media/albums/'.$album.'/_thumbs/'.$image;
 			if(is_file($file)) 
 			{
-				if(unlink($file)&&unlink($thumb)) 
+				if(@unlink($file)&&@unlink($thumb)) 
 				{
 					header("Location:lightbox.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['fullremoved'])."&album=$album");
 					exit();
@@ -236,12 +236,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "apply-album")
 		{
 			// Posted variables
 			$topage = getPOSTparam4Filename('albumtopage');
-			$description = (!empty($_POST['description'])?trim(htmlspecialchars($_POST['description'])):trim(' '));
+			$description = (!empty($_POST['description'])?trim(htmlspecialchars($_POST['description'])):'');
 			$infofile = BASE_PATH."/media/albums/$album_name/info.txt";
 			
 			if ($handle = fopen($infofile, 'w+')) 
 			{
-			    if (fwrite($handle, $topage)&&fwrite($handle,"\r\n".$description)) 
+			    if (fwrite($handle, $topage."\r\n".$description)) 
 				{
 					header("Location: lightbox.Manage.php?album=$album_name&status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
 					exit();
@@ -303,45 +303,57 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files")
 	
 	// Validation
 	$error 		= false;
+	$error_code = 0;
 
 	if (!isset($_FILES['Filedata']) || !is_uploaded_file($_FILES['Filedata']['tmp_name'])) 
 	{
 		$error = 'Invalid Upload';
+		$error_code = $_FILES['Filedata']['tmp_name'];
 	}
 	
 	if (!$error && !($size = @getimagesize($_FILES['Filedata']['tmp_name']) ) ) 
 	{
 		$error = 'Please upload only images, no other files are supported.';
+		$error_code = $_FILES['Filedata']['tmp_name'];
 	}
 	
-	if (!$error && !in_array($size[2], array(1, 2, 3, 7, 8) ) ) 
+	if (!$error && !in_array($size[2], array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM) ) ) 
 	{
 		$error = 'Please upload only images of type JPEG, GIF or PNG.';
+		$error_code = $size[2];
 	}
 	
 	if (!$error && ($size[0] < 50) || ($size[1] < 50)) 
 	{
 		$error = 'Please upload an image bigger than 50px.';
+		$error_code = $size[0] . ':' . $size[1];
 	}
 	
 	// Set file and get file extension
 	$uploadedfile	= $_FILES['Filedata']['tmp_name'];
 	$extension		= strtolower(substr($_FILES['Filedata']['name'], strrpos($_FILES['Filedata']['name'], '.') + 1));
 	
-	// Do resize
-	if($extension=="jpg" || $extension=="jpeg" ) 
+	// Do resize    
+	if($extension=="jpg" || $extension=="jpeg") 
 	{
-		$src = imagecreatefromjpeg($uploadedfile);
+		$src = @imagecreatefromjpeg($uploadedfile);
 	} 
 	elseif($extension=="png") 
 	{
-		$src = imagecreatefrompng($uploadedfile);
+		$src = @imagecreatefrompng($uploadedfile);
 	} 
 	else 
 	{
-		$src = imagecreatefromgif($uploadedfile);
+		$src = @imagecreatefromgif($uploadedfile);
 	}
-		 
+	if ($src == false)
+	{
+		$error = 'Internal error.';
+		$error_code = $uploadedfile . ' : ' . $extension;
+	}
+	
+	if (!$error)
+	{
 		list($width,$height)=getimagesize($uploadedfile);
 		
 		$aspect_ratio = (floatval($height)/floatval($width));
@@ -400,14 +412,15 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files")
 		
 		imagedestroy($tmp);
 		imagedestroy($tmp_t);
+	}
 	
-
 	// Check for errors
 	if ($error) 
 	{
 		$return = array(
 			'status' => '0',
-			'error' => $error
+			'error' => $error,
+			'code' => $error_code
 		);
 	} 
 	else 
