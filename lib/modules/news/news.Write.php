@@ -272,9 +272,9 @@ function confirmation()
 				<textarea name="newsTeaser" id="newsTeaser" style="height:50px;width:98%;" class="minLength:3 text" rows="4" cols="40"><?php echo (isset($news)?$news->newsTeaser:null);?></textarea>
 				
 				<label for="newsContent"><?php echo $ccms['lang']['news']['contents']; ?></label>
-				<textarea name="newsContent" id="newsContent" style="height:290px;width:100%;color:#000;" class="text" rows="8" cols="40">
-					<?php echo (isset($news)?$news->newsContent:null);?>
-				</textarea>
+				<textarea name="newsContent" id="newsContent" style="height:290px;width:100%;color:#000;" class="text" rows="8" cols="40"><?php 
+					echo (isset($news)?$news->newsContent:null);
+				?></textarea>
 				<hr class="space"/>
 				<p>
 					<input type="hidden" name="newsID" value="<?php echo $newsID; ?>" id="newsID" />
