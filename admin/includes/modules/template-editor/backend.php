@@ -98,7 +98,7 @@ editAreaLoader.init(
 		allow_toggle:false,
 		word_wrap:true,
 		start_highlight:true,
-		language:"eng",
+		<?php echo 'language:"'.$cfg['editarea_language'].'",'; ?>
 		syntax:"html"
 	});
 </script>
