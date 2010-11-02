@@ -99,7 +99,7 @@ if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth())
 		<p class="clear right"><span class="ss_sprite ss_arrow_undo"><a href="backend.php"><?php echo $ccms['lang']['backend']['tooverview']; ?></a></span></p>
 		
 		<?php // Check authority 
-		if($_SESSION['ccms_userLevel']<$perm['manageUsers']||$row->userLevel>$_SESSION['ccms_userLevel']) 
+		if($perm['manageUsers']==0 || $_SESSION['ccms_userLevel']<$perm['manageUsers'] || $row->userLevel>$_SESSION['ccms_userLevel']) 
 		{
 			if($_SESSION['ccms_userID']!=$userID) 
 			{
@@ -124,7 +124,7 @@ if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth())
 		
 		<div class="span-9">
 			<?php 
-			if($_SESSION['ccms_userID']==$row->userID||$_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) 
+			if($_SESSION['ccms_userID']==$row->userID||($perm['manageUsers']>0 && $_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel)) 
 			{ 
 			?>
 			<h2><?php echo $ccms['lang']['users']['editpassword']; ?></h2>
@@ -146,7 +146,7 @@ if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth())
 			<h2><?php echo $ccms['lang']['users']['accountcfg']; ?></h2>
 			<?php 
 			} 
-			if($_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) 
+			if($perm['manageUsers']>0 && $_SESSION['ccms_userLevel']>=$perm['manageUsers']&&$_SESSION['ccms_userLevel']>=$row->userLevel) 
 			{ 
 			?>
 			<div class="prepend-1">

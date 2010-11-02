@@ -105,20 +105,21 @@ function confirmation()
 		
 		<div class="span-16 colborder">
 			<h2><?php echo $ccms['lang']['news']['manage']; ?></h2>
+			<?php
+			// Load recordset
+			$i=0;
+			if(!$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE pageID=".MySQL::SQLValue($pageID,MySQL::SQLVALUE_TEXT)))
+				$db->Kill();
+
+			// Start switch for news, select all the right details
+			if($db->HasRecords()) 
+			{ 
+			?>
 				<form action="news.Process.php?action=del-news" method="post" accept-charset="utf-8">
 					<table border="0" cellspacing="5" cellpadding="5">
-				<?php
-				// Load recordset
-				$i=0;
-				$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE pageID='$pageID'");
-	
-				// Start switch for news, select all the right details
-				if($db->HasRecords()) 
-				{ 
-				?>
 						<tr>
 							<?php 
-							if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
+							if($perm['manageModNews']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
 							{ 
 							?>
 								<th class="span-1">&#160;</th>
@@ -145,16 +146,16 @@ function confirmation()
 								echo '<tr>';
 							} 
 						
-								if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
+								if($perm['manageModNews']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
 								{ 
 								?>
 									<td><input type="checkbox" name="newsID[]" value="<?php echo $rsNews->newsID; ?>" id="newsID"></td>
 								<?php 
 								} 
 								?>
-								<td><?php echo "<span class='ss_sprite ".($rsNews->newsPublished>0?"ss_bullet_green'>":"ss_bullet_red'>")."</span>"; ?></td>
+								<td><?php echo "<span class='ss_sprite ".($rsNews->newsPublished!=0?"ss_bullet_green'>":"ss_bullet_red'>")."</span>"; ?></td>
 								<?php 
-								if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
+								if($perm['manageModNews']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
 								{ 
 								?>
 									<td><span class="ss_sprite ss_pencil"><a href="news.Write.php?pageID=<?php echo $pageID;?>&amp;newsID=<?php echo $rsNews->newsID; ?>"><?php echo substr($rsNews->newsTitle,0,20); echo (strlen($rsNews->newsTitle)>20?'...':null); ?></a></span></td>
@@ -173,27 +174,29 @@ function confirmation()
 							<?php 
 							$i++; 
 						}
-					} 
-					else 
-						echo $ccms['lang']['system']['noresults']; 
+						?>
+					</table>
+					<hr />
+					<?php 
+					if($perm['manageModNews']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
+					{ 
 					?>
-				</table>
-				<hr />
-				<?php 
-				if($_SESSION['ccms_userLevel']>=$perm['manageModNews']&&$db->HasRecords()) 
-				{ 
-				?>
-					<input type="hidden" name="pageID" value="<?php echo $pageID; ?>" id="pageID">
-					<button type="submit" onclick="return confirmation();" name="deleteNews"><span class="ss_sprite ss_newspaper_delete"><?php echo $ccms['lang']['backend']['delete']; ?></span></button>
-				<?php 
-				} 
-				?>
-			</form>
+						<input type="hidden" name="pageID" value="<?php echo $pageID; ?>" id="pageID">
+						<button type="submit" onclick="return confirmation();" name="deleteNews"><span class="ss_sprite ss_newspaper_delete"><?php echo $ccms['lang']['backend']['delete']; ?></span></button>
+					<?php 
+					} 
+					?>
+				</form>
+				<?php
+			} 
+			else 
+				echo $ccms['lang']['system']['noresults'];  // [i_a] moved OUTSIDE the <form><table> : correct HTML
+			?>
 		</div>
 		<div class="span-6">
 			<h2><?php echo $ccms['lang']['news']['addnews']; ?></h2>
 			<?php 
-			if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
+			if($perm['manageModNews']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
 			{ 
 			?>
 				<p><span class="ss_sprite ss_newspaper_add"><a href="news.Write.php?pageID=<?php echo $pageID; ?>"><?php echo $ccms['lang']['news']['addnewslink']; ?></a></span></p>

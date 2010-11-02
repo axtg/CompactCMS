@@ -187,7 +187,7 @@ if($db->HasRecords())
 				</td>
 				<td class="span-2" style="text-align: center;">
 					<?php 
-					if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageActivity']) 
+					if($_SESSION['ccms_userLevel']>=$perm['manageActivity']) 
 					{ 
 					?>
 						<a href="#" id="published-<?php echo $row->page_id; ?>" rel="<?php echo $row->published; ?>" class="sprite editinplace" title="<?php echo $ccms['lang']['backend']['changevalue']; ?>"><?php 
@@ -204,7 +204,7 @@ if($db->HasRecords())
 				</td>
 				<td class="span-2" style="text-align: center;">
 					<?php 
-					if(isset($_SESSION['ccms_userLevel'])&&$_SESSION['ccms_userLevel']>=$perm['manageVarCoding']) 
+					if($_SESSION['ccms_userLevel']>=$perm['manageVarCoding']) 
 					{ 
 					?>
 						<?php 
@@ -802,7 +802,7 @@ if($do_action == "save-template" && $_SERVER['REQUEST_METHOD'] == "POST" && chec
 if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
+	if($perm['manageUsers']>0 && $_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
 	{
 		$i=0;
 		foreach ($_POST as $key => $value) 
@@ -850,7 +850,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) 
+	if(($perm['manageUsers']>0 && $_SESSION['ccms_userLevel']>=$perm['manageUsers']) || $_SESSION['ccms_userID']==$_POST['userID']) 
 	{
 		// Check length of values
 		if(strlen($_POST['first'])>2&&strlen($_POST['last'])>2&&strlen($_POST['email'])>6) 
@@ -894,7 +894,7 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']||$_SESSION['ccms_userID']==$_POST['userID']) 
+	if(($perm['manageUsers']>0 && $_SESSION['ccms_userLevel']>=$perm['manageUsers']) || $_SESSION['ccms_userID']==$_POST['userID']) 
 	{
 		if(strlen($_POST['userPass'])>6&&md5($_POST['userPass'])===md5($_POST['cpass'])) 
 		{
@@ -934,7 +934,7 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
+	if($perm['manageUsers']>0 && $_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
 	{
 		$userID = getPOSTparam4Number('userID');
 		$userLevel = getPOSTparam4Number('userLevel');
@@ -972,7 +972,7 @@ if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && ch
 if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
+	if($perm['manageUsers']>0 && $_SESSION['ccms_userLevel']>=$perm['manageUsers']) 
 	{
 		$total = count($_POST['userID']);
 		

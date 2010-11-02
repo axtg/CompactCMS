@@ -185,11 +185,16 @@ if ($handle = opendir(BASE_PATH.'/media/albums/'))
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
-	<head>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<title>Lightbox module</title>
-		<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,liquid.css,layout.css,sprite.css,uploader.css" />
-		<script type="text/javascript" src="../../includes/js/mootools.js" charset="utf-8"></script>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title>Lightbox module</title>
+	<link rel="stylesheet" type="text/css" href="../../../admin/img/styles/base.css,liquid.css,layout.css,sprite.css,uploader.css" />
+	<script type="text/javascript" src="../../includes/js/mootools.js" charset="utf-8"></script>
+	<?php 
+	// prevent JS errors when permissions don't allow uploading (and all the rest)
+	if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+	{
+	?>
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader/Swiff.Uploader.js"></script>
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/Source/Uploader/Fx.ProgressBar.js"></script>
 		<script type="text/javascript" src="../../../admin/includes/fancyupload/FancyUpload2.js"></script>
@@ -269,7 +274,7 @@ function confirm_regen()
 					?>
 					<tr>
 						<?php 
-						if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+						if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel'] >= $perm['manageModLightbox']) 
 						{ 
 						?>
 							<th class="span-1">&#160;</th>
@@ -293,7 +298,7 @@ function confirm_regen()
 								echo '<tr>';
 							} 
 							
-							if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+							if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel'] >= $perm['manageModLightbox']) 
 							{ 
 							?>
 								<td><input type="checkbox" name="albumID[<?php echo $key+1;?>]" value="<?php echo $value; ?>" id="newsID"></td>
@@ -313,7 +318,7 @@ function confirm_regen()
 				</table>
 				<hr />
 				<?php 
-				if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']&&count($albums)>0) 
+				if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']&&count($albums)>0) 
 				{ 
 				?>
 					<button type="submit" onclick="return confirmation();" name="deleteAlbum"><span class="ss_sprite ss_bin_empty"><?php echo $ccms['lang']['backend']['delete']; ?></span></button>
@@ -344,14 +349,14 @@ function confirm_regen()
 			<?php 
 			foreach ($images as $key => $value) 
 			{ 
-				if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+				if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox'])
 				{
 					echo '<a onclick="return confirmation();" href="lightbox.Process.php?album=' . $album . '&amp;image=' . $value . '&amp;action=del-image" title="' . $ccms['lang']['backend']['delete'] . ': ' . $value . '">';
 				} 
 
 				echo '<img src="' . $imagethumbs[$key] . '" class="thumbview" alt="Thumbnail of ' . $value . '" ' . $imginfo[$key]['style'] . ' />';
 
-				if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+				if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 				{
 					echo '</a>';
 				} 
@@ -384,7 +389,7 @@ function confirm_regen()
 		?>
 			<h2><?php echo $ccms['lang']['album']['newalbum']; ?></h2>
 			<?php 
-			if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+			if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 			{
 			?>
 				<form action="lightbox.Process.php?action=create-album" method="post" accept-charset="utf-8">
@@ -405,40 +410,48 @@ function confirm_regen()
 			$lines = @file($album_path.'/info.txt'); 
 			?>
 			<h2><?php echo $ccms['lang']['album']['settings']; ?></h2>
-			<form action="lightbox.Process.php?action=apply-album" method="post" accept-charset="utf-8">
-				<label for="albumtopage"><?php echo $ccms['lang']['album']['apply_to']; ?></label>
-				<select class="text" name="albumtopage" id="albumtopage" size="1">
-					<option value=""><?php echo $ccms['lang']['backend']['none']; ?></option>
-					<?php 
-					$lightboxes = $db->QueryArray("SELECT * FROM ".$cfg['db_prefix']."pages WHERE module='lightbox'"); 
-					for ($i=0; $i < count($lightboxes); $i++) 
-					{ 
-					?>
-						<option <?php echo (!empty($lines[0])&&trim($lines[0])==$lightboxes[$i]['urlpage']?'selected':null); ?> value="<?php echo $lightboxes[$i]['urlpage'];?>"><?php echo $lightboxes[$i]['urlpage'];?>.html</option>
-					<?php 
-					} 
-					?>
-				</select>
-				<?php
+			<?php 
+			if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+			{
+			?>
+				<form action="lightbox.Process.php?action=apply-album" method="post" accept-charset="utf-8">
+					<label for="albumtopage"><?php echo $ccms['lang']['album']['apply_to']; ?></label>
+					<select class="text" name="albumtopage" id="albumtopage" size="1">
+						<option value=""><?php echo $ccms['lang']['backend']['none']; ?></option>
+						<?php 
+						$lightboxes = $db->QueryArray("SELECT * FROM ".$cfg['db_prefix']."pages WHERE module='lightbox'"); 
+						for ($i=0; $i < count($lightboxes); $i++) 
+						{ 
+						?>
+							<option <?php echo (!empty($lines[0])&&trim($lines[0])==$lightboxes[$i]['urlpage']?'selected':null); ?> value="<?php echo $lightboxes[$i]['urlpage'];?>"><?php echo $lightboxes[$i]['urlpage'];?>.html</option>
+						<?php 
+						} 
+						?>
+					</select>
+					<?php
 					$desc = '';
 					for ($x=1; $x<count($lines); $x++) 
 					{
 						$desc = trim($desc.' '.$lines[$x]); // [i_a] double invocation of htmlspecialchars, together with the form input (lightbox.Process.php)
 					}
-				?>
-				<label for="description"><?php echo $ccms['lang']['album']['description']; ?></label>
-				<textarea name="description" rows="3" cols="40" style="height:50px;width:290px;" id="description"><?php echo trim($desc);?></textarea>
-				<input type="hidden" name="album" value="<?php echo $album; ?>" id="album" />
-				<p class="prepend-5"><button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button></p>
-			</form>
-		<?php 
+					?>
+					<label for="description"><?php echo $ccms['lang']['album']['description']; ?></label>
+					<textarea name="description" rows="3" cols="40" style="height:50px;width:290px;" id="description"><?php echo trim($desc);?></textarea>
+					<input type="hidden" name="album" value="<?php echo $album; ?>" id="album" />
+					<p class="prepend-5"><button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button></p>
+				</form>
+			<?php 
+			} 
+			else 
+				echo $ccms['lang']['auth']['featnotallowed']; 
 		} 
+		
 		if(count($albums)>0) 
 		{ 
 		?>
 			<h2><?php echo $ccms['lang']['album']['uploadcontent']; ?></h2>
 			<?php 
-			if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+			if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 			{
 			?>
 			<form action="./lightbox.Process.php?<?php 

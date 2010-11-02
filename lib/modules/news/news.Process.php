@@ -77,7 +77,7 @@ $do_action 	= getGETparam4IdOrNumber('action');
 if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkAuth()) 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
+	if($perm['manageModNews']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
 	{
 		// Published
 		$newsPublished = getPOSTparam4boolean('newsPublished');
@@ -113,7 +113,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkA
 if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth()) 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
+	if($perm['manageModNews']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
 	{
 		// Number of selected items
 		$total = count($_POST['newsID']);
@@ -156,7 +156,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth()
 if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="cfg-news" && checkAuth()) 
 {
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
+	if($perm['manageModNews']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModNews']) 
 	{
 		$values = array(); // [i_a] make sure $values is an empty array to start with here
 		$values["pageID"]		= MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
