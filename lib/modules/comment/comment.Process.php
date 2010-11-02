@@ -134,9 +134,16 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 			$rsComment = $db->Row(); 
 			?>
 			<div id="s-display"><a name="<?php echo "cmt" . $index; ?>"></a>
-				<div id="s-avatar">
-					<img src="http://www.gravatar.com/avatar.php?gravatar_id=<?php echo md5($rsComment->commentEmail);?>&amp;size=80&amp;rating=G" alt="<?php echo $ccms['lang']['guestbook']['avatar'];?>" /><br/>
-				</div>
+				<?php 
+				if ($cfg['enable_gravatar']) 
+				{ 
+				?>
+					<div id="s-avatar">
+						<img src="http://www.gravatar.com/avatar.php?gravatar_id=<?php echo md5($rsComment->commentEmail);?>&amp;size=80&amp;rating=G" alt="<?php echo $ccms['lang']['guestbook']['avatar'];?>" /><br/>
+					</div>
+				<?php
+				} 
+				?>
 				<div id="s-name">
 					<?php echo (!empty($rsComment->commentUrl)?'<a href="'.$rsComment->commentUrl.'" rel="nofollow" target="_blank">'.$rsComment->commentName.'</a>':$rsComment->commentName).' '.$ccms['lang']['guestbook']['wrote']; ?>:
 				</div>

@@ -58,6 +58,7 @@ $cfg['db_prefix']	= "ccms_";		// MySQL setting - the table prefix.
 // Restrict for editing with the editor. Use the filenames without extension.
 $cfg['restrict']	= array("foo","bar");
 $cfg['default_template'] = 'ccms'; 
+$cfg['enable_gravatar'] = true;  // set to 'false' if you don't want to show 'gravatars' in your comment pages for each commenter.
 
 
 define('CCMS_DEVELOPMENT_ENVIRONMENT', true); // comment out or remove this line for any release install (where you are not developing on a local & very safe machine)
