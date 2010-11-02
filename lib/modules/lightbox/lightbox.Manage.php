@@ -213,8 +213,34 @@ function confirmation()
 		return false;
 	}
 }
+
+function confirm_regen()
+{
+	var answer=confirm('<?php echo $ccms['lang']['backend']['confirmthumbregen']; ?>');
+	if(answer)
+	{
+		try
+		{
+			$('lightbox-pending').setStyle('visibility', 'visible');
+			return true;
+		}
+		catch(e)
+		{
+			$('lightbox-pending').setStyle('visibility', 'hidden');
+			return false;
+		}
+	}
+	else
+	{
+		$('lightbox-pending').setStyle('visibility', 'hidden');
+		return false;
+	}
+}
 		</script>
-	</head>
+	<?php
+	}
+	?>
+</head>
 <body>
 	<div class="module">
 		<div class="center <?php echo (isset($_GET['status'])?htmlspecialchars($_GET['status']):null); ?>">
@@ -332,8 +358,17 @@ function confirmation()
 				echo "\n";
 			} 
 			?>
-				
 			<p class="clear right">
+			<?php
+			if (count($images) > 0 && $perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel'] >= $perm['manageModLightbox']) 
+			{
+			?>
+				<span class="ss_sprite ss_arrow_in"><a onclick="return confirm_regen();" href="lightbox.Process.php?album=<?php echo $album; ?>&amp;action=confirm_regen">
+				<?php echo $ccms['lang']['album']['regenalbumthumbs']; ?>
+				</a></span>
+			<?php
+			}
+			?>
 			<span class="ss_sprite ss_arrow_undo"><a href="lightbox.Manage.php"><?php echo $ccms['lang']['album']['albumlist']; ?></a></span>
 			</p>
 		<?php 

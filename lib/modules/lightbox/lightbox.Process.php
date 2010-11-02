@@ -406,4 +406,147 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "save-files")
 		echo json_encode($return);
 	}
 }
+
+/**
+ * Regenerate all thumbnails. This will delete any existing thumbnails!
+ */
+if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "confirm_regen") 
+{
+	// Only if current user has the rights
+	if($_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
+	{
+		$album = (isset($_GET['album'])&&!empty($_GET['album'])?htmlspecialchars($_GET['album']):null);
+		
+		if(!empty($album)) 
+		{
+			$dest = BASE_PATH.'/media/albums/'.$album;
+			if(!is_dir($dest)) 
+			{
+				header("Location: lightbox.Manage.php?status=error&msg=".rawurlencode($ccms['lang']['system']['error_dirwrite']));
+				exit();
+			} 
+			if(!is_dir($dest.'/_thumbs')) 
+			{
+				if(@mkdir($dest.'/_thumbs')) 
+				{
+					header("Location: lightbox.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['itemcreated'])."&album=$album_name");
+					exit();
+				} 
+				else 
+				{
+					header("Location: lightbox.Manage.php?status=error&msg=".rawurlencode($ccms['lang']['system']['error_dirwrite']));
+					exit();
+				}
+			} 
+			
+			foreach(array_diff(scandir($dest),array('.','..','index.html','info.txt')) as $f) 
+			{
+				if(is_file($dest.'/'.$f)) 
+				{
+					$extension = strtolower(substr($f, strrpos($f, '.') + 1));
+					$uploadedfile = $dest . '/' . $f;
+					
+					// Do resize
+					if($extension=="jpg" || $extension=="jpeg") 
+					{
+						$src = imagecreatefromjpeg($uploadedfile);
+					} 
+					elseif($extension=="png") 
+					{
+						$src = imagecreatefrompng($uploadedfile);
+					} 
+					else 
+					{
+						$src = imagecreatefromgif($uploadedfile);
+					}
+						 
+					list($width,$height)=getimagesize($uploadedfile);
+					
+					$aspect_ratio = (floatval($height)/floatval($width));
+					
+					// Resize thumbnail to approx 80 x 80
+					$newheight_t = $height;
+					$newwidth_t = $width;
+					if ($newwidth_t > 80)
+					{
+						$newwidth_t = 80;
+						$newheight_t = intval($aspect_ratio * $newwidth_t);
+					}
+					if ($newheight_t > 80)
+					{
+						$newheight_t = 80;
+						$newwidth_t = intval($newheight_t / $aspect_ratio);
+					}
+					
+					// sharpen intermediate image when shrinking size a lot.
+					//
+					// see also:
+					//   http://adamhopkinson.co.uk/blog/2010/08/26/sharpen-an-image-using-php-and-gd/
+					//   http://nl2.php.net/manual/nl/ref.image.php#56144
+					//   http://loriweb.pair.com/8udf-sharpen.html
+					if ($height >= 160 || $width >= 160)
+					{
+						$newheight = $newheight_t * 2;
+						$newwidth = intval($newheight / $aspect_ratio);
+						
+						$tmp = imagecreatetruecolor($newwidth,$newheight);
+						imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height);
+
+						// define the sharpen matrix
+						$sharpen = array(
+							array(0.0, -1.0, 0.0),
+							array(-1.0, 5.0, -1.0),
+							array(0.0, -1.0, 0.0)
+						);
+
+						// calculate the sharpen divisor
+						$divisor = array_sum(array_map('array_sum', $sharpen));
+
+						// apply the matrix
+						imageconvolution($tmp, $sharpen, $divisor, 0);
+
+						imagedestroy($src);
+						$src = $tmp;
+						$width = $newwidth;
+						$height = $newheight;
+					}
+
+					$tmp_t = imagecreatetruecolor($newwidth_t,$newheight_t);
+					imagecopyresampled($tmp_t,$src,0,0,0,0,$newwidth_t,$newheight_t,$width,$height);
+					
+					// Save newly generated versions
+					$thumbnail	= $dest.'/_thumbs/'.$f;
+					
+					@unlink($thumbnail);
+					
+					if($extension=="jpg" || $extension=="jpeg" ) 
+					{
+						imagejpeg($tmp_t, $thumbnail, 100);
+					} 
+					elseif($extension=="png") 
+					{
+						imagepng($tmp_t, $thumbnail, 7);
+					} 
+					else 
+					{
+						imagegif($tmp_t, $thumbnail, 100);
+					}
+					
+					imagedestroy($tmp_t);
+				}
+			}
+
+			header("Location:lightbox.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['fullregenerated'])."&album=$album");
+			exit();
+		}
+		else
+		{
+			header("Location: lightbox.Manage.php?status=error&msg=".rawurlencode($ccms['lang']['system']['error_tooshort']));
+			exit();
+		}
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
+}
+
 ?>
