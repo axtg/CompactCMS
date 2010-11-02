@@ -333,3 +333,9 @@ div.module
 }
 .thumbview:hover{background-color:#E6F2D9;border:solid #A5D611 3px;}
 .albumbox img{border:1px solid #000;}
+
+/* === BACKUPS === */
+#no-delete-action 
+{
+	margin-top: 20px;
+}
