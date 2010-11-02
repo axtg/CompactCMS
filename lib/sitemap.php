@@ -383,7 +383,6 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 				$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir'].$subpath->urlpage.".html\" title=\"".$db->SQLUnfix($subpath->subheader)."\">".$db->SQLUnfix($subpath->pagetitle)."</a> &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$db->SQLUnfix($row->subheader)."\">".$db->SQLUnfix($row->pagetitle)."</a></span>";
 			}
 		}
-
 	} 
 	else 
 	{
@@ -617,100 +616,6 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 			$ccms[$current_structure] .= '</li></ul>';
 		}
 	}
-	
-	// old code:
-	if (false)
-	{
-	
-	// Start menu generation
-	for($i=1; $i<=MENU_TARGET_COUNT; $i++) {
-
-		// Count total active menu items in database
-		$ct = $db->QuerySingleRow("SELECT COUNT(`page_id`) AS num, MIN(`toplevel`) AS mtl FROM `".$cfg['db_prefix']."pages` WHERE `published`='Y' AND `menu_id`='$i' GROUP BY `menu_id`");
-
-		// Loop through menu generator for all items
-		if(!empty($ct->num)) {
-			// Start menu parent item
-			$ccms['structure'.$i] = "<ul>";
-
-			for ($index=1; $index<=$ct->num; $index++) {
-				// Select all items for given menu and process hierarchy
-				$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `published`='Y' AND `menu_id`='$i' AND `toplevel`='".$ct->mtl."' ORDER BY `toplevel` ASC, `sublevel` ASC");
-
-				// Next toplevel
-				$ct->mtl++;
-
-				// Check whether the recordset is not empty
-				if($db->HasRecords()) {
-
-					// Set the pointer to the first row
-					$db->MoveFirst();
-
-					// Go through all rows found for the current toplevel
-					while (!$db->EndOfSeek()) {
-						$row = $db->Row();
-
-						// Specify special link attributes if applicable
-						$current_class = '';
-						$current_extra = '';
-						$current_link = '';
-						if ($row->urlpage == $pagereq)
-						{
-							$current_class = 'class="current"';
-						}
-						if ($row->islink == "N")
-						{
-							$current_link = '#';
-						}
-						else if (regexUrl($db->SQLUnfix($row->description)))
-						{
-							$msg = explode(' ::', $db->SQLUnfix($row->description));
-							$current_link = $msg[0];
-							$current_extra = $msg[1];
-							$current_class = 'class="to_external_url"';
-						}
-						else if ($row->urlpage == "home")
-						{
-							$current_link = $cfg['rootdir'];
-						}
-						else 
-						{
-							$current_link = $cfg['rootdir'] . $row->urlpage . '.html';
-						}
-						
-						if (!empty($current_extra))
-						{
-							$current_extra = '<br/>' . $current_extra;
-						}
-
-						// What text to show for the links
-						$link_text      = ucfirst($db->SQLUnfix($row->pagetitle));
-
-						// Specifying the position of the current item in the menu
-						if($row->sublevel==0 && $db->RowCount()==1) {
-							$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($db->SQLUnfix($row->subheader)).'">'.$link_text.'</a>'.$current_extra.'</li>';
-						}
-						else if($row->sublevel==0 && $db->RowCount()>1) {
-							$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($db->SQLUnfix($row->subheader)).'">'.$link_text.'</a>'.$current_extra;
-							$ccms['structure'.$i] .= '<ul class="sublevel">';
-						}
-						else if($row->sublevel>0 && $db->SeekPosition()!=$db->RowCount()) {
-							$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($db->SQLUnfix($row->subheader)).'">'.$link_text.'</a>'.$current_extra.'</li>';
-						}
-						else if($row->sublevel>0 && $db->SeekPosition()==$db->RowCount()) {
-							$ccms['structure'.$i] .= '<li><a '.$current_class.' href="'.$current_link.'" title="'.ucfirst($db->SQLUnfix($row->subheader)).'">'.$link_text.'</a>'.$current_extra.'</li>';
-							$ccms['structure'.$i] .= '</ul></li>';
-						}
-						else die('internal error in menu generator');
-					}
-				}
-			}
-			$ccms['structure'.$i] .= "</ul>";
-		}
-	}
-
-	} // false
-
 }
 
 // OPERATION MODE ==
