@@ -206,8 +206,9 @@ fieldset {
 	margin-bottom: 10px;
 	background: #E6F5D6;
 	border: 3px solid #90D244;
-	-moz-border-radius: 10px; 
-	border-radius: 0;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
 	behavior: url('../admin/img/styles/PIE.php');
 }
 legend, .installMsg {
@@ -216,7 +217,8 @@ legend, .installMsg {
 	margin: 0 15px;
 	padding: 0.4em 1em;
 	border: 2px solid #9DAFBB;
-	-moz-border-radius: 5px; 
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
 	border-radius: 5px;
 	behavior: url('../admin/img/styles/PIE.php');
 }
@@ -233,7 +235,8 @@ div.ss_help {
 	border-right: 5px solid #F7D5D5;
 	border-top: 5px solid #F7D5D5;
 	border-bottom: 5px solid #EFAAAB;
-	-moz-border-radius: 10px; 
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
 	border-radius: 10px;
 	behavior: url('../admin/img/styles/PIE.php');
 }
@@ -244,7 +247,8 @@ div.tip-title {
 	color: #FFFFFF;
 	padding: 5px;
 	background: #DB7075;
-	-moz-border-radius: 20px; 
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
 	border-radius: 20px;
 	behavior: url('../admin/img/styles/PIE.php');
 }
@@ -263,7 +267,8 @@ div.tip-text {
 	background-color:#E6F5D6;
 	padding:10px;
 	border:10px solid #90D244;
-	-moz-border-radius: 10px; 
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
 	border-radius: 10px;
 	behavior: url('../admin/img/styles/PIE.php');
 }
