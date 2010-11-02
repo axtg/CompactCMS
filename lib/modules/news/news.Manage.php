@@ -203,55 +203,76 @@ function confirmation()
 			
 				<h2><?php echo $ccms['lang']['news']['settings']; ?></h2>
 				<?php 
-				$rsCfg = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgnews` WHERE pageID='$pageID'"); 
+				if (!$rsCfg = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."cfgnews` WHERE pageID=".MySQL::SQLValue($pageID,MySQL::SQLVALUE_TEXT)))
+					$db->Kill();
+					
+				if ($db->HasRecords())
+				{
+					$showmsg = max(1,intval($rsCfg->showMessage)); // always show at least 1 news item on a news page!
+					$locale = $rsCfg->showLocale;
+					$showauth = intval($rsCfg->showAuthor);
+					$showdate = intval($rsCfg->showDate);
+					$showteaser = intval($rsCfg->showTeaser);
+					//$newscfgid = $rsCfg->cfgID;
+				}
+				else // set defaults 
+				{
+					// [i_a] when no cfg record, fill in the defaults as were also set in the database
+					$showmsg = 3;
+					$locale = $cfg['locale'];
+					$showauth = 1;
+					$showdate = 1;
+					$showteaser = 0;
+					//$newscfgid = null;
+				}
 				?>
 				<form action="news.Process.php?action=cfg-news" method="post" accept-charset="utf-8">
 					<label for="messages"><?php echo $ccms['lang']['news']['numbermess']; ?></label>
-					<input type="text" class="text" name="messages" value="<?php echo ($db->HasRecords()?$rsCfg->showMessage:null); ?>" id="messages" />
-				
+					<input type="text" class="text" name="messages" value="<?php echo $showmsg; ?>" id="messages" />
+					
 					<label for="locale"><?php echo $ccms['lang']['forms']['setlocale']; ?></label>
 					<select name="locale" class="text" id="locale" size="1">
-						<option value="eng" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='eng'?"selected":null); ?>>English</option>
-						<option value="esp" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='esp'?"selected":null); ?>>español</option>
-						<option value="fra" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='fra'?"selected":null); ?>>français</option>
-						<option value="deu" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='deu'?"selected":null); ?>>Deutsch</option>
-						<option value="nld" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='nld'?"selected":null); ?>>Nederlands</option>
-						<option value="ita" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='ita'?"selected":null); ?>>italiano</option>
-						<option value="dan" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='dan'?"selected":null); ?>>dansk</option>
-						<option value="fin" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='fin'?"selected":null); ?>>suomi</option>
-						<option value="nor" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='nor'?"selected":null); ?>>norsk</option>
-						<option value="rus" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='rus'?"selected":null); ?>>русский</option>
-						<option value="sve" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='sve'?"selected":null); ?>>svenska</option>
-						<option value="ind" <?php echo ($db->HasRecords()&&$rsCfg->showLocale=='ind'?"selected":null); ?>>Bahasa Indonesia</option>
+						<option value="eng" <?php echo ($locale=='eng'?"selected":null); ?>>English</option>
+						<option value="esp" <?php echo ($locale=='esp'?"selected":null); ?>>español</option>
+						<option value="fra" <?php echo ($locale=='fra'?"selected":null); ?>>français</option>
+						<option value="deu" <?php echo ($locale=='deu'?"selected":null); ?>>Deutsch</option>
+						<option value="nld" <?php echo ($locale=='nld'?"selected":null); ?>>Nederlands</option>
+						<option value="ita" <?php echo ($locale=='ita'?"selected":null); ?>>italiano</option>
+						<option value="dan" <?php echo ($locale=='dan'?"selected":null); ?>>dansk</option>
+						<option value="fin" <?php echo ($locale=='fin'?"selected":null); ?>>suomi</option>
+						<option value="nor" <?php echo ($locale=='nor'?"selected":null); ?>>norsk</option>
+						<option value="rus" <?php echo ($locale=='rus'?"selected":null); ?>>русский</option>
+						<option value="sve" <?php echo ($locale=='sve'?"selected":null); ?>>svenska</option>
+						<option value="ind" <?php echo ($locale=='ind'?"selected":null); ?>>Bahasa Indonesia</option>
 					</select>
-				
+					
 					<label><?php echo $ccms['lang']['news']['showauthor']; ?></label>
 						<img src="../../../admin/img/spacer.gif" height="10" width="20" alt=" "/>
 						<label style="display:inline;" for="show_author1"><?php echo $ccms['lang']['backend']['yes']; ?></label>
-						<input type="radio" name="author" <?php echo ($db->HasRecords()&&$rsCfg->showAuthor==1?"checked":null); ?> value="1" id="author1" />
+						<input type="radio" name="author" <?php echo ($showauth!=0?"checked":null); ?> value="1" id="author1" />
 							<img src="../../../admin/img/spacer.gif" height="10" width="50" alt=" "/>
 						<label style="display:inline;" for="show_author0"><?php echo $ccms['lang']['backend']['no']; ?></label>
-						<input type="radio" name="author" <?php echo ($db->HasRecords()&&$rsCfg->showAuthor==0?"checked":null); ?> value="0" id="author0" />
+						<input type="radio" name="author" <?php echo ($showauth==0?"checked":null); ?> value="0" id="author0" />
 					<br/><br/>
 					<label><?php echo $ccms['lang']['news']['showdate']; ?></label>
 						<img src="../../../admin/img/spacer.gif" height="10" width="20" alt=" "/>
 						<label style="display:inline;" for="show_modified1"><?php echo $ccms['lang']['backend']['yes']; ?></label>
-						<input type="radio" name="show_modified" <?php echo ($db->HasRecords()&&$rsCfg->showDate==1?"checked":null); ?> value="1" id="show_modified1" />
+						<input type="radio" name="show_modified" <?php echo ($showdate!=0?"checked":null); ?> value="1" id="show_modified1" />
 							<img src="../../../admin/img/spacer.gif" height="10" width="50" alt=" "/>
 						<label style="display:inline;" for="show_modified0"><?php echo $ccms['lang']['backend']['no']; ?></label>
-						<input type="radio" name="show_modified" <?php echo ($db->HasRecords()&&$rsCfg->showDate==0?"checked":null); ?> value="0" id="show_modified0" />
+						<input type="radio" name="show_modified" <?php echo ($showdate==0?"checked":null); ?> value="0" id="show_modified0" />
 					<br/><br/>
 					<label><?php echo $ccms['lang']['news']['showteaser']; ?></label>
 						<img src="../../../admin/img/spacer.gif" height="10" width="20" alt=" "/>
 						<label style="display:inline;" for="show_teaser1"><?php echo $ccms['lang']['backend']['yes']; ?></label>
-						<input type="radio" name="show_teaser" <?php echo ($db->HasRecords()&&$rsCfg->showTeaser==1?"checked":null); ?> value="1" id="show_teaser1" />
+						<input type="radio" name="show_teaser" <?php echo ($showteaser!=0?"checked":null); ?> value="1" id="show_teaser1" />
 							<img src="../../../admin/img/spacer.gif" height="10" width="50" alt=" "/>
 						<label style="display:inline;" for="show_modified0"><?php echo $ccms['lang']['backend']['no']; ?></label>
-						<input type="radio" name="show_teaser" <?php echo ($db->HasRecords()&&$rsCfg->showTeaser==0?"checked":null); ?> value="0" id="show_teaser0" />
+						<input type="radio" name="show_teaser" <?php echo ($showteaser==0?"checked":null); ?> value="0" id="show_teaser0" />
 					<br/><br/>			
 					<p class="prepend-3">
 						<?php echo ($db->HasRecords()?'<input type="hidden" name="cfgID" value="'.$rsCfg->cfgID.'" id="cfgID" />':null); ?>
-						<input type="hidden" name="pageID" value="<?php echo (isset($pageID)?$pageID:null); ?>" id="pageID" />
+						<input type="hidden" name="pageID" value="<?php echo $pageID; ?>" id="pageID" />
 						<button type="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['forms']['savebutton']; ?></span></button>
 					</p>
 				</form>
