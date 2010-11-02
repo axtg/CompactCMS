@@ -403,7 +403,7 @@ if($db->HasRecords())
 							<optgroup label="Sublevel">
 								<?php 
 								$y = 0; 
-								while($y+1 < $db->RowCount()) 
+								while($y /* +1  [i_a] one sublevel too few when you hang all under Home, for example */ < $db->RowCount()) 
 								{ 
 								?>
 									<option <?php echo ($row->sublevel==$y) ? "selected=\"selected\"" : ""; ?> value="<?php echo $y; ?>"><?php echo $y; ?></option>
