@@ -263,6 +263,39 @@ else
 
 // Fill active module array and load the plugin code
 $modules = $db->QueryArray("SELECT * FROM `".$cfg['db_prefix']."modules` WHERE modActive='1'");
+foreach($modules as $index => $module)
+{
+	/*
+	Next, we determine where and if to load the module 'augmentation' functionality: this is our new way of doing extensible 'plugins'
+	as allowing those to provide a class instance with various methods, we can call into those at various spots where module/plugin
+	specific augmentation/alteration is desirable, for example in the case of the 'lightbox' module when constructing the 'breadcrumb' below:
+	
+	there we would benefit greatly from having access to the module/plugin and allowing it to extend/augment the breadcrumb as it
+	desires, so that we can offer a complete breadcrumb, striaght into the album page (when multiple album pages were assigned to a single
+	CCMS page) plus printer-friendly versions of those (as 'print' is part of the breadcrumb generation down below.
+	
+	Of course, simply loading another module PHP file is not enough; we must consider where to place the hooks/callbacks and decide on
+	what can be altered/augmented and when/where.
+	
+	NB: since we require_once each module PHP, we MUST require_once those bits of code BEFORE this moment AND ONLY when we're loading the
+		 list of CCMS modules. Right here we should then be able to invoke the first hook: instantiation of the plugin class object for the
+		 current page.
+	*/
+	$modfilename = strtolower($module['modName']);
+	$module_path = BASE_PATH . '/lib/modules/'.$modfilename.'/'.$modfilename.'.Augment.php';
+	if (@file_exists($module_path))
+	{
+		$modules[$index]['module_path'] = $module_path;
+		
+		/*MARKER*/require_once($module_path);
+		
+		if (!is_object($modules[$modfilename]))
+		{
+			die('FATAL: module ' . $module['modName'] . ' failed to initialize.');
+		}
+	}
+}
+// 'editor' is a special module as it is built-in and doesn't come with a plugin class instance, so is_object($modules['editor'])===false
 
 
 
