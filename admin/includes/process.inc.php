@@ -80,7 +80,9 @@ $do_action = getGETparam4IdOrNumber('action');
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
 // Fill active module array
-$modules = $db->QueryArray("SELECT * FROM `".$cfg['db_prefix']."modules` WHERE modActive='1'");
+// $modules = $db->QueryArray("SELECT * FROM `".$cfg['db_prefix']."modules` WHERE modActive='1'");    // [i_a] already collected in sitemap.php 
+
+
 
 // Open recordset for sites' pages
 $db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` ORDER BY `published`, `menu_id`, `toplevel` ASC, `sublevel` ASC");
