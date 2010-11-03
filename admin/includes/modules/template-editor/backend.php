@@ -51,6 +51,8 @@ if (!defined('BASE_PATH'))
 
 
 $do	= getGETparam4IdOrNumber('do');
+$status = getGETparam4IdOrNumber('status');
+$status_message = getGETparam4DisplayHTML('msg');
 
 if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && isset($_SESSION['rc1']) && checkAuth()) {
 	
@@ -163,9 +165,21 @@ function confirmation()
 		</div>
 		<hr class="space"/>
 		
-		<?php if(isset($_GET['status'])) { ?>
-			<div class="notice center"><span class="ss_sprite ss_confirm"><?php echo $ccms['lang']['backend']['settingssaved'];?></span></div>
-		<?php } ?>
+		<?php 
+		/*
+		??? ALWAYS saying 'settings saved' instead of the attached message in the old code? Must've been a bug...
+		
+		Changed to mimic the layout in the other files...
+		*/                 
+		?>                              
+		<div class="center <?php echo $status; ?>">
+			<?php 
+			if(!empty($status_message)) 
+			{ 
+				echo '<span class="ss_sprite '.($status == 'notice' ? 'ss_accept' : 'ss_error').'">'.$status_message.'</span>'; 
+			} 
+			?>
+		</div>
 		
 		<form action="../../process.inc.php?template=<?php echo $get_temp; ?>&amp;action=save-template" method="post" accept-charset="utf-8">
 		
