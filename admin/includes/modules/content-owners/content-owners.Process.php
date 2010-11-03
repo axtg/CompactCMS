@@ -94,7 +94,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth())
 		
 		// If all empty, we're done here
 		if(empty($_POST['owner'])) {
-			header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
+			header("Location: ./content-owners.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
 			exit();
 		}
 	
@@ -129,7 +129,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth())
 			}
 		}	
 		
-		header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['success']);
+		header("Location: ./content-owners.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['success']));
 		exit();
 
 		
@@ -145,7 +145,7 @@ if (0) // old code - lots of queries.
 		{
 			// If all empty, we're done here
 			if(empty($_POST['owner'])) {
-				header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
+				header("Location: ./content-owners.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
 				exit();
 			}
 		
@@ -172,7 +172,7 @@ if (0) // old code - lots of queries.
 					$db->Kill();
 			}	
 			// within loop: if($i==count($_POST['owner']))     -- [i_a] very odd way of writing this end-of-loop bit... :-S   simplified now.
-			header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['success']);
+			header("Location: ./content-owners.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['success']));
 			exit();
 		}
 }

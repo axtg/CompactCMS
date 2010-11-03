@@ -56,6 +56,8 @@ if (!defined('BASE_PATH'))
 // Include general configuration
 /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
+class FbX extends CcmsAjaxFbException {}; // nasty way to do 'shorthand in PHP -- I do miss my #define macros! :'-|
+
 // Some security functions
 
 
@@ -775,36 +777,44 @@ if($do_action == "liveedit" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
  */
 if($do_action == "save-template" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
 {
-	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageTemplate']) 
+	FbX::SetFeedbackLocation($cfg['rootdir'] . "/admin/includes/modules/template-editor/backend.php");
+	try
 	{
-		$filename	= "../../lib/templates/".htmlentities($_POST['template']);
-		$filenoext	= $_POST['template'];
-		$content	= $_POST['content'];
-		
-		if (is_writable($filename)) 
+		// Only if current user has the rights
+		if($_SESSION['ccms_userLevel']>=$perm['manageTemplate']) 
 		{
-			if (!$handle = fopen($filename, 'w')) 
+			$filenoext	= getGETparam4FullFilePath('template');
+			$filename	= BASE_PATH . "/lib/templates/" . $filenoext;
+			
+			$content	= $_POST['content'];
+			
+			if (is_writable($filename)) 
 			{
-				die("[ERR105] ".$ccms['lang']['system']['error_openfile']." (".$filename.").");
-			}
-			if (fwrite($handle, $content) === FALSE) 
+				if (!$handle = fopen($filename, 'w'))  throw new FbX($ccms['lang']['system']['error_openfile']." (".$filename.").");
+				if (fwrite($handle, $content) === FALSE) 
+				{
+					fclose($handle);
+					throw new FbX($ccms['lang']['system']['error_write']." (".$filename.").");
+				}
+				// Do on success
+				fclose($handle);
+				header("Location: ./modules/template-editor/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved'])."&template=".$filenoext);
+				exit();
+			} 
+			else 
 			{
-				die("[ERR106] ".$ccms['lang']['system']['error_write']." (".$filename.").");
-			}
-			// Do on success
-			fclose($handle);
-			header("Location: ./modules/template-editor/backend.php?status=notice&template=$filenoext");
-			exit();
+				throw new FbX($ccms['lang']['system']['error_chmod']);
+			} 
 		} 
 		else 
 		{
-			// Else throw relevant error(s)
-			die($ccms['lang']['system']['error_chmod']);
-		} 
-	} 
-	else 
-		die($ccms['lang']['auth']['featnotallowed']);
+			throw new FbX($ccms['lang']['auth']['featnotallowed']);
+		}
+	}
+	catch (CcmsAjaxFbException $e)
+	{
+		$e->croak();
+	}
 }
 
 /**
@@ -824,7 +834,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		}
 		if($i <= 6) 
 		{
-			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_tooshort']);
+			header("Location: ./modules/user-management/backend.php?status=error&msg=".rawurlencode($ccms['lang']['system']['error_tooshort']));
 			exit();
 		}
 			
@@ -845,7 +855,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		// Check for errors
 		if($result) 
 		{
-			header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
+			header("Location: ./modules/user-management/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
 			exit();
 		} 
 		else 
@@ -882,7 +892,7 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 					$_SESSION['ccms_userLast']	= htmlspecialchars($_POST['last']);
 				}
 				
-				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
+				header("Location: ./modules/user-management/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
 				exit();
 			}
 			else
@@ -890,7 +900,7 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 		} 
 		else 
 		{
-			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_tooshort']);
+			header("Location: ./modules/user-management/backend.php?status=error&msg=".rawurlencode($ccms['lang']['system']['error_tooshort']));
 			exit();
 		}
 	} 
@@ -917,7 +927,7 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 			
 			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => MySQL::SQLValue($userID,MySQL::SQLVALUE_NUMBER)))) 
 			{
-				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
+				header("Location: ./modules/user-management/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
 				exit();
 			}
 			else
@@ -925,12 +935,12 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 		} 
 		elseif(strlen($_POST['userPass'])<=6) 
 		{
-			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passshort']);
+			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&msg=".rawurlencode($ccms['lang']['system']['error_passshort']));
 			exit();
 		} 
 		else 
 		{
-			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&action=".$ccms['lang']['system']['error_passnequal']);
+			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&msg=".rawurlencode($ccms['lang']['system']['error_passnequal']));
 			exit();
 		}
 	} 
@@ -964,7 +974,7 @@ if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && ch
 					$_SESSION['ccms_userLevel'] = $userLevel;
 				}
 				
-				header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
+				header("Location: ./modules/user-management/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
 				exit();
 			}
 			else
@@ -991,7 +1001,7 @@ if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 		
 		if($total==0) 
 		{
-			header("Location: ./modules/user-management/backend.php?status=error&action=".$ccms['lang']['system']['error_selection']);
+			header("Location: ./modules/user-management/backend.php?status=error&msg=".rawurlencode($ccms['lang']['system']['error_selection']));
 			exit();
 		}
 		
@@ -1007,7 +1017,7 @@ if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 		// Check for errors
 		if($result && $i == $total) 
 		{
-			header("Location: ./modules/user-management/backend.php?status=notice&action=".$ccms['lang']['backend']['fullremoved']);
+			header("Location: ./modules/user-management/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['fullremoved']));
 			exit();
 		} 
 		else 

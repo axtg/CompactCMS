@@ -52,6 +52,8 @@ if (!defined('BASE_PATH'))
 
 
 $do	= getGETparam4IdOrNumber('do');
+$status = getGETparam4IdOrNumber('status');
+$status_message = getGETparam4DisplayHTML('msg');
 
 // Open recordset for specified user
 $userID = getGETparam4Number('userID');
@@ -88,13 +90,14 @@ if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth())
 
 <body>
 	<div class="module">
-		<?php if(isset($_GET['status'])&&isset($_GET['action'])) 
-		{ 
-		?>
-			<div class="<?php echo htmlspecialchars($_GET['status']);?> center"><strong><?php echo ucfirst(htmlspecialchars($_GET['action']));?></strong></div>
-		<?php 
-		} 
-		?>
+		<div class="center <?php echo $status; ?>">
+			<?php 
+			if(!empty($status_message)) 
+			{ 
+				echo '<span class="ss_sprite '.($status == 'notice' ? 'ss_accept' : 'ss_error').'">'.$status_message.'</span>'; 
+			} 
+			?>
+		</div>
 		
 		<p class="clear right"><span class="ss_sprite ss_arrow_undo"><a href="backend.php"><?php echo $ccms['lang']['backend']['tooverview']; ?></a></span></p>
 		
