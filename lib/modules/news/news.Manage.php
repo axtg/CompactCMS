@@ -57,6 +57,8 @@ if (!checkAuth() || empty($_SESSION['rc1']) || empty($_SESSION['rc2']))
 
 
 $do	= getGETparam4IdOrNumber('do');
+$status = getGETparam4IdOrNumber('status');
+$status_message = getGETparam4DisplayHTML('msg');
 $pageID		= (isset($_GET['file'])?htmlspecialchars($_GET['file']):null);
 
 // Get permissions
@@ -94,11 +96,11 @@ function confirmation()
 </head>
 <body>
 	<div class="module">
-		<div class="center <?php echo (isset($_GET['status'])?htmlspecialchars($_GET['status']):null); ?>">
+		<div class="center <?php echo $status; ?>">
 			<?php 
-			if(!empty($_GET['msg'])) 
+			if(!empty($status_message)) 
 			{ 
-				echo htmlspecialchars(rawurldecode($_GET['msg'])); 
+				echo '<span class="ss_sprite '.($status == 'notice' ? 'ss_accept' : 'ss_error').'">'.$status_message.'</span>'; 
 			} 
 			?>
 		</div>

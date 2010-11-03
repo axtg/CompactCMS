@@ -27,6 +27,10 @@ if (!defined('BASE_PATH'))
 }
 
 
+/*MARKER*/require_once(BASE_PATH . '/lib/class/exception_ajax.php');
+
+
+
 
 /**
 Convert any string input to a US-ASCII limited character set with a few common conversions included.
@@ -213,18 +217,28 @@ function filterParam4CommaSeppedFilenames($value, $def = null)
 
 
 
-function getGETparam4FullFilePath($name, $def = null) 
+
+function getGETparam4FullFilePath($name, $def = null, $accept_parent_dotdot = false) 
 {
 	if (!isset($_GET[$name]))
 		return $def;
 
-	return filterParam4FullFilePath($_GET[$name], $def);
+	return filterParam4FullFilePath($_GET[$name], $def, $accept_parent_dotdot);
 }
 
 /**
 As filterParam4Filename(), but also accepts '/' directory separators
+
+When $accept_parent_dotdot is TRUE, only then does this filter 
+accept '../' directory parts anywhere in the path.
+
+WARNING: setting $accept_parent_dotdot = TRUE can be VERY DANGEROUS
+         without further checking the result whether it's trying to
+		 go places we don't them to go! 
+		 
+		 Be vewey vewey caweful!
 */
-function filterParam4FullFilePath($value, $def = null)
+function filterParam4FullFilePath($value, $def = null, $accept_parent_dotdot = false)
 {
 	if (!isset($value))
 		return $def;
@@ -238,6 +252,10 @@ function filterParam4FullFilePath($value, $def = null)
 	{
 		$fns[$i] = filterParam4Filename($fns[$i], '');
 		if ($i > 0 && $i < count($fns) - 1 && empty($fns[$i]))
+		{
+			return $def; // illegal path specified!
+		}
+		if ($fns[$i] == ".." && !$accept_parent_dotdot)
 		{
 			return $def; // illegal path specified!
 		}
@@ -404,6 +422,45 @@ function filterParam4Number($value, $def = null)
 	}
 }
 
+
+
+
+
+function getGETparam4DisplayHTML($name, $def = null)
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4DisplayHTML($_GET[$name], $def);
+}
+
+function getPOSTparam4DisplayHTML($name, $def = null)
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4DisplayHTML($_POST[$name], $def);
+}
+
+/*
+Accepts any number
+*/
+function filterParam4DisplayHTML($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$value = trim(strval($value)); // force cast to string before we do anything
+	if (empty($value))
+		return $def;
+	
+	// TODO: use HTMLpurifier to strip undesirable content. sanitize.inc.php is not an option as it's a type of blacklist filter and we WANT a whitelist approach for future-safe processing.
+	
+	// convert the input to a string which can be safely printed as HTML; no XSS through JS or 'smart' use of HTML tags:
+	$value = htmlentities($value, ENT_NOQUOTES, "UTF-8");
+	
+	return $value;
+}
 
 
 

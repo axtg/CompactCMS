@@ -56,6 +56,8 @@ if (!defined('BASE_PATH'))
 // Include general configuration
 /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
+class FbX extends CcmsAjaxFbException {}; // nnasty way to do 'shorthand in PHP -- I do miss my #define macros! :'-|
+
 // Security functions
 
 
@@ -70,29 +72,41 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
  */
 if($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST) && checkAuth()) 
 {
-	// (!) Only administrators can change these values
-	if($_SESSION['ccms_userLevel']>=4) 
+	FbX::SetFeedbackLocation("permissions.Manage.php");
+	try
 	{
-		// Execute either INSERT or UPDATE
-		$values = array(); // [i_a] make sure $values is an empty array to start with here
-		foreach ($_POST as $key => $value)
+		// (!) Only administrators can change these values
+		if($_SESSION['ccms_userLevel']>=4) 
 		{
-			$key = filterParam4IdOrNumber($key);
-			$setting = filterParam4Number($value);
-			if (empty($key) || (empty($setting) && $value !== "0"))
-				die($ccms['lang']['system']['error_forged']); 
-			$values[$key] = MySQL::SQLValue($setting, MySQL::SQLVALUE_NUMBER);
-		}
-		if($db->UpdateRows($cfg['db_prefix']."cfgpermissions", $values)) 
-		{
-			header("Location: permissions.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
-			exit();
+			// Execute either INSERT or UPDATE
+			$values = array(); // [i_a] make sure $values is an empty array to start with here
+			foreach ($_POST as $key => $value)
+			{
+				$key = filterParam4IdOrNumber($key);
+				$setting = filterParam4Number($value);
+				if (empty($key) || (empty($setting) && $value !== "0"))
+					throw new FbX($ccms['lang']['system']['error_forged']); 
+				$values[$key] = MySQL::SQLValue($setting, MySQL::SQLVALUE_NUMBER);
+			}
+			if($db->UpdateRows($cfg['db_prefix']."cfgpermissions", $values)) 
+			{
+				header("Location: permissions.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
+				exit();
+			} 
+			else 
+			{
+				throw new FbX($db->MyDyingMessage());
+			}
 		} 
 		else 
-			$db->Kill();
-	} 
-	else 
-		die($ccms['lang']['auth']['featnotallowed']);
+		{
+			throw new FbX($ccms['lang']['auth']['featnotallowed']);
+		}
+	}
+	catch (CcmsAjaxFbException $e)
+	{
+		$e->croak();
+	}
 } 
 else 
 	die("No external access to file");

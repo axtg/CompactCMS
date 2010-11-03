@@ -52,6 +52,7 @@ if (!defined('BASE_PATH'))
 
 $do	= getGETparam4IdOrNumber('do');
 $status = getGETparam4IdOrNumber('status');
+$status_message = getGETparam4DisplayHTML('msg');
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
@@ -95,9 +96,13 @@ function confirmation()
 <div class="module">
 	<div class="center <?php echo $status; ?>">
 		<?php 
-		if(isset($_GET['msg'])) 
+		if(!empty($status_message)) 
 		{ 
-			echo '<span class="ss_sprite ss_confirm">'.htmlspecialchars(rawurldecode($_GET['msg'])).'</span><br/><span class="ss_sprite ss_exclamation">'.$ccms['lang']['backend']['must_refresh'].'</span>'; 
+			echo '<span class="ss_sprite '.($status == 'notice' ? 'ss_accept' : 'ss_error').'">'.$status_message.'</span>';
+			if ($status != 'error') 
+			{
+				echo '<br/><span class="ss_sprite ss_exclamation">'.$ccms['lang']['backend']['must_refresh'].'</span>'; 
+			}
 		} 
 		?>
 	</div>
