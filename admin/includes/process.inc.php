@@ -1083,7 +1083,7 @@ function confirmation()
 	{
 		try
 		{
-			parent.MochaUI.closeWindow(parent.$('<?php echo htmlspecialchars($_GET['file']); ?>_ccms'));
+			parent.MochaUI.closeWindow(parent.$('<?php echo $name; ?>_ccms'));
 		}
 		catch(e)
 		{
@@ -1253,8 +1253,8 @@ editAreaLoader.init(
 				<label for="keywords"><?php echo $ccms['lang']['editor']['keywords']; ?></label>
 				<input type="input" class="text" style="height:30px; width:98%;" maxlength="250" name="keywords" value="<?php echo $keywords; ?>" id="keywords">
 			<p>
-				<input type="hidden" name="action" value="Save changes" />
-				<input type="hidden" name="code" value="<?php echo (isset($_GET['restrict'])&&$_GET['restrict']=="Y"?1:null);?>" id="code" />
+				<input type="hidden" name="action" value="save-changes" />
+				<input type="hidden" name="code" value="<?php echo getGETparam4boolYN('restrict', 'N'); ?>" id="code" />
 				<button type="submit" name="do" id="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['editor']['savebtn']; ?></span></button>
 				<span class="ss_sprite ss_cross"><a href="javascript:;" onClick="confirmation()" title="<?php echo $ccms['lang']['editor']['cancelbtn']; ?>"><?php echo $ccms['lang']['editor']['cancelbtn']; ?></a></span>
 			</p>
@@ -1271,7 +1271,7 @@ editAreaLoader.init(
  * Processing save page (prev. handler.inc.php)
  *
  */
-if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth()) 
+if(isset($_POST['action']) && $_POST['action'] == "save-changes" && checkAuth()) 
 {
 	// Strip slashes for certain servers (DEPRECIATED for PHP6)
 	if (get_magic_quotes_gpc()) 
@@ -1292,7 +1292,7 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth())
 
 	$name 		= getGETparam4Filename('page');
 	$active		= getGETparam4boolYN('active', 'N');
-	$type		= (isset($_POST['code'])&&$_POST['code']>0?"code":"text");
+	$type		= (getPOSTparam4boolean('code') ? "code" : "text");
 	$content	= $_POST['content']; // [i_a] must be RAW HTML, no htmlspecialchars(). Filtering required if malicious input risk expected.
 	$filename	= "../../content/$name.php";
 	$keywords	= htmlentities($_POST['keywords']);
@@ -1306,7 +1306,9 @@ if(isset($_POST['action']) && $_POST['action'] == "Save changes" && checkAuth())
 			die("[ERR106] ".$ccms['lang']['system']['error_write']." (".$filename.").");
 		}
 		fclose($handle);
-	} else {
+	} 
+	else 
+	{
 		die($ccms['lang']['system']['error_chmod']);
 	}
 		

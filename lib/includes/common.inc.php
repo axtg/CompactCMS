@@ -288,35 +288,14 @@ Accepts any boolean value: as any number, T[rue]/F[alse] or Y[es]/N[o]
 */
 function filterParam4boolYN($value, $def = null)
 {
-	if (!isset($value))
-		return $def;
-
-	$value = trim(strval($value)); // force cast to string before we do anything
-	if (empty($value))
-		return $def;
-	
-	// see if the value is a valid integer (plus or minus)
-	$numval = intval($value);
-	if (strval($numval) !== $value)
+	$rv = filterParam4boolean($value, null);
+	if ($rv === true)
 	{
-		// no full match for the integer check, so this is a string hence we must check the text-based boolean values here:
-		switch (strtoupper(substr($value, 0, 1)))
-		{
-		case 'T':
-		case 'Y':
-			return 'Y';
-			
-		case 'F':
-		case 'N':
-			return 'N';
-			
-		default:
-			return $def;
-		}
+		return 'Y';
 	}
-	else
+	else if ($rv === false)
 	{
-		return ($numval != 0 ? 'Y' : 'N');
+		return 'N';
 	}
 	return $def;
 }
