@@ -61,9 +61,9 @@ if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && isset($_S
 }
 
 // Set the default template
-$dir_temp = "../../../../lib/templates/";
-$get_temp = (isset($_GET['template'])?htmlentities($_GET['template']):$template[0].'.tpl.html');
-$chstatus = (substr(sprintf('%o', fileperms($dir_temp.$get_temp)), -4)>='0666'?1:0);
+$dir_temp = BASE_PATH . "/lib/templates/";
+$get_temp = getGETparam4FullFilePath('template', $template[0].'.tpl.html');
+$chstatus = is_writable($dir_temp.$get_temp); // @dev: to test the error feedback on read-only on Win+UNIX: add '|| 1' here.
 	
 // Check for filename	
 if(!empty($get_temp)) {
@@ -128,9 +128,14 @@ function confirmation()
 <body>
 	<div class="module">
 
-		<?php if(!strpos($_SERVER['SERVER_SOFTWARE'], "Win") && $chstatus==0) { ?>
+		<?php 
+		if($chstatus==0) 
+		{ 
+		?>
 			<p class="error center"><?php echo $ccms['lang']['template']['nowrite']; ?></p>
-		<?php } ?>	
+		<?php 
+		} 
+		?>	
 		<div class="span-13">
 			<h1 class="editor"><?php echo $ccms['lang']['template']['manage']; ?></h1>
 		</div>
@@ -141,25 +146,52 @@ function confirmation()
 				<select class="text" onChange="document.getElementById('changeTmp').submit();" id="template" name="template">
 					<?php
 					$x = 0; 
-					while($x<count($template)) { ?>
+					while($x<count($template)) 
+					{ 
+					?>
 						<optgroup label="<?php echo ucfirst($template[$x]); ?>">
 							<option <?php echo ($get_temp==$template[$x].".tpl.html") ? "selected=\"selected\"" : ""; ?> value="<?php echo $template[$x]; ?>.tpl.html"><?php echo ucfirst($template[$x]).': '.strtolower($ccms['lang']['backend']['template']); ?></option>
 							<?php 
 							
-							// Get CSS files
-							if ($handle = opendir($dir_temp.$template[$x].'/')) {
-								while (false !== ($file = readdir($handle))) {
-							        if ($file != "." && $file != ".." && strtolower(substr($file, strrpos($file, '.') + 1))=='css') {
-							            $cssfiles[$x][] = $file;
+							// Get CSS and other text-editable files which are part of the engine
+							$cssfiles = array();
+							if ($handle = opendir($dir_temp.$template[$x].'/')) 
+							{
+								while (false !== ($file = readdir($handle))) 
+								{
+							        if ($file != "." && $file != "..")
+									{
+										switch (strtolower(substr($file, strrpos($file, '.') + 1)))
+										{
+										case 'css':
+										case 'js':
+										case 'php':
+										case 'html':
+										case 'txt':
+											$cssfiles[$x][] = $file;
+											break;
+											
+										default:
+											// don't list image files and such
+											break;
+										}
 							        }
 							    }
 							    closedir($handle);
 							}
-							foreach ($cssfiles[$x] as $css) { ?>
+							
+							foreach ($cssfiles[$x] as $css) 
+							{ 
+							?>
 								<option <?php echo ($get_temp==$template[$x].'/'.$css) ? "selected=\"selected\"" : ""; ?> value="<?php echo $template[$x].'/'.$css; ?>"><?php echo ucfirst($template[$x]).': '.$css; ?></option>
-							<?php } ?>
+							<?php 
+							} 
+							?>
 						</optgroup>
-					<?php $x++; } ?>
+					<?php 
+					$x++; 
+				} 
+				?>
 				</select>
 			</form>
 		</div>
@@ -187,9 +219,14 @@ function confirmation()
 			
 			<p>
 				<input type="hidden" name="template" value="<?php echo $get_temp; ?>" id="template" />
-				<?php if(strpos($_SERVER['SERVER_SOFTWARE'], "Win") || $chstatus>0) { ?>
+				<?php 
+				if($chstatus > 0) 
+				{ 
+				?>
 					<button type="submit" name="do" id="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['editor']['savebtn']; ?></span></button>
-				<?php }  ?>
+				<?php 
+				}  
+				?>
 				<span class="ss_sprite ss_cross"><a href="javascript:;" onClick="confirmation()" title="<?php echo $ccms['lang']['editor']['cancelbtn']; ?>"><?php echo $ccms['lang']['editor']['cancelbtn']; ?></a></span>
 			</p>
 			

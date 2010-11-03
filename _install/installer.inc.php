@@ -156,6 +156,7 @@ if($nextstep == md5('4') && CheckAuth()) {
 	// Check for current chmod() if server != Windows
 	//
 	if(!strpos($_SERVER['SERVER_SOFTWARE'], "Win")) {
+		// TODO: change these expressions to the 'is_writable()' check
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/.htaccess')),-4)!='0666') { $chfile[] = '.htaccess (0666)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/lib/config.inc.php')),-4)!='0666') { $chfile[] = '/lib/config.inc.php (0666)'; }
 		if(substr(sprintf('%o', fileperms(BASE_PATH.'/content/home.php')),-4)!='0666') { $chfile[] = '/content/home.php (0666)'; }
