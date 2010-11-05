@@ -50,7 +50,11 @@ Modified   : For CompactCMS.nl 1.4.0+
 <div id="page">
 	<div id="content">
 	<h2 class="title">{%subheader%}</h2>
-		<p style="clear:both;text-align:right;" class="breadcrumb">{%breadcrumb%}{%IF printable (eq Y)%}<span class=\"breadcrumb-print\"> &raquo <a href="{%rootdir%}{%urlpage%}.print">{%lang:template:print%}</a></span>{%/IF printable%}</p>
+		<p style="clear:both;text-align:right;" class="breadcrumb">{%breadcrumb%}
+			{%IF printable (eq Y)%}
+				<span class=\"breadcrumb-print\"> &raquo <a href="{%rootdir%}{%urlpage%}.print">{%lang:template:print%}</a></span>
+			{%/IF printable%}
+		</p>
 		<div class="entry">
 			<p>{%content%}</p>
 		</div>
