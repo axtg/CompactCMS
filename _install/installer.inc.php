@@ -29,19 +29,26 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(__FILE__)));
+	define('BASE_PATH', $base);
+}
+
+
 // Start the current session
 session_start();
-
-// Set current && additional step
-$nextstep = (isset($_POST['do'])&&!empty($_POST['do'])?$_POST['do']:'ea2b2676c28c0db26d39331a336c6b92');
-$additional = (isset($_GET['do'])&&!empty($_GET['do'])?$_GET['do']:null);
-
-// Define default root folder
-@define('BASE_PATH',dirname(dirname(__FILE__)));
 
 // Load generic functions
 /*MARKER*/require_once(BASE_PATH . '/lib/includes/common.inc.php');
 
+
+// Set current && additional step
+$nextstep = (isset($_POST['do'])&&!empty($_POST['do'])?$_POST['do']:'ea2b2676c28c0db26d39331a336c6b92');
+$additional = (isset($_GET['do'])&&!empty($_GET['do'])?$_GET['do']:null);
 
 
 /**
