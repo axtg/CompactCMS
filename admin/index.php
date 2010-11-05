@@ -92,9 +92,9 @@ window.addEvent('domready',function()
 </script>
 </head>
 
-<body id="desktop">	
+<body id="desktop">
+<div id='pageWrapper'><?php /* <-- required to ensure there are proper scrollbars in the MochaUI 'desktop' */ ?>
 <div class="container">
-
 	<?php // Top bar including status block ?>
 	<div id="logo" class="sprite logo span-5 colborder">
 		<h1>CompactCMS <?php echo $ccms['lang']['backend']['administration']; ?></h1>
@@ -390,6 +390,8 @@ window.addEvent('domready',function()
 	</fieldset>
 	</div>
 
+	<div id='debugMsg' class="span-25" style="visibility: visible; opacity: 1;" >&#160;</div>
+
 	<?php // Footer block ?>
 	<div id="footer" class="span-25">
 		<div class="prepend-11 span-11 colborder">&copy; 2008 - <?php echo date('Y'); ?> <a href="http://www.compactcms.nl">CompactCMS.nl</a>. <?php echo $ccms['lang']['system']['message_rights']; ?>.<br/><em><?php echo $ccms['lang']['backend']['gethelp']; ?></em></div>
@@ -402,6 +404,7 @@ window.addEvent('domready',function()
 			<span class="sprite safari" title="<?php echo $ccms['lang']['system']['message_compatible']; ?> Safari"></span>
 		</div>
 	</div>
+</div>
 </div>
 	
 	<?php // Dock block ?>
