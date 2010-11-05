@@ -68,4 +68,9 @@ $STP->setTemplate('./lib/templates/'.$ccms['template'].'.tpl.html', '<?php globa
 // Execute code
 $STP->setParams($ccms);
 $STP->parseAndEchoPHP();
+
+/*
+echo "<p>\$ccms = <pre>";
+var_dump($ccms);
+*/
 ?>

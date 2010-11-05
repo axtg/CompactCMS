@@ -698,11 +698,14 @@ if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] == "GET" && checkAu
 	$page_id = explode("-", getGETparam4IdOrNumber('id'), 2); // [i_a] fix for page_id's which have dashes in their own name...
 	
 	// Set the action for this call
-	if($page_id[0] == "printable" || $page_id[0] == "published" || $page_id[0] == "iscoding") {
+	if($page_id[0] == "printable" || $page_id[0] == "published" || $page_id[0] == "iscoding") 
+	{
 		$action	 = $page_id[0];
 	} 
 	else 
+	{
 		die($ccms['lang']['system']['error_forged']);
+	}
 	
 	// [i_a] and the value of $new is when the else is not correct? "Y" I take it, or "" empty string?
 	//if(htmlspecialchars($_GET['s']) == "Y") { $new = "N"; } else { $new = "Y"; }
@@ -722,7 +725,9 @@ if($do_action == "editinplace" && $_SERVER['REQUEST_METHOD'] == "GET" && checkAu
 		}
 	} 
 	else 
+	{
 		$db->Kill($ccms['lang']['system']['error_general']);
+	}
 }
 
 /**
