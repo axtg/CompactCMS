@@ -100,17 +100,21 @@ if (!defined('BASE_PATH'))
 
 $cache		= true;
 $cachedir	= BASE_PATH . '/lib/includes/cache';
+
 $jsdir		= getGETparam4FullFilePath('jsdir');
 if (empty($jsdir)) 
 	$jsdir = BASE_PATH . '/lib/includes/js';
-else if (substr($jsdir, 0, 1) != '/') 
+else if ($jsdir[0] != '/') 
 	$jsdir = BASE_PATH . '/' . $jsdir;
+	
 $cssdir		= getGETparam4FullFilePath('cssdir');
 if (empty($cssdir)) 
 	$cssdir = BASE_PATH . '/admin/img/styles';
-else if (substr($cssdir, 0, 1) != '/') 
+else if ($cssdir[0] != '/') 
 	$cssdir = BASE_PATH . '/' . $cssdir;
 
+
+	
 // Determine the directory and type we should use
 $type = getGETparam4IdOrNumber('type');
 switch ($type) 

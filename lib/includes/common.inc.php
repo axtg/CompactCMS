@@ -87,8 +87,12 @@ function str2VarOrFileName($src, $extra_accept_set = '', $accept_leading_minus =
 	$src = preg_replace('/(?:[^\-A-Za-z0-9_' . $extra_accept_set . ']|_)+/', '_', $src);
 	// reduce series of underscores to a single one:
 	$src = preg_replace('/_+/', '_', $src);
+	
 	// remove leading and trailing underscores (which may have been whitespace or other stuff before)
-	$src = trim($src, '_');
+	// except... we have directories which start with an underscore. So I guess a single
+	// leading underscore should be okay. And so would a trailing underscore...
+	//$src = trim($src, '_');
+	
 	// We NEVER tolerate a leading dot:
 	$src = preg_replace('/^\.+/', '', $src);
 	if (!$accept_leading_minus)

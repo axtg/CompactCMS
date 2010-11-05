@@ -29,11 +29,17 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(__FILE__)));
+	define('BASE_PATH', $base);
+}
+
 // Start the current session
 session_start();
-
-// Define default root folder
-@define('BASE_PATH',dirname(dirname(__FILE__)));
 
 // Load generic functions
 /*MARKER*/require_once(BASE_PATH . '/lib/includes/common.inc.php');
@@ -108,7 +114,7 @@ function setLanguage($lang) {
 		<title>CompactCMS Installation</title>
 		<meta name="description" content="CompactCMS administration. CompactCMS is a light-weight and SEO friendly Content Management System for developers and novice programmers alike." />
 		<link rel="stylesheet" type="text/css" href="./install.css" />
-		<script type="text/javascript" src="./mootools.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../lib/includes/js/mootools.js" charset="utf-8"></script>
 		<script type="text/javascript" charset="utf-8">
 			window.addEvent('domready', function(){
 				// Process steps
