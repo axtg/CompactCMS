@@ -686,6 +686,184 @@ function get_response_code_string($reponse_code)
 
 
 
+/*
+http://nadeausoftware.com/node/79
+*/
+function path_remove_dot_segments($path)
+{
+    // multi-byte character explode
+    $inSegs  = preg_split( '!/!u', $path);
+    $outSegs = array();
+    foreach ($inSegs as $seg)
+    {
+        if ($seg == '' || $seg == '.')
+            continue;
+        if ($seg == '..')
+            array_pop($outSegs);
+        else
+            array_push($outSegs, $seg);
+    }
+    $outPath = implode('/', $outSegs);
+    if ($path[0] == '/')
+        $outPath = '/' . $outPath;
+    // // compare last multi-byte character against '/'
+    // if ($outPath != '/' && (mb_strlen($path)-1) == mb_strrpos($path, '/', 'UTF-8'))
+    //     $outPath .= '/';
+    return $outPath;
+}
+
+
+			  
+/*
+Convert any path (absolute or relative) to a fully qualified URL
+*/			  
+function makeAbsoluteURI($path)
+{
+	$reqpage = filterParam4FullFilePath($_SERVER["PHP_SELF"]);
+	
+	$page = array();
+	if (strpos($path, '://'))
+	{
+		if (strpos($path, '?') === false || strpos($path, '://') < strpos($path, '?'))
+		{
+			/*
+			parse_url can only parse URLs, not relative paths. 
+			
+			http://bugs.php.net/report.php?manpage=function.parse-url#Notes
+			*/
+			$page = parse_url($path);
+			if (isset($page[PHP_URL_SCHEME]))
+				return $path;
+
+			/*
+			We do NOT accept 'URL's like
+			
+			   www.example.com/path.ext
+			   
+			as input: we treat the entire string as a path (and a relative one at that)!
+			*/
+		}
+	}
+
+	/*
+	Expect input which is a subset of
+	
+	   /path/file.exe?query#fragment
+	
+	with either absolute or relative path/file.ext as the mandatory part.
+	*/   
+	$idx = strpos($path, '?');
+	if ($idx !== false)
+	{
+		$page[PHP_URL_PATH] = substr($path, 0, $idx);
+		
+		$path = substr($path, $idx + 1);
+		$idx = strpos($path, '#');
+		if ($idx !== false)
+		{
+			$page[PHP_URL_QUERY] = substr($path, 0, $idx);
+			$page[PHP_URL_FRAGMENT] = substr($path, $idx + 1);
+		}
+		else
+		{
+			$page[PHP_URL_QUERY] = $path;
+		}
+	}
+	else
+	{
+		$page[PHP_URL_PATH] = $path;
+	}
+	$path = $page[PHP_URL_PATH];
+
+	if (strpos($path, '/') === 0)
+	{
+		//already absolute
+	} 
+	else 
+	{
+		/*
+		Convert relative path to absolute by prepending the current request path 
+		(which is absolute) and a '../' basedir-similar. 
+		
+		This way also provides for relative paths which don't start with './' but
+		simply say something like
+		  relpath/file.ext
+		which will produce a dotted absolute path like this:
+		  /current_request_path/reqfile.php/../relpath/file.ext
+		which is fine: the ../ will remove the reqfile.php component and we're left 
+		with a neatly formatted absolute path!
+		*/
+		$page[PHP_URL_PATH] = $_SERVER['PHP_SELF'] . '/../' . $path;
+	}
+	$page[PHP_URL_PATH] = path_remove_dot_segments($page[PHP_URL_PATH]);
+	
+	// fill in the holes... assume defaults from the current request.
+	if (empty($page[PHP_URL_SCHEME]))
+	{
+		if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+			|| strpos(strtolower($_SERVER['SERVER_PROTOCOL']), 'https') === 0
+			|| intval($_SERVER["SERVER_PORT"]) == 443)
+		{
+			$page[PHP_URL_SCHEME] = 'https';
+		}
+		else
+		{
+			$page[PHP_URL_SCHEME] = 'http';
+		}
+	}
+	if (empty($page[PHP_URL_HOST]))
+	{
+		$page[PHP_URL_HOST] = $_SERVER["SERVER_NAME"];
+	}
+	if (empty($page[PHP_URL_PORT]))
+	{
+		/*
+		Only set the port number when it is non-standard:
+		*/
+		$portno = intval($_SERVER["SERVER_PORT"]);
+		if ($portno != 0
+			&& ($page[PHP_URL_SCHEME] == 'http' && $portno == 80)
+			&& ($page[PHP_URL_SCHEME] == 'https' && $portno == 443))
+		{
+			$page[PHP_URL_PORT] = $portno;
+		}
+	}
+	
+	$url = '';
+	if(!empty($page[PHP_URL_SCHEME]))
+	{
+		$url = $page[PHP_URL_SCHEME] . '://';
+	}
+	if(!empty($page[PHP_URL_USER]))
+	{
+		$url .= $page[PHP_URL_USER];
+		if(!empty($page[PHP_URL_PASS]))
+		{
+			$url .= ':' . $page[PHP_URL_PASS];
+		}
+		$url .= '@';
+	}
+	if(!empty($page[PHP_URL_HOST]))
+	{
+		$url .= $page[PHP_URL_HOST];
+	}
+	$url .= $page[PHP_URL_PATH];
+	if (!empty($page[PHP_URL_QUERY]))
+	{
+		$url .= '?' . $page[PHP_URL_QUERY];
+	}
+	if (!empty($page[PHP_URL_FRAGMENT]))
+	{
+		$url .= '#' . $page[PHP_URL_FRAGMENT];
+	}
+	return $url;
+}
+
+
+
+
+
+
 /**
  Check for authentic request ($cage=md5(SESSION_ID),$host=md5(CURRENT_HOST)) v.s. 'id' and 'host' session variable values.
  
@@ -713,6 +891,7 @@ function SetAuthSafety()
 	unset($_SESSION['rc1']);
 	unset($_SESSION['rc2']);
 }
+
 
 
 ?>

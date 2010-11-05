@@ -49,7 +49,7 @@ if (!defined('BASE_PATH'))
 // If session already exists
 if(!empty($_SESSION['ccms_userID']) && !empty($_SESSION['ccms_userName']) && CheckAuth()) // [i_a] session vars must exist AND NOT BE EMPTY to be deemed valid.
 {
-	header("Location: ../../admin/index.php");
+	header('Location: ' . makeAbsoluteURI('../../admin/index.php'));
 	exit();
 }
 
@@ -134,7 +134,7 @@ if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST")
 
 					// Return functions result
 					unset($_SESSION['logmsg']);
-					header("Location: ../../admin/index.php");
+					header('Location: ' . makeAbsoluteURI('../../admin/index.php'));
 					exit();
 				}
 			}

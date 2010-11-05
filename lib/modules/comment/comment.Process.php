@@ -190,7 +190,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth
 			
 			if($db->DeleteRows($cfg['db_prefix']."modcomment", $values)) 
 			{
-				header("Location: comment.Manage.php?status=notice&file=".$pageID."&msg=".rawurlencode($ccms['lang']['backend']['fullremoved']));
+				header('Location: ' . makeAbsoluteURI('comment.Manage.php?status=notice&file='.$pageID.'&msg='.rawurlencode($ccms['lang']['backend']['fullremoved'])));
 				exit();
 			} 
 			else 
@@ -238,7 +238,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="save-cfg" && checkAuth()
 
 	// Insert or update configuration
 	if($db->AutoInsertUpdate($cfg['db_prefix']."cfgcomment", $values, array("cfgID" => MySQL::BuildSQLValue($cfgID)))) {
-		header("Location: comment.Manage.php?file=$pageID&status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
+		header('Location: ' . makeAbsoluteURI('comment.Manage.php?file='.$pageID.'&status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
 		exit();
 	} else $db->Kill();
 }

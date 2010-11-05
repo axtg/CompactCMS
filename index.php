@@ -44,7 +44,7 @@ if (!defined('BASE_PATH'))
 
 // Check first whether installation directory exists
 if(is_dir('./_install/')&&is_file('./_install/index.php') && !defined('CCMS_DEVELOPMENT_ENVIRONMENT')) {
-	header('Location: ./_install/index.php');
+	header('Location: ' . makeAbsoluteURI('./_install/index.php'));
 	exit();
 }
 

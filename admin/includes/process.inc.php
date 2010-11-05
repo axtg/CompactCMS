@@ -803,7 +803,7 @@ if($do_action == "save-template" && $_SERVER['REQUEST_METHOD'] == "POST" && chec
 				}
 				// Do on success
 				fclose($handle);
-				header("Location: ./modules/template-editor/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved'])."&template=".$filenoext);
+				header('Location: ' . makeAbsoluteURI('./modules/template-editor/backend.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved']).'&template='.$filenoext));
 				exit();
 			} 
 			else 
@@ -839,7 +839,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		}
 		if($i <= 6) 
 		{
-			header("Location: ./modules/user-management/backend.php?status=error&msg=".rawurlencode($ccms['lang']['system']['error_tooshort']));
+			header('Location: ' . makeAbsoluteURI('./modules/user-management/backend.php?status=error&msg='.rawurlencode($ccms['lang']['system']['error_tooshort'])));
 			exit();
 		}
 			
@@ -860,7 +860,7 @@ if($do_action == "add-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth
 		// Check for errors
 		if($result) 
 		{
-			header("Location: ./modules/user-management/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
+			header('Location: ' . makeAbsoluteURI('./modules/user-management/backend.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
 			exit();
 		} 
 		else 
@@ -897,7 +897,7 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 					$_SESSION['ccms_userLast']	= htmlspecialchars($_POST['last']);
 				}
 				
-				header("Location: ./modules/user-management/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
+				header('Location: ' . makeAbsoluteURI('./modules/user-management/backend.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
 				exit();
 			}
 			else
@@ -905,7 +905,7 @@ if($do_action == "edit-user-details" && $_SERVER['REQUEST_METHOD'] == "POST" && 
 		} 
 		else 
 		{
-			header("Location: ./modules/user-management/backend.php?status=error&msg=".rawurlencode($ccms['lang']['system']['error_tooshort']));
+			header('Location: ' . makeAbsoluteURI('./modules/user-management/backend.php?status=error&msg='.rawurlencode($ccms['lang']['system']['error_tooshort'])));
 			exit();
 		}
 	} 
@@ -932,7 +932,7 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 			
 			if ($db->UpdateRows($cfg['db_prefix']."users", $values, array("userID" => MySQL::SQLValue($userID,MySQL::SQLVALUE_NUMBER)))) 
 			{
-				header("Location: ./modules/user-management/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
+				header('Location: ' . makeAbsoluteURI('./modules/user-management/backend.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
 				exit();
 			}
 			else
@@ -940,12 +940,12 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 		} 
 		elseif(strlen($_POST['userPass'])<=6) 
 		{
-			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&msg=".rawurlencode($ccms['lang']['system']['error_passshort']));
+			header('Location: ' . makeAbsoluteURI('./modules/user-management/user.Edit.php?userID='.$_POST['userID'].'&status=error&msg='.rawurlencode($ccms['lang']['system']['error_passshort'])));
 			exit();
 		} 
 		else 
 		{
-			header("Location: ./modules/user-management/user.Edit.php?userID=".$_POST['userID']."&status=error&msg=".rawurlencode($ccms['lang']['system']['error_passnequal']));
+			header('Location: ' . makeAbsoluteURI('./modules/user-management/user.Edit.php?userID='.$_POST['userID'].'&status=error&msg='.rawurlencode($ccms['lang']['system']['error_passnequal'])));
 			exit();
 		}
 	} 
@@ -979,7 +979,7 @@ if($do_action == "edit-user-level" && $_SERVER['REQUEST_METHOD'] == "POST" && ch
 					$_SESSION['ccms_userLevel'] = $userLevel;
 				}
 				
-				header("Location: ./modules/user-management/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
+				header('Location: ' . makeAbsoluteURI('./modules/user-management/backend.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
 				exit();
 			}
 			else
@@ -1006,7 +1006,7 @@ if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 		
 		if($total==0) 
 		{
-			header("Location: ./modules/user-management/backend.php?status=error&msg=".rawurlencode($ccms['lang']['system']['error_selection']));
+			header('Location: ' . makeAbsoluteURI('./modules/user-management/backend.php?status=error&msg='.rawurlencode($ccms['lang']['system']['error_selection'])));
 			exit();
 		}
 		
@@ -1022,7 +1022,7 @@ if($do_action == "delete-user" && $_SERVER['REQUEST_METHOD'] == "POST" && checkA
 		// Check for errors
 		if($result && $i == $total) 
 		{
-			header("Location: ./modules/user-management/backend.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['fullremoved']));
+			header('Location: ' . makeAbsoluteURI('./modules/user-management/backend.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['fullremoved'])));
 			exit();
 		} 
 		else 

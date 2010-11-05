@@ -90,7 +90,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST) && checkAuth())
 			}
 			if($db->UpdateRows($cfg['db_prefix']."cfgpermissions", $values)) 
 			{
-				header("Location: permissions.Manage.php?status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
+				header('Location: ' . makeAbsoluteURI('permissions.Manage.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
 				exit();
 			} 
 			else 

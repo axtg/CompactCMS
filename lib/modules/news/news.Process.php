@@ -95,7 +95,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-edit-news" && checkA
 		// Execute either INSERT or UPDATE based on $newsID
 		if($db->AutoInsertUpdate($cfg['db_prefix']."modnews", $values, array("newsID" => MySQL::BuildSQLValue($newsID)))) 
 		{
-			header("Location: news.Manage.php?file=$pageID&status=notice&msg=".rawurlencode($ccms['lang']['backend']['itemcreated']));
+			header('Location: ' . makeAbsoluteURI('news.Manage.php?file='.$pageID.'&status=notice&msg='.rawurlencode($ccms['lang']['backend']['itemcreated'])));
 			exit();
 		} 
 		else 
@@ -121,7 +121,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth()
 		// If nothing selected, throw error
 		if($total==0) 
 		{
-			header("Location: news.Manage.php?file=$pageID&status=error&msg=".rawurlencode($ccms['lang']['system']['error_selection']));
+			header('Location: ' . makeAbsoluteURI('news.Manage.php?file='.$pageID.'&status=error&msg='.rawurlencode($ccms['lang']['system']['error_selection'])));
 			exit();
 		}
 		
@@ -138,7 +138,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="del-news" && checkAuth()
 		// Check for errors
 		if($result&&$i==$total) 
 		{
-			header("Location: news.Manage.php?file=$pageID&status=notice&msg=".rawurlencode($ccms['lang']['backend']['fullremoved']));
+			header('Location: ' . makeAbsoluteURI('news.Manage.php?file='.$pageID.'&status=notice&msg='.rawurlencode($ccms['lang']['backend']['fullremoved'])));
 			exit();
 		} 
 		else 
@@ -169,7 +169,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="cfg-news" && checkAuth()
 		// Execute the insert or update for current page
 		if($db->AutoInsertUpdate($cfg['db_prefix']."cfgnews", $values, array("cfgID" => MySQL::BuildSQLValue($cfgID)))) 
 		{
-			header("Location: news.Manage.php?file=$pageID&status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
+			header('Location: ' . makeAbsoluteURI('news.Manage.php?file='.$pageID.'&status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
 			exit();
 		} 
 		else 

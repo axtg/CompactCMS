@@ -59,7 +59,7 @@ $loc = $cfg['rootdir'] . "lib/includes/auth.inc.php";
 // Check whether current user has running session
 if(empty($_SESSION['ccms_userID']) && $cfg['protect']==true)
 {
-	header('Location: '.$loc);
+	header('Location: ' . makeAbsoluteURI($loc));
 	exit();
 }
 
@@ -85,13 +85,13 @@ if(isset($_GET['do'])&&$_GET['do']=="logout")
 	// Finally, destroy the session.
 	if(session_destroy()) 
 	{
-		header('Location: '.$loc);
+		header('Location: ' . makeAbsoluteURI($loc));
 		exit();
 	}
 	
 	if(empty($_SESSION['ccms_userID'])) 
 	{
-		header('Location: '.$loc);
+		header('Location: ' . makeAbsoluteURI($loc));
 		exit();
 	}
 }

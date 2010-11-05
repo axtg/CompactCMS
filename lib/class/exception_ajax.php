@@ -58,7 +58,7 @@
  *   if (some_operation() == failed) 
  *     throw new CcmsAjaxFbException("urgh! we failed dramtically!");
  *   ...
- *   header("Location: " . $cfg['rootdir'] . "admin/modules/template-editor/backend.php&status=success&msg=hunky dory!");
+ *   header('Location: ' . makeAbsoluteURI($cfg['rootdir'] . 'admin/modules/template-editor/backend.php&status=success&msg=hunky+dory!'));
  *   exit();
  * }
  * catch (CcmsAjaxFbException $e)
@@ -95,7 +95,7 @@ class CcmsAjaxFbException extends Exception
 	{
 		if (!empty(self::$feedback_url))
 		{
-			header("Location: " . self::$feedback_url . "?status=error&msg=".rawurlencode($this->message) . $this->extra_url_query_data);
+			header('Location: ' . makeAbsoluteURI(self::$feedback_url . '?status=error&msg='.rawurlencode($this->message) . $this->extra_url_query_data));
 			exit();
 		}
 		// if we get here, this exception class hasn't been set up according to requirements. Barf a hairball.
