@@ -334,9 +334,9 @@ class MySQL_Backup
     $this->_Query('LOCK TABLES ' . $table . ' WRITE');
     if ($this->comments)
     {
-      $value .= '#' . MSB_NL;
-      $value .= '# Table structure for table `' . $table . '`' . MSB_NL;
-      $value .= '#' . MSB_NL . MSB_NL;
+      $value .= '--' . MSB_NL;
+      $value .= '-- Table structure for table `' . $table . '`' . MSB_NL;
+      $value .= '--' . MSB_NL . MSB_NL;
     }
     if ($this->drop_tables)
     {
@@ -353,9 +353,9 @@ class MySQL_Backup
     {
       if ($this->comments)
       {
-        $value .= '#' . MSB_NL;
-        $value .= '# Dumping data for table `' . $table . '`' . MSB_NL;
-        $value .= '#' . MSB_NL . MSB_NL;
+        $value .= '--' . MSB_NL;
+        $value .= '-- Dumping data for table `' . $table . '`' . MSB_NL;
+        $value .= '--' . MSB_NL . MSB_NL;
       }
             
       $value .= $this->_GetInserts($table);
