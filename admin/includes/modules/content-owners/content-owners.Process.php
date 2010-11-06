@@ -176,6 +176,10 @@ if (0) // old code - lots of queries.
 			exit();
 		}
 }
-	} else die($ccms['lang']['auth']['featnotallowed']);
-} else die("No external access to file");
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
+} 
+else 
+	die("No external access to file");
 ?>

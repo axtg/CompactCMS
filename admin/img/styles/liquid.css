@@ -1,4 +1,10 @@
-.container {min-width: 950px;width: 80%;margin: 0 auto;overflow: hidden;}
+.container 
+{
+	min-width: 950px;
+	width: 80%;
+	margin: 0 auto;
+	overflow: hidden;
+}
 .block {overflow: hidden;}
 .column {float: left;}
 .last { margin-right: 0; }

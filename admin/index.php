@@ -92,9 +92,9 @@ window.addEvent('domready',function()
 </script>
 </head>
 
-<body id="desktop">	
+<body id="desktop">
+<div id='pageWrapper'><?php /* <-- required to ensure there are proper scrollbars in the MochaUI 'desktop' */ ?>
 <div class="container">
-
 	<?php // Top bar including status block ?>
 	<div id="logo" class="sprite logo span-5 colborder">
 		<h1>CompactCMS <?php echo $ccms['lang']['backend']['administration']; ?></h1>
@@ -402,6 +402,7 @@ window.addEvent('domready',function()
 			<span class="sprite safari" title="<?php echo $ccms['lang']['system']['message_compatible']; ?> Safari"></span>
 		</div>
 	</div>
+</div>
 </div>
 	
 	<?php // Dock block ?>
