@@ -1,7 +1,7 @@
 <?php
 /* ************************************************************
 Copyright (C) 2008 - 2010 by Xander Groesbeek (CompactCMS.nl)
-Revision:   CompactCMS - v 1.4.1
+Revision:   CompactCMS - v 1.4.2
 
 This file is part of CompactCMS.
 
