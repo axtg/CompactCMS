@@ -34,15 +34,31 @@
  * > W: http://community.CompactCMS.nl/forum
 **/
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+/*
+We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
+*/
+define('CCMS_PERFORM_MINIMAL_INIT', true);
+
+
 // Compress all output and coding
 header('Content-type: text/html; charset=UTF-8');
 
+// Define default location
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(dirname(dirname(__FILE__))))));
+	define('BASE_PATH', $base);
+}
+
 // Include general configuration
-require_once('../../../../lib/sitemap.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Security functions
-$canarycage		= md5(session_id());
-$currenthost	= md5($_SERVER['HTTP_HOST']);
+
+
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
@@ -52,43 +68,118 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
  * Either INSERT or UPDATE preferences
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth($canarycage,$currenthost)) {
-	
+if($_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+{
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageOwners']) {
+	if($_SESSION['ccms_userLevel']>=$perm['manageOwners']) 
+	{
+		/*
+		Since the number of items to process is PAGES x USERS, this number can become rather large, even for moderately small sites.
 		
-		// Set all values back to zero
-		$values["user_ids"] = 0;
-		if($db->UpdateRows($cfg['db_prefix']."pages", $values)) {
+		Hence we do this in two phases: 
+		
+		1) first we collect the user=owner set per page in an associative array.
+		
+		2) next, we update the database for each page collected in phase 1.
+		
+		This is different from the original approach in that:
+		
+		a) it cuts down the number of queries by a factor of USERS
+		
+		b) it does NOT reset the ownership of ALL pages at the start with another query --> unmentioned pages don't change.
+		
+		Particularly (b) plays well into our hands when we expand the notion of 'filtered page sets' in the admin section, i.e.
+		an admin section which currently only shows a SUBSET of all the pages available on the site.
+		*/
+		
+		// If all empty, we're done here
+		if(empty($_POST['owner'])) {
+			header('Location: ' . makeAbsoluteURI('./content-owners.Manage.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
+			exit();
+		}
+	
+		// Otherwise, set the page owners (phase #1)
+		$ownership = array();
+		foreach ($_POST['owner'] as $value) 
+		{
+			// Split posted variable
+			$explode = explode("||",$value);
+		
+			// Set variables
+			$userID = filterParam4Number($explode[0]);
+			$pageID = filterParam4Number($explode[1]);
+			if (empty($userID) || empty($pageID))
+			{
+				die($ccms['lang']['system']['error_forged']);
+			}
+			$ownership[$pageID] .= '||' . $userID; // add user; we'll trim leading '||' in phase 2
+		}
+		
+		// now update page ownership in the database (phase #2); order doesn't matter
+		foreach($ownership as $page_id => $users)
+		{
+			$users = ltrim($users, '|');
 			
+			$values = array();
+			$values["user_ids"] = MySQL::SQLValue($users,MySQL::SQLVALUE_TEXT);
+		
+			if(!$db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id,MySQL::SQLVALUE_NUMBER)))) 
+			{
+				$db->Kill();
+			}
+		}	
+		
+		header('Location: ' . makeAbsoluteURI('./content-owners.Manage.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['success'])));
+		exit();
+
+		
+		
+		
+		
+if (0) // old code - lots of queries.
+{	
+		// Set all values back to zero
+		$values = array(); // [i_a] make sure $values is an empty array to start with here
+		$values["user_ids"] = 0;
+		if($db->UpdateRows($cfg['db_prefix']."pages", $values))
+		{
 			// If all empty, we're done here
 			if(empty($_POST['owner'])) {
-				header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['settingssaved']);
+				header('Location: ' . makeAbsoluteURI('./content-owners.Manage.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
 				exit();
 			}
 		
 			// Otherwise, set the page owners
 			$i=0;
-			foreach ($_POST['owner'] as $value) {
+			foreach ($_POST['owner'] as $value) 
+			{
 				// Split posted variable
 				$explode = explode("||",$value);
 			
 				// Set variables
-				$pageID = (isset($explode['1'])&&is_numeric($explode['1'])?$explode['1']:null);
-				$current = $db->QuerySingleValue("SELECT user_ids FROM ".$cfg['db_prefix']."pages WHERE page_id='".$pageID."'");
-				$users = $current.$explode['0'].'||';
+				$userID = filterParam4Number($explode[0]);
+				$pageID = filterParam4Number($explode[1]);
+				$current = $db->SelectSingleValue($cfg['db_prefix']."pages", array('page_id' => MySQL::SQLValue($pageID, MySQL::SQLVALUE_NUMBER)), array('user_ids'));
+				$users = $userID . '||' . $current; // concatenate user IDs with '||' between them!
+				$values = array(); // [i_a] make sure $values is an empty array to start with here
 				$values["user_ids"] = MySQL::SQLValue($users,MySQL::SQLVALUE_TEXT);
 			
-				if($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => "\"$pageID\""))) {
+				if($db->UpdateRows($cfg['db_prefix']."pages", $values, array("page_id" => MySQL::SQLValue($page_id,MySQL::SQLVALUE_NUMBER)))) 
+				{
 					$i++;
 				}
-				
-				if($i==count($_POST['owner'])) {
-					header("Location: ./content-owners.Manage.php?status=notice&action=".$ccms['lang']['backend']['success']);
-					exit();
-				} 
-			}
+				else
+					$db->Kill();
+			}	
+			// within loop: if($i==count($_POST['owner']))     -- [i_a] very odd way of writing this end-of-loop bit... :-S   simplified now.
+			header('Location: ' . makeAbsoluteURI('./content-owners.Manage.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['success'])));
+			exit();
 		}
-	} else die($ccms['lang']['auth']['featnotallowed']);
-} else die("No external access to file");
+}
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
+} 
+else 
+	die("No external access to file");
 ?>

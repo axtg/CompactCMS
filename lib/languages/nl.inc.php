@@ -118,6 +118,9 @@ $ccms['lang']['backend']['item'] 			= "Item";
 $ccms['lang']['backend']['none']			= "Geen";
 $ccms['lang']['backend']['yes'] 			= "Ja";
 $ccms['lang']['backend']['no'] 				= "Nee";
+$ccms['lang']['backend']['confirmthumbregen'] 	= "Bevestig a.u.b. dat u alle mini-afbeeldingen wilt regeneren. Dit kan even duren.";
+$ccms['lang']['backend']['fullregenerated']	= "De mini-afbeeldingen zijn volledig geregenereerd.";
+$ccms['lang']['backend']['must_refresh']	= "Merk op dat het verstandig is om de admin pagina te herladen (functietoets F5) om <em>alle</em> wijzigingen in de rechten direct terug te zien!";
 
 // Texts for authentication screen
 $ccms['lang']['login']['welcome']			= "<p>Gebruik een geldige gebruikersnaam en wachtwoord om in te loggen op CompactCMS. Indien u hier per abuis belandde, keer dan terug naar de <a href='../../'>start pagina</a>.</p><p>E-mail de webmaster voor uw gegevens.</p>";
@@ -250,6 +253,11 @@ $ccms['lang']['album']['noalbums']		= "Er zijn nog geen albums aangemaakt!";
 $ccms['lang']['album']['files']			= "Bestanden";
 $ccms['lang']['album']['nodir']			= "Bevestig dat de map <strong>albums</strong> bestaat in de ./media/ map";
 $ccms['lang']['album']['lastmod']		= "Laatste update";
+$ccms['lang']['album']['apply_to']		= "Hang dit album aan de volgende index pagina:";
+$ccms['lang']['album']['description']	= "Album beschrijving";
+$ccms['lang']['album']['please_wait'] 	= "Even geduld, a.u.b. ...";
+$ccms['lang']['album']['regenalbumthumbs']	= "Regenereer alle mini-afbeeldingen";
+$ccms['lang']['album']['settings']		= "Album instellingen";
 
 // News messages
 $ccms['lang']['news']['manage']			= "Beheer huidige nieuwsitems";
@@ -288,4 +296,51 @@ $ccms['lang']['guestbook']['verify']	= "Verificatie";
 $ccms['lang']['guestbook']['preview']	= "Preview reactie";
 $ccms['lang']['guestbook']['add']		= "Voeg jouw reactie toe";
 $ccms['lang']['guestbook']['posted']	= "Je reactie is geplaatst!";
+
+
+      /* ### OBSOLETED ENTRIES ### */
+      /*
+         Please check the CompactCMS code to:
+
+         a) make sure whether these entries are indeed obsoleted.
+            When yes, then the corresponding entry above should be
+            removed as well!
+
+         b) When no, i.e. the entry exists in the code, this merits
+            a bug report regarding the ./collect_lang_items.sh script.
+       
+         ----------------------------------------------------------
+	
+	$ccms['lang']['album']['nodir']			
+	$ccms['lang']['backend']['startedittitle'] 	
+	$ccms['lang']['backend']['updatelist'] 		
+	$ccms['lang']['editor']['closeeditor'] 	
+	$ccms['lang']['guestbook']['posted']	
+	$ccms['lang']['guestbook']['reaction']	
+	$ccms['lang']['guestbook']['removed'] 	
+	$ccms['lang']['login']['falsetries']		
+	$ccms['lang']['login']['provide']			
+	$ccms['lang']['system']['error_default'] 	
+	$ccms['lang']['system']['error_sitemap'] 	
+	$ccms['lang']['system']['tooriginal']		
+       
+         ----------------------------------------------------------
+	
+         ### MISSING ENTRIES ###
+
+         The entries below have been found to be missing from this 
+         translation file; move them from this comment section to the
+         PHP code above and assign them a suitable text.
+
+         When done so, you can of course remove them from the list 
+         below.
+       
+         ----------------------------------------------------------
+      */
+	  
+       
+      /*
+         ----------------------------------------------------------
+      */
+	  
 ?>

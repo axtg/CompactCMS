@@ -65,7 +65,8 @@ fieldset {
 	margin-bottom: 10px;
 	background: #E6F5D6;
 	border: 3px solid #90D244;
-	-moz-border-radius: 10px; 
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
 	border-radius: 10px;
 }
 legend, .loginMsg {
@@ -75,7 +76,8 @@ legend, .loginMsg {
 	margin: 0 15px;
 	padding: 0.4em 1em;
 	border: 2px solid #9DAFBB;
-	-moz-border-radius: 5px; 
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
 	border-radius: 5px;
 }
 
@@ -119,7 +121,8 @@ a.edit, a.editinplace:hover {
 	position: relative;
 	background-color: #EED9BA;
 	border: 2px solid #C7892E;
-	-moz-border-radius: 10px; 
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
 	border-radius: 10px;
 	min-height: 95px;
 	margin: 0 15px 10px 0;
@@ -132,7 +135,8 @@ a.edit, a.editinplace:hover {
 	margin: 0 auto;
 	padding: 0;
 	border: 2px solid #9E65D7;
-	-moz-border-radius: 5px; 
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
 	border-radius: 5px;
 }
 #notify p, #advanced h2 {
@@ -172,8 +176,19 @@ a.edit, a.editinplace:hover {
 input[type="text"]{width: 200px;}
 button {margin-right: 15px;}
 optgroup option {padding-left: 10px;}
-#f_de {width: 200px;height: 50px;}
+#f_de 
+{
+	width: 200px;
+	height: 50px;
+}
 
+/* [i_a] fix the default edit_area monospace font to be the admin page's regular serif: */
+#addForm /* <div id="fields"> */ textarea 
+{
+	font-size: 90%;
+	font-family: "Palatino Linotype", Palatino, Baskerville, "Book Antiqua", Georgia, serif;
+}
+		
 /* === 1. CORE === */
 /* === EDIT in PAGE === */
 .liveedit:hover {
@@ -186,7 +201,8 @@ optgroup option {padding-left: 10px;}
 	background: #ECC6CD;
 	padding: 0 4px;
 	border: #D37A8A 2px solid;	
-	font: 90% 'Palatino Linotype', Palatino,Baskerville, 'Book Antiqua', Georgia,serif;
+	font-size: 90%;
+	font-family: "Palatino Linotype", Palatino, Baskerville, "Book Antiqua", Georgia, serif;
 	width: 85%;
 	height: 35px;
 }
@@ -197,7 +213,7 @@ pre {
 	font-size: 12px;
 	padding: 0 5px;
 	margin: 5px;
-	background: #f0f0f0 url('../pre_bg.gif') repeat left top;;
+	background: #f0f0f0 url('../pre_bg.gif') repeat left top;
 	border: 1px solid #ccc;
 	line-height: 18px;
 	width: 95%;
@@ -217,7 +233,8 @@ div.ss_help {
 	border-right: 5px solid #F7D5D5;
 	border-top: 5px solid #F7D5D5;
 	border-bottom: 5px solid #EFAAAB;
-	-moz-border-radius: 10px; 
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
 	border-radius: 10px;
 	behavior: url('./img/styles/PIE.php');
 }
@@ -228,7 +245,8 @@ div.tip-title {
 	color: #FFFFFF;
 	padding: 5px;
 	background: #DB7075;
-	-moz-border-radius: 20px; 
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
 	border-radius: 20px;
 	behavior: url('./img/styles/PIE.php');
 }
@@ -247,7 +265,8 @@ div.tip-text {
 	width:750px;
 	background-color:#E6F5D6;
 	border:10px solid #90D244;
-	-moz-border-radius: 10px; 
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
 	border-radius: 10px;
 	padding:10px;
 }
@@ -257,7 +276,16 @@ div.tip-text {
 
 /* === 1. CORE === */
 /* === MODULES === */
-div.module{font:'Palatino Linotype',Palatino, Baskerville, 'Book Antiqua', Georgia,serif;color:#222;line-height:1.6em;margin:15px;}
+div.module
+{
+	font-family: "Palatino Linotype", Palatino, Baskerville, "Book Antiqua", Georgia, serif;
+	color:#222;
+	line-height:1.6em;
+	margin:15px;
+	
+	/* float: left; */
+	position: relative;
+}
 .module label{display:block;}
 .module h1,.module h2 {
 	font-size:1.2em;
@@ -265,7 +293,8 @@ div.module{font:'Palatino Linotype',Palatino, Baskerville, 'Book Antiqua', Georg
 	background-color:#e6f5d6;
 	border:1px solid #9ACC66;
 	text-align:center;
-	-moz-border-radius: 5px; 
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
 	border-radius: 5px;
 }
 .module h2 {font-size:1em;}
@@ -293,3 +322,17 @@ div.module{font:'Palatino Linotype',Palatino, Baskerville, 'Book Antiqua', Georg
 }
 .thumbview:hover{background-color:#E6F2D9;border:solid #A5D611 3px;}
 .albumbox img{border:1px solid #000;}
+
+/* === BACKUPS === */
+#no-delete-action 
+{
+	margin-top: 20px;
+}
+
+/*
+Make sure the admin content has a scrollbar when needed. Override body+html:overflow=hidden CSS setup in Mocha: we want our Y-scrollbar!
+*/
+#pageWrapper
+{
+	overflow: auto;
+}

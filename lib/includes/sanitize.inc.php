@@ -1,15 +1,73 @@
 <?php
+
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
+
+
 /////////////////////////////////////////////
 // input sanitizer function - 10/2009 by LDM
 
-function sanitize($dtype, $dlen, $data){
+/*
+From another place and time, someone else has been wondering as well:
+
+---
+
+In PHPMailer-FE version 4.0.5, we added the ability to sanitize or clean up
+user-submitted form data.
+
+The file responsible for this is: _lib/inc.sanitize.php
+
+This script is not entirely of our making. The core of the script is authored
+by someone else ... and we have no idea who. We would like to attribute this
+excellent work to the rightful author. If anyone recognizes who the author is
+please contact us so that we can attribute this work and recognize the author.
+All we have is one single line in the script that says:
+// input sanitizer function - LDM 2008
+
+We have modified this script to function with PHPMailer-FE.
+
+In essence, it will "clean-up" or sanitize the data users type into the form.
+
+The specific functionality is (in no specific order):
+
+- will remove hex values
+- will stop directory traversal
+- will stop MySQL injections and MySQL comments
+- will stop base64 encoding
+- will remove null characters
+- will do basic HTML entities checks and conversion
+- will convert all tabs to spaces
+- will convert all PHP tags to safe HTML entities
+- will convert all XML tags to safe HTML entities
+- will convert all Javascript (and other script) tags to safe HTML entities
+- will compact all exploded words
+- will remove all Javascript (and other scripts) from links and images
+- will sanitize all bad HTML code
+- will sanitize all bad script code
+
+Essentially, if enabled, it will eliminiate and/or minimize the impact of
+hacker access to forms to generate cross site scripting attacks, database
+injection or attacks, and javascript/vbscript (etc) malicious use.
+
+The sanitize utility is not intended to be used for data validation or
+formatting.
+
+Enjoy!
+Andy Prevost (codeworxtech)
+
+----
+
+Postscript: 'LDM' is still an unknown entity apparently.
+*/
+
+function sanitize($dtype, $dlen, $data, $charset = "UTF-8"){
 
 // dtype 1: allow numbers, space, and '-' 
 // dtype 2: allow alpha and spaces only
 // dtype 3: allow alphanumeric, spaces, period, and '-'
 // dtype 4: allow alphanumeric w/ all punctuation 
 // dtype 5: email validation chars 
-// dlen: data length limit, '0' = no length limit 
+// dlen: data length limit, 0 = no length limit 
 
 	// special cleanups
 	$data = preg_replace("/x1a/",'', $data);
@@ -47,8 +105,12 @@ function sanitize($dtype, $dlen, $data){
 // Just in case stuff like this is submitted:
 // <a href="http://%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D">Google</a>
 // Note: Normally urldecode() would be easier but it removes plus signs
-    $data = preg_replace("/%u0([a-z0-9]{3})/i", "&#x\\1;", $data);
-    $data = preg_replace("/%([a-z0-9]{2})/i", "&#x\\1;", $data);		
+//
+// See also RFC 3986 / http://en.wikipedia.org/wiki/Percent-encoding
+// about the _rejected_ %uxxxx encoding checked for here; can't be sure 
+// browsers/servers don't accept it, so better keep it here:
+    $data = preg_replace("/%u([a-f0-9]{4})/i", "&#x\\1;", $data);
+    $data = preg_replace("/%([a-f0-9]{2})/i", "&#x\\1;", $data);		
 				
 
 // Convert character entities to ASCII
@@ -56,9 +118,9 @@ function sanitize($dtype, $dlen, $data){
 // We only convert entities that are within tags since
 // these are the ones that will pose security problems.
     if (preg_match_all("/<(.+?)>/si", $data, $matches)) {		
-        for ($i = 0; $i < count($matches['0']); $i++) {
-            $data = str_replace($matches['1'][$i],
-                html_entity_decode($matches['1'][$i], ENT_COMPAT, $charset), $data);
+        for ($i = 0; $i < count($matches[0]); $i++) {
+            $data = str_replace($matches[1][$i],
+                html_entity_decode($matches[1][$i], ENT_COMPAT, $charset), $data);
         }
     }
 	
@@ -144,31 +206,31 @@ function sanitize($dtype, $dlen, $data){
 ////////// END NEW TESTS /////////////////////////////////////////////////////
 // final character stripping & length limiting
 
-	if($dlen != '0'){
+	if($dlen != 0){
 		$data = substr($data, 0, $dlen);
 	}
 
-	if($dtype == '1'){
+	if($dtype == 1){
 		// allow only numeric characters, space, period, and '-' 
 		$data = preg_replace("/[^0-9\-\ \.]/",'', $data);
 	}
 	
-	if($dtype == '2'){
+	if($dtype == 2){
 		// allow only alpha characters, '_' and space 
 		$data = preg_replace("/[^a-zA-Z~\ \_]/",'', $data);
 	}
 	
-	if($dtype == '3'){
+	if($dtype == 3){
 		// allow only alphanumeric characters, space, '_', period, colon, and '-'
 		$data = preg_replace("/[^0-9a-zA-Z~\-\ \.\:\_]/",'', $data);
 	}
 	
-	if($dtype == '4'){
+	if($dtype == 4){
 		// allow only alphanumeric characters w/ punctuation + carriage returns
 		$data = preg_replace("|[^0-9a-zA-Z~@#$%=:;_, \\n\\\!\^&\*\(\)\-\+\.\?\/\'\"]|",'', $data);
 	}
 
-	if($dtype == '5'){
+	if($dtype == 5){
 		// specifically for email validation 
 		$data = preg_replace("|[^0-9a-zA-Z@_\-\.]|",'', $data);
 	}

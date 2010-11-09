@@ -6,7 +6,7 @@ var tinyMCE_GZ = {
 		disk_cache : true,
 		page_name : 'tiny_mce_gzip.php',
 		debug : false,
-		suffix : ''
+		suffix : '' /* can be '_src' or '_dev' for development work; ' ' for production / tests */
 	},
 
 	init : function(s, cb, sc) {

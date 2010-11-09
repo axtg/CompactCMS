@@ -29,24 +29,60 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+/*
+We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
+*/
+define('CCMS_PERFORM_MINIMAL_INIT', true);
+
+
 // Include general configuration
-require_once(dirname(dirname(__FILE__)).'/sitemap.php');
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(__FILE__))));
+	define('BASE_PATH', $base);
+}
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
 // If session already exists
-if(isset($_SESSION['ccms_userID']) && isset($_SESSION['ccms_userName'])) {
-	header("Location: ../../admin/index.php");
+if(!empty($_SESSION['ccms_userID']) && !empty($_SESSION['ccms_userName']) && CheckAuth()) // [i_a] session vars must exist AND NOT BE EMPTY to be deemed valid.
+{
+	header('Location: ' . makeAbsoluteURI('../../admin/index.php'));
 	exit();
 }
 
 // Check for ./install directory
-if(is_dir('../../_install/')) {
+if(is_dir('../../_install/') && !defined('CCMS_DEVELOPMENT_ENVIRONMENT')) 
+{
 	die('<strong>Security risk: the installation directory is still present.</strong><br/>Either first <a href="../../_install/">run the installer</a>, or remove the <em>./_install</em> directory, before accessing <a href="../../admin/">the back-end</a>.');
 }
 
 // Do authentication
-if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST") {
+if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST") 
+{                               
+	/*
+	This code does NOT require that the submitted data (user+pass) originates from the
+	web form below and was entered in the same session (as we don't have the CheckAuth()
+	condition checked in the if(...) above).
+	
+	This is intentional: users may store the login credentials in any form and still log
+	in. However, it also means that we must be aware that the current POST data can be
+	entirely malicious, hence we MUST perform rigorous checks -- which one would require
+	anyhow when logging in.
+	
+	To prevent SQL injection attacks against this form, we make sure the POST-ed data
+	does not contain any wildcards or trickery which makes our validation query below
+	produce multiple records. If for some other reason we get multiple user records
+	from the database then this is clearly a security/safety violation!
+	
+	Only when everything check out do we set the session validation items 'id' and 'host'
+	which will be used to validate basic website interaction security for the remainder 
+	of this session.
+	*/
 	$userName = mysql_real_escape_string($_POST['userName']);
-	$userPass = mysql_real_escape_string($_POST['userPass']).$cfg['authcode'];
+	$userPass = mysql_real_escape_string($_POST['userPass']) . $cfg['authcode'];
 
 	if(empty($userName) && empty($userPass)){
 		$_SESSION['logmsg'] = $ccms['lang']['login']['nodetails'];
@@ -67,12 +103,22 @@ if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST") {
 			$result	= mysql_query($sql);
 			$row 	= mysql_fetch_assoc($result);
 			
-			// If no match: count attempt and show error
-			if($userName != $row['userName'] && md5($userPass) != $row['userPass']){
+			if (mysql_num_rows($result) != 1)
+			{
+				// probably corrupt db table (corrupt import?) or hack attempt
+				die('<strong>Database corruption or hack attempt. Access denied.</strong>');
+				
+				// TODO: alert website owner about this failure/abuse. email to owner?
+			}
+			elseif($userName != $row['userName'] && md5($userPass) != $row['userPass'])
+			{
+				// If no match: count attempt and show error
 				$_SESSION['logmsg'] = $ccms['lang']['login']['nomatch'];
-
-			// If all checks are okay
-			} elseif($userName == $row['userName'] && md5($userPass) == $row['userPass'] && $row['userActive'] > 0) {
+			} 
+			elseif($userName == $row['userName'] && md5($userPass) == $row['userPass'] && $row['userActive'] > 0) 
+			{
+				// If all checks are okay
+				//
 				// Update latest login date
 				if(mysql_query("UPDATE `".$cfg['db_prefix']."users` SET userLastlog='".date('Y-m-d G:i:s')."' WHERE userID=".$row['userID'])) {
 					// Set system wide session variables
@@ -81,10 +127,14 @@ if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST") {
 					$_SESSION['ccms_userFirst']	= $row['userFirst'];
 					$_SESSION['ccms_userLast']	= $row['userLast'];
 					$_SESSION['ccms_userLevel']	= $row['userLevel'];
-					
+
+					// [i_a] fix for session faking/hijack security issue:
+					// Setting safety variables as well: used for checkAuth() during the session.
+					SetAuthSafety();
+
 					// Return functions result
 					unset($_SESSION['logmsg']);
-					header("Location: ../../admin/index.php");
+					header('Location: ' . makeAbsoluteURI('../../admin/index.php'));
 					exit();
 				}
 			}

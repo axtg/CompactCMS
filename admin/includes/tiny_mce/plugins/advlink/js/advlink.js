@@ -1,5 +1,3 @@
-/* Functions for the advlink plugin popup */
-
 tinyMCEPopup.requireLangPack();
 
 var templates = {
@@ -354,7 +352,7 @@ function setAttrib(elm, attrib, value) {
 
 	// Clean up the style
 	if (attrib == 'style')
-		value = dom.serializeStyle(dom.parseStyle(value));
+		value = dom.serializeStyle(dom.parseStyle(value), 'a');
 
 	dom.setAttrib(elm, attrib, value);
 }

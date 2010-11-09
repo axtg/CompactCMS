@@ -29,28 +29,80 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+/*
+We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
+*/
+define('CCMS_PERFORM_MINIMAL_INIT', true);
+
+
 // Compress all output and coding
 header('Content-type: text/html; charset=UTF-8');
 
-// Include general configuration
-require_once('../../../../lib/sitemap.php');
+// Define default location
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(dirname(dirname(__FILE__))))));
+	define('BASE_PATH', $base);
+}
 
-$canarycage	= md5(session_id());
-$currenthost= md5($_SERVER['HTTP_HOST']);
-$do 		= (isset($_GET['do'])?$_GET['do']:null);
+// Include general configuration
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
+
+$do = getGETparam4IdOrNumber('do');
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
- /**
+if ($perm['manageModBackup'] <= 0 || !checkAuth()) 
+{
+	die("No external access to file");
+}
+
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+		<title>Back-up &amp; Restore module</title>
+		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
+		<script type="text/javascript" charset="utf-8">
+function confirmation()
+{
+	var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');
+	if(answer)
+	{
+		try
+		{
+			return true;
+		}
+		catch(e)
+		{
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+</script>
+	</head>
+<body>
+	<div class="module">
+<?php
+
+
+/**
  *
  * Create requested backup archive
  *
  */
-if(!empty($do) && $_GET['do']=="backup" && isset($_POST['btn_backup']) && $_POST['btn_backup']=="dobackup" && checkAuth($canarycage,$currenthost)) {
-	
+if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_backup']=="dobackup" && checkAuth()) 
+{
 	// Include back-up functions
-	include_once('functions.php');
+	/*MARKER*/require_once('./functions.php');
 	
 	$configBackup 		= array('../../../../content/','../../../../lib/templates/');
 	$configBackupDir 	= '../../../../media/files/';
@@ -102,44 +154,51 @@ if(!empty($do) && $_GET['do']=="backup" && isset($_POST['btn_backup']) && $_POST
 	$fd			= fopen ($fileName, "wb");
 	$out		= fwrite ($fd, $createZip -> getZippedfile());
 	fclose ($fd);
+	
+	echo "<p class=\"success center\">".$ccms['lang']['backend']['newfilecreated'].", <a href=\"../../../../media/files/$backupName\">".strtolower($ccms['lang']['backup']['download'])."</a>.</p>"; 
 }
 
- /**
+/**
  *
  * Delete current backup archives
  *
  */
-if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth($canarycage,$currenthost)) {
-	
-	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) {
-	
-		echo "<div class=\"module notice center\">";
-		foreach ($_POST['file'] as $key => $value) {
-			unlink('../../../../media/files/'.$value);
-			echo ucfirst($value)." ".$ccms['lang']['backend']['statusremoved'].".<br/>";
+if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth()) 
+{
+	if (!empty($_POST['file']))
+	{
+		// Only if current user has the rights
+		if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) 
+		{
+			echo "<div class=\"module notice center\">";
+			foreach ($_POST['file'] as $key => $value) 
+			{
+				$value = filterParam4Filename($value);
+				if (!empty($value))
+				{
+					unlink('../../../../media/files/'.$value);
+					echo ucfirst($value)." ".$ccms['lang']['backend']['statusremoved'].".<br/>";
+				}
+				else 
+				{
+					echo $ccms['lang']['auth']['featnotallowed'];
+				}
+			}
+			echo "</div>";
+		} 
+		else 
+		{
+			echo "<div class=\"module error center\">".$ccms['lang']['auth']['featnotallowed']."</div>";
 		}
-		echo "</div>";
-	} else die($ccms['lang']['auth']['featnotallowed']);
-	
-} elseif($do=="delete" && empty($_POST['file']) && $_POST['btn_delete']=="dodelete" && checkAuth($canarycage,$currenthost)) {
-	echo "<div class=\"module error center\">".$ccms['lang']['system']['error_selection']."</div>";
+	} 
+	else 
+	{
+		echo "<div class=\"module error center\">".$ccms['lang']['system']['error_selection']."</div>";
+	}
 }
+
+
 ?>
-<?php if($perm['manageModBackup']>0&&checkAuth($canarycage,$currenthost)) { ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-	<head>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<title>Back-up &amp; Restore module</title>
-		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
-		<script type="text/javascript" charset="utf-8">function confirmation(){var answer=confirm('<?php echo $ccms['lang']['backend']['confirmdelete']; ?>');if(answer){try{return true;}catch(e){}}else{return false;}}</script>
-	</head>
-<body>
-	<div class="module">
-		<?php if(!empty($backupName)) { 
-			echo "<p class=\"success center\">".$ccms['lang']['backend']['newfilecreated'].", <a href=\"../../../../media/files/$backupName\">".strtolower($ccms['lang']['backup']['download'])."</a>.</p>"; 
-		} ?>
 	
 		<div class="span-6 colborder">
 		<h2><?php echo $ccms['lang']['backup']['createhd']; ?></h2>
@@ -154,42 +213,72 @@ if($do=="delete" && !empty($_POST['file']) && $_POST['btn_delete']=="dodelete" &
 			<form action="<?php echo $_SERVER['PHP_SELF'];?>?do=delete" method="post" accept-charset="utf-8">
 				<table border="0" cellspacing="5" cellpadding="5">
 					<tr>
-						<?php if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) { ?><th class="span-1">&#160;</th><?php } ?>
+						<?php 
+						if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) 
+						{ 
+						?>
+							<th class="span-1">&#160;</th>
+						<?php 
+						} 
+						?>
 						<th class="span-10"><?php echo $ccms['lang']['backup']['timestamp'];?></th>
 						<th>&#160;</th>
 					</tr>
 					<?php 
-					if ($handle = opendir('../../../../media/files/')) {
+					if ($handle = opendir('../../../../media/files/')) 
+					{
 						$i=0;
-						while (false !== ($file = readdir($handle))) {
-					        if ($file != "." && $file != ".." && strpos($file, ".zip")) {
+						while (false !== ($file = readdir($handle))) 
+						{
+					        if ($file != "." && $file != ".." && strpos($file, ".zip")) 
+							{
 						        // Alternate rows
-			    				if($i%2 != '1') {
+			    				if($i%2 != 1) 
+								{
 									echo '<tr style="background-color: #E6F2D9;">';
-								} else { 
+								} 
+								else 
+								{ 
 									echo '<tr>';
 								} 
-						        if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) {
+						        if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) 
+								{
 						        	echo '<td><input type="checkbox" name="file[]" value="'.$file.'" id="'.$i.'"></td>';
 						        }
 						        echo '<td>'.$file.'</td>';
 						        echo '<td><span class="ss_sprite ss_package_green"><a href="../../../../media/files/'.$file.'" title="'.ucfirst($file).'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
-						        echo '</tr>';
-					        $i++;} 
+						        echo "</tr>\n";
+								$i++;
+							} 
 					    }
 					    closedir($handle);
 					}
 					?>
 				</table>
-			<?php if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) {
-					if($i>0) { ?>
-				<p><button type="submit" onclick="return confirmation();" name="btn_delete" value="dodelete"><span class="ss_sprite ss_package_delete"><?php echo $ccms['lang']['backend']['delete'];?></span></button></p>
-			<?php 	} else echo $ccms['lang']['system']['noresults'];
-				} else echo $ccms['lang']['auth']['featnotallowed'];?>
+			<?php 
+			if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) 
+			{
+				if($i>0) 
+				{ 
+				?>
+					<p><button type="submit" onclick="return confirmation();" name="btn_delete" value="dodelete"><span class="ss_sprite ss_package_delete"><?php echo $ccms['lang']['backend']['delete'];?></span></button></p>
+				<?php 	
+				} 
+				else 
+					echo $ccms['lang']['system']['noresults'];
+			} 
+			else 
+			{
+			?>
+				<div id="no-delete-action">
+					<h2><span class="ss_sprite ss_package_delete"><?php echo $ccms['lang']['backend']['delete'];?></span></h2>
+					<p><?php echo $ccms['lang']['auth']['featnotallowed']; ?></p>
+				</div>
+			<?php
+			}
+			?>
 			</form>
 		</div>
-		
 	</div>
 </body>
 </html>
-<?php } else die("No external access to file");?>

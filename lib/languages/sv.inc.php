@@ -215,4 +215,140 @@ $ccms['lang']['guestbook']['verify']	= "Verification";
 $ccms['lang']['guestbook']['preview']	= "Preview comment";
 $ccms['lang']['guestbook']['add']		= "Add your comments";
 $ccms['lang']['guestbook']['posted']	= "Comment has been posted!";
+
+
+      /* ### OBSOLETED ENTRIES ### */
+      /*
+         Please check the CompactCMS code to:
+
+         a) make sure whether these entries are indeed obsoleted.
+            When yes, then the corresponding entry above should be
+            removed as well!
+
+         b) When no, i.e. the entry exists in the code, this merits
+            a bug report regarding the ./collect_lang_items.sh script.
+       
+         ----------------------------------------------------------
+	
+	$ccms['lang']['album']['directory']		
+	$ccms['lang']['album']['errordir']		
+	$ccms['lang']['album']['newdircreated']	
+	$ccms['lang']['album']['nodir']			
+	$ccms['lang']['album']['refresh']		
+	$ccms['lang']['album']['removed']		
+	$ccms['lang']['album']['renamed']		
+	$ccms['lang']['album']['tooverview']	
+	$ccms['lang']['backend']['startedittitle'] 	
+	$ccms['lang']['backend']['updatelist']		
+	$ccms['lang']['editor']['closeeditor']	
+	$ccms['lang']['guestbook']['guestbook']	
+	$ccms['lang']['guestbook']['posted']	
+	$ccms['lang']['guestbook']['reaction']	
+	$ccms['lang']['guestbook']['removed'] 	
+	$ccms['lang']['login']['falsetries']		
+	$ccms['lang']['login']['provide']			
+	$ccms['lang']['system']['error_default']	
+	$ccms['lang']['system']['error_sitemap'] 	
+	$ccms['lang']['system']['tooriginal']		
+       
+         ----------------------------------------------------------
+	
+         ### MISSING ENTRIES ###
+
+         The entries below have been found to be missing from this 
+         translation file; move them from this comment section to the
+         PHP code above and assign them a suitable text.
+
+         When done so, you can of course remove them from the list 
+         below.
+       
+         ----------------------------------------------------------
+      */
+	  
+$ccms['lang']['album']['apply_to']		= "Specifically apply this album to";
+$ccms['lang']['album']['browse']		= "Browse files";
+$ccms['lang']['album']['clear']			= "Clear list";
+$ccms['lang']['album']['currentalbums']	= "Current albums";
+$ccms['lang']['album']['description']	= "Album description";
+$ccms['lang']['album']['files']			= "Files";
+$ccms['lang']['album']['lastmod']		= "Last modified";
+$ccms['lang']['album']['please_wait'] 	= "Please wait ...";
+$ccms['lang']['album']['regenalbumthumbs']	= "Regenerate all thumbnails";
+$ccms['lang']['album']['settings']		= "Album settings";
+$ccms['lang']['album']['singlefile']	= "<strong>Single file upload</strong><br/><p>The Flash loader failed to initialize. Make sure Javascript is enabled and Flash is installed. Single file uploads are possible, but not optimized.</p>";
+$ccms['lang']['album']['toexisting']	= "Upload to existing album";
+$ccms['lang']['album']['upload']		= "Start upload";
+$ccms['lang']['album']['uploadcontent']	= "Upload content";
+$ccms['lang']['auth']['featnotallowed']	= "Your current account level does not allow you to use this feature.";
+$ccms['lang']['auth']['generatepass'] 	= "Auto generate a safe password";
+$ccms['lang']['backend']['confirmthumbregen'] 	= "Please confirm that you want to regenerate all thumbnails.";
+$ccms['lang']['backend']['contentowners']	= "Define content owners";
+$ccms['lang']['backend']['fullregenerated']	= "Successfully regenerated the thumbnails.";
+$ccms['lang']['backend']['fullremoved']		= "Successfully deleted the selected item(s).";
+$ccms['lang']['backend']['itemcreated']		= "Successfully processed the submitted item(s).";
+$ccms['lang']['backend']['must_refresh']	= "Please make sure to reload the main page to see <strong>all</strong> your changes";
+$ccms['lang']['backend']['none']			= "None";
+$ccms['lang']['backend']['permissions']		= "Set CCMS permissions";
+$ccms['lang']['backend']['settingssaved']	= "Your changes have been successfully saved.";
+$ccms['lang']['backend']['templateeditor']	= "Template editor";
+$ccms['lang']['backend']['tooverview']		= "Back to overview";
+$ccms['lang']['backend']['usermanagement']	= "User management";
+$ccms['lang']['forms']['modifybutton'] 	= "Modify";
+$ccms['lang']['forms']['setlocale']		= "Front-end language";
+$ccms['lang']['news']['addnews']		= "Add news";
+$ccms['lang']['news']['addnewslink']	= "Write new article";
+$ccms['lang']['news']['author']			= "News author";
+$ccms['lang']['news']['contents']		= "Article contents";
+$ccms['lang']['news']['date']			= "Date";
+$ccms['lang']['news']['manage']			= "Manage current news items";
+$ccms['lang']['news']['numbermess']		= "# messages on front-end";
+$ccms['lang']['news']['published']		= "Published?";
+$ccms['lang']['news']['settings']		= "Manage settings";
+$ccms['lang']['news']['showauthor']		= "Show author";
+$ccms['lang']['news']['showdate']		= "Show publication date";
+$ccms['lang']['news']['showteaser']		= "Only show teaser";
+$ccms['lang']['news']['teaser']			= "Teaser";
+$ccms['lang']['news']['title']			= "News title";
+$ccms['lang']['news']['viewarchive']	= "View archive";
+$ccms['lang']['news']['writenews']		= "Write news";
+$ccms['lang']['owners']['explain']		= "Here you can appoint specific page ownership to individual users. If for a cartain page no users are selected, everyone can modify the page. Otherwise only the specified user had modification rights to the file. Administrators always have access to all files.";
+$ccms['lang']['owners']['header']		= "Content owners";
+$ccms['lang']['owners']['pages']		= "Pages";
+$ccms['lang']['owners']['users']		= "Users";
+$ccms['lang']['permission']['explain']	= "Use the table below to specify what minimum user level can use certain features. Any user below the specified minimum required user level, will not see nor have access to the feature.";
+$ccms['lang']['permission']['header']	= "Permission preferences";
+$ccms['lang']['permission']['level1']	= "Level 1 - User";
+$ccms['lang']['permission']['level2']	= "Level 2 - Editor";
+$ccms['lang']['permission']['level3']	= "Level 3 - Manager";
+$ccms['lang']['permission']['level4']	= "Level 4 - Admin";
+$ccms['lang']['permission']['target']	= "Target";
+$ccms['lang']['system']['error_dirwrite']	= "Directory has no write access";
+$ccms['lang']['system']['error_passnequal']	= "The entered passwords did not match";
+$ccms['lang']['system']['error_passshort']	= "A password should contain more than 6 characters";
+$ccms['lang']['system']['error_tooshort']	= "One or multiple submitted values were either too short or incorrect";
+$ccms['lang']['system']['noresults']		= "No results";
+$ccms['lang']['template']['manage']		= "Manage templates";
+$ccms['lang']['template']['nowrite']	= "The current template is <strong>not</strong> writable";
+$ccms['lang']['users']['accountcfg']	= "Account settings";
+$ccms['lang']['users']['active']		= "Active";
+$ccms['lang']['users']['cpassword']		= "Confirm password";
+$ccms['lang']['users']['createuser']	= "Create a user";
+$ccms['lang']['users']['editdetails']	= "Edit user's personal details";
+$ccms['lang']['users']['editpassword']	= "Edit user's password";
+$ccms['lang']['users']['email']			= "E-mail";
+$ccms['lang']['users']['firstname']		= "First name";
+$ccms['lang']['users']['lastlog']		= "Last log";
+$ccms['lang']['users']['lastname']		= "Last name";
+$ccms['lang']['users']['level']			= "Level";
+$ccms['lang']['users']['name']			= "Name";
+$ccms['lang']['users']['overviewusers']	= "Overview CCMS users";
+$ccms['lang']['users']['password']		= "Password";
+$ccms['lang']['users']['user']			= "User";
+$ccms['lang']['users']['userlevel']		= "User level";
+$ccms['lang']['users']['username']		= "Username";
+       
+      /*
+         ----------------------------------------------------------
+      */
+	  
 ?>

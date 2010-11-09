@@ -34,36 +34,80 @@
  * > W: http://community.CompactCMS.nl/forum
 **/
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+/*
+We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
+*/
+define('CCMS_PERFORM_MINIMAL_INIT', true);
+
+
 // Compress all output and coding
 header('Content-type: text/html; charset=UTF-8');
 
+// Define default location
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(dirname(dirname(__FILE__))))));
+	define('BASE_PATH', $base);
+}
+
 // Include general configuration
-require_once('../../../../lib/sitemap.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
+
+class FbX extends CcmsAjaxFbException {}; // nnasty way to do 'shorthand in PHP -- I do miss my #define macros! :'-|
 
 // Security functions
-$canarycage		= md5(session_id());
-$currenthost	= md5($_SERVER['HTTP_HOST']);
+
+
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
- /**
+/**
  *
  * Either INSERT or UPDATE preferences
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST) && checkAuth($canarycage,$currenthost)) {
-	
-	// (!) Only administrators can change these values
-	if($_SESSION['ccms_userLevel']>='4') {
-		
-		// Execute either INSERT or UPDATE
-		if($db->UpdateRows($cfg['db_prefix']."cfgpermissions", $_POST)) {
-			header("Location: permissions.Manage.php?status=notice&msg=".$ccms['lang']['backend']['settingssaved']);
-			exit();
-		} else $db->Kill();
-		
-	} else die($ccms['lang']['auth']['featnotallowed']);
-	
-} else die("No external access to file");
+if($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST) && checkAuth()) 
+{
+	FbX::SetFeedbackLocation("permissions.Manage.php");
+	try
+	{
+		// (!) Only administrators can change these values
+		if($_SESSION['ccms_userLevel']>=4) 
+		{
+			// Execute either INSERT or UPDATE
+			$values = array(); // [i_a] make sure $values is an empty array to start with here
+			foreach ($_POST as $key => $value)
+			{
+				$key = filterParam4IdOrNumber($key);
+				$setting = filterParam4Number($value);
+				if (empty($key) || (empty($setting) && $value !== "0"))
+					throw new FbX($ccms['lang']['system']['error_forged']); 
+				$values[$key] = MySQL::SQLValue($setting, MySQL::SQLVALUE_NUMBER);
+			}
+			if($db->UpdateRows($cfg['db_prefix']."cfgpermissions", $values)) 
+			{
+				header('Location: ' . makeAbsoluteURI('permissions.Manage.php?status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
+				exit();
+			} 
+			else 
+			{
+				throw new FbX($db->MyDyingMessage());
+			}
+		} 
+		else 
+		{
+			throw new FbX($ccms['lang']['auth']['featnotallowed']);
+		}
+	}
+	catch (CcmsAjaxFbException $e)
+	{
+		$e->croak();
+	}
+} 
+else 
+	die("No external access to file");
 ?>

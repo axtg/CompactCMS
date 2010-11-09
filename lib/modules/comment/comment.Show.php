@@ -29,21 +29,66 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
-// Load previously defined variables
-global $db,$cfg,$ccms;
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
+
 
 // Set Captcha value
-$_SESSION['captcha'] = rand('123456','987654'); 
+$_SESSION['ccms_captcha'] = mt_rand('123456','987654'); 
 
 // Load comment preferences
-$pageID	= (isset($_GET['page'])?$_GET['page']:null);
+$pageID	= getGETparam4Filename('page');
+
+
 ?>
 
 <!-- additional style and code -->
-<link rel="stylesheet" href="<?php echo $cfg['rootdir']; ?>lib/modules/comment/resources/style.css" type="text/css" media="screen" title="comments" charset="utf-8" />
-<script type="text/javascript" src="<?php echo $cfg['rootdir']; ?>lib/modules/comment/resources/script.js" charset="utf-8"></script>
+<link rel="stylesheet" href="./lib/modules/comment/resources/style.css" type="text/css" media="screen" title="comments" charset="utf-8" />
+<script type="text/javascript" src="./lib/modules/comment/resources/script.js" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
-window.addEvent('domready',function(){var req=new Request.HTML({useSpinner:true,method:'get',url:'./lib/modules/comment/comment.Process.php?action=show-comments&page=<?php echo $_GET['page']; ?>',update:$('comments'),onRequest:function(){},onSuccess:function(){ajaxLinks();}}).send();function ajaxLinks(){$$('.pagination a').each(function(ele){ele.addEvent('click',function(e){e=new Event(e).stop();var alink=ele.getProperty('href');var url='./lib/modules/comment/comment.Process.php'+alink+'&action=show-comments&page=<?php echo $_GET['page'];?>';var ajaxLink=new Request.HTML({useSpinner:true,onRequest:function(){},onSuccess:function(){new Fx.Scroll(document.body,{'duration':'long'}).toElement('comments');ajaxLinks();},onFailure:function(){},update:$('comments')}).get(url);});});}});</script>
+window.addEvent(
+	'domready',
+	function()
+	{
+		var req=new Request.HTML(
+			{
+				useSpinner:true,
+				method:'get',
+				url:<?php echo "'./lib/modules/comment/comment.Process.php?action=show-comments&page=" . $pageID . "'"; ?>,
+				update:$('comments'),
+				onRequest:function(){},
+				onFailure:function(){},
+				onSuccess:function(){ajaxLinks();}
+			}).send();
+		function ajaxLinks()
+		{
+			$$('.pagination a').each(
+				function(ele)
+				{
+					ele.addEvent(
+						'click',
+						function(e)
+						{
+							e=new Event(e).stop();
+							var alink=ele.getProperty('href');
+							var url=<?php echo "'./lib/modules/comment/comment.Process.php'+alink+'&action=show-comments&page=" . $pageID . "'"; ?>;
+							var ajaxLink=new Request.HTML(
+								{
+									useSpinner:true,
+									onRequest:function(){},
+									onSuccess:function()
+									{
+										new Fx.Scroll(document.body, {'duration':'long'}).toElement('comments');
+										ajaxLinks();
+									},
+									onFailure:function(){},
+									update:$('comments')
+								}).get(url);
+						});
+				});
+		}
+	});
+</script>
 
 <div id="comments">
 	<!--spinner-->
@@ -74,11 +119,11 @@ window.addEvent('domready',function(){var req=new Request.HTML({useSpinner:true,
 				<option value="4">4 ****</option>
 				<option value="5">5 *****</option>
 			</select><br/>
-			<p><?php echo $ccms['lang']['guestbook']['verinstr']; ?> <span style="font-weight:bold;color: #f00;"><?php echo $_SESSION['captcha']; ?></span>.</p>
+			<p><?php echo $ccms['lang']['guestbook']['verinstr']; ?> <span style="font-weight:bold;color: #f00;"><?php echo $_SESSION['ccms_captcha']; ?></span>.</p>
 			<label for="verification"><?php echo $ccms['lang']['guestbook']['verify']; ?></label><input type="input" name="verification" style="width:50px;" maxlength="6" value="" id="verification" class="required validate-match matchInput:'captcha_check' matchName:'captcha' text"/>
 			
-			<input type="hidden" name="captcha_check" value="<?php echo $_SESSION['captcha']; ?>" id="captcha_check" />
-			<input type="hidden" name="pageID" value="<?php echo $_GET['page']; ?>" id="pageID" />
+			<input type="hidden" name="captcha_check" value="<?php echo $_SESSION['ccms_captcha']; ?>" id="captcha_check" />
+			<input type="hidden" name="pageID" value="<?php echo $pageID; ?>" id="pageID" />
 			<p style="margin-bottom:20px;text-align:center;">
 				<button name="submit_gb" type="submit"><?php echo $ccms['lang']['guestbook']['add']; ?></button>
 			</p>

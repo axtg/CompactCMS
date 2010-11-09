@@ -29,6 +29,10 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
+
+
 /*
   MySQL database backup class, version 1.0.0
   Written by Rochak Chauhan
@@ -330,9 +334,9 @@ class MySQL_Backup
     $this->_Query('LOCK TABLES ' . $table . ' WRITE');
     if ($this->comments)
     {
-      $value .= '#' . MSB_NL;
-      $value .= '# Table structure for table `' . $table . '`' . MSB_NL;
-      $value .= '#' . MSB_NL . MSB_NL;
+      $value .= '--' . MSB_NL;
+      $value .= '-- Table structure for table `' . $table . '`' . MSB_NL;
+      $value .= '--' . MSB_NL . MSB_NL;
     }
     if ($this->drop_tables)
     {
@@ -349,9 +353,9 @@ class MySQL_Backup
     {
       if ($this->comments)
       {
-        $value .= '#' . MSB_NL;
-        $value .= '# Dumping data for table `' . $table . '`' . MSB_NL;
-        $value .= '#' . MSB_NL . MSB_NL;
+        $value .= '--' . MSB_NL;
+        $value .= '-- Dumping data for table `' . $table . '`' . MSB_NL;
+        $value .= '--' . MSB_NL . MSB_NL;
       }
             
       $value .= $this->_GetInserts($table);

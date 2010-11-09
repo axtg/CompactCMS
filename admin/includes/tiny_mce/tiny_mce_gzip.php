@@ -9,11 +9,11 @@
 	$plugins = explode(',', getParam("plugins", ""));
 	$languages = explode(',', getParam("languages", ""));
 	$themes = explode(',', getParam("themes", ""));
-	$diskCache = getParam("diskcache", "") == "true";
-	$isJS = getParam("js", "") == "true";
-	$compress = getParam("compress", "true") == "true";
-	$core = getParam("core", "true") == "true";
-	$suffix = getParam("suffix", "_src") == "_src" ? "_src" : "";
+	$diskCache = (getParam("diskcache", "") == "true");
+	$isJS = (getParam("js", "") == "true");
+	$compress = (getParam("compress", "true") == "true");
+	$core = (getParam("core", "true") == "true");
+	$suffix = (getParam("suffix", "_src") == "_src" ? "_src" : "");
 	$cachePath = "../cache/"; // Cache path, this is where the .gz files will be stored
 	$expiresOffset = 3600 * 24 * 7; // Cache for 7 days in browser cache
 	$content = "";

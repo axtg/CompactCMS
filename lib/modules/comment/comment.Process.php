@@ -34,54 +34,99 @@
  * > W: http://community.CompactCMS.nl/forum
 **/
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/ 
+
+/*
+We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
+*/
+define('CCMS_PERFORM_MINIMAL_INIT', true);
+
+
 // Compress all output and coding
 header('Content-type: text/html; charset=UTF-8');
 
+// Define default location
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(dirname(__FILE__)))));
+	define('BASE_PATH', $base);
+}
+
 // Include general configuration
-require_once('../../sitemap.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Security functions
-$canarycage		= md5(session_id());
-$currenthost	= md5($_SERVER['HTTP_HOST']);
+
+
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 
 // Set default variables
-$commentID 	= (isset($_GET['commentID'])&&!empty($_GET['commentID'])&&is_numeric($_GET['commentID'])?$_GET['commentID']:'0');
-$pageID		= (isset($_POST['pageID'])&&!empty($_POST['pageID'])?$_POST['pageID']:'0');
-$cfgID		= (isset($_POST['cfgID'])&&!empty($_POST['cfgID'])?$_POST['cfgID']:'0');
-$do_action 	= (isset($_GET['action'])&&!empty($_GET['action'])?$_GET['action']:null);
+$commentID 	= getGETparam4Number('commentID');
+$pageID		= getPOSTparam4Filename('pageID');
+$cfgID		= getPOSTparam4Number('cfgID');
+$do_action 	= getGETparam4IdOrNumber('action');
 
  /**
  *
  * Show comments
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAuth($canarycage,$currenthost)) {
-		
+if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAuth()) 
+{
 	// Pagination variables
-	$pageID	= (isset($_GET['page'])?$_GET['page']:null);
-	$rsCfg	= $db->QuerySingleValue("SELECT showMessage FROM `".$cfg['db_prefix']."cfgcomment` WHERE pageID='$pageID'");
-	$rsLoc	= $db->QuerySingleValue("SELECT showLocale FROM `".$cfg['db_prefix']."cfgcomment` WHERE pageID='$pageID'");
-	$max 	= (!empty($rsCfg)?$rsCfg:'10');
-	$limit 	= (isset($_GET['offset'])&&$_GET['offset']>0?($_GET['offset']*$max).','.$max:"0,$max");
-	$total	= count($db->QueryArray("SELECT commentID FROM `".$cfg['db_prefix']."modcomment` WHERE pageID='$pageID'"));
+	$pageID	= getGETparam4Filename('page');
+	$rs = $db->SelectSingleRow($cfg['db_prefix']."cfgcomment", array('pageID' => MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT)), array('showMessage', 'showLocale'));
+	if (!$rs)
+		$db->Kill();
+	$rsCfg	= $rs->showMessage;
+	$rsLoc	= $rs->showLocale;
+	$max 	= ($rsCfg > 0 ? $rsCfg : 10);
+	/*
+	The next query is a nice example about the MySQL class 'enhanced' use: by 
+	passing a prefab string instead of an array of fields, it is copied 
+	literally into the query, without quoting it.
 	
-	$locale = (!empty($rsLoc)?$rsLoc:'eng');
-
+	This produces the following query as a result:
+	
+	  SELECT COUNT(commentID) FROM ccms_modcomment WHERE pageID = 'xyz'
+	  
+	NOTE that this type of usage assumes the 'raw string' has been correctly
+	processed by the caller, i.e. all SQL injection attack prevention precautions
+	have been taken. (Well, /hardcoding/ it like this is the safest possible
+	thing right there, so no worries, mate! ;-) )
+	*/
+	$total = $db->SelectSingleValue($cfg['db_prefix']."modcomment", array('pageID' => MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT)), 'COUNT(commentID)');
+	if ($db->ErrorNumber()) 
+		$db->Kill();
+	$limit = getGETparam4Number('offset') * $max;
+	if ($limit >= $total)
+		$limit = $total - 1;
+	if ($limit < 0)
+		$limit = 0;
+	$offset = intval($limit / $max);
+	$limit4sql = ($offset * $max) . ',' . $max;
+	
 	// Set front-end language
-	setlocale(LC_ALL, $locale);
-	
+	SetUpLanguageAndLocale($rsLoc);
+
 	// Load recordset
-	$db->Query("SELECT * FROM `".$cfg['db_prefix']."modcomment` WHERE pageID='$pageID' ORDER BY `commentID` DESC LIMIT $limit");
+	if (!$db->SelectRows($cfg['db_prefix']."modcomment", array('pageID' => MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT)), null, 'commentID', false, $limit4sql))
+		$db->Kill();
+	//echo "<pre>" . $db->GetLastSQL() . "</pre>";
 	
 	// Start switch for comments, select all the right details
-	if($db->HasRecords()) {
-		while (!$db->EndOfSeek()) {
-		$rsComment = $db->Row(); ?>
-	
-			<div id="s-display">
+	if($db->HasRecords()) 
+	{
+		$index = $limit;
+		while (!$db->EndOfSeek()) 
+		{
+			$index++; // start numbering at 1 (+ N*pages)
+			$rsComment = $db->Row(); 
+			?>
+			<div id="s-display"><a name="<?php echo "cmt" . $index; ?>"></a>
 				<div id="s-avatar">
 					<img src="http://www.gravatar.com/avatar.php?gravatar_id=<?php echo md5($rsComment->commentEmail);?>&amp;size=80&amp;rating=G" alt="<?php echo $ccms['lang']['guestbook']['avatar'];?>" /><br/>
 				</div>
@@ -90,28 +135,39 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 				</div>
 				<div id="s-comment"><p><?php echo nl2br(strip_tags($rsComment->commentContent)); ?></p></div>
 				<div id="s-rating">
+					<img src="<?php echo $cfg['rootdir']; ?>lib/modules/comment/resources/<?php echo $rsComment->commentRate;?>-star.gif" alt="<?php echo $ccms['lang']['guestbook']['rating']." ".$rsComment->commentRate; ?>" />
 					<p>
-						<img src="<?php echo $cfg['rootdir']; ?>lib/modules/comment/resources/<?php echo $rsComment->commentRate;?>-star.gif" alt="<?php echo $ccms['lang']['guestbook']['rating']." ".$rsComment->commentRate; ?>" /><br/>
 						<?php echo htmlentities(strftime('%A %d %B %Y, %H:%M',strtotime($rsComment->commentTimestamp)));?>
 					</p>
 				</div>
 			</div>
-		<?php } ?>
+		<?php 
+		} 
+		?>
 		
 		<div class="pagination">
-			<?php $current = (isset($_GET['offset'])&&$_GET['offset']>0?$_GET['offset']:'0'); ?>
-			<?php for ($i=0; $i<$total; $i++) { 
-				$linktext = ($i/$max>0?($i/$max)+1:'1');
-				if($i%$max==0&&$current==($i/$max)) {
+			<?php 
+			$maxblocks = intval(($total + $max - 1) / $max);
+			$current = $offset;
+			for ($i = 0; $i < $maxblocks; $i++) 
+			{ 
+				$linktext = $i+1;
+				if ($current == $i) 
+				{
 					echo '<span class="current">'.$linktext.'</span>';
-				} elseif($i%$max==0&&$current!=($i/$max)) {
-					echo '<a href="?offset='.$i/$max.'">'.$linktext.'</a>';
+				} 
+				else 
+				{
+					echo '<a href="?offset='.$i.'">'.$linktext.'</a>';
 				}
-			} ?>
+			} 
+			?>
 		</div>
-		<p>&#160;</p>
-
-	<?php } else echo $ccms['lang']['guestbook']['noposts'];
+		<!--<p>&#160;</p>-->
+	<?php 
+	} 
+	else 
+		echo $ccms['lang']['guestbook']['noposts'];
 }
 
  /**
@@ -119,17 +175,32 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
  * Delete comment
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth($canarycage,$currenthost)) {
-	
+if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth()) 
+{
 	// Only if current user has the rights
-	if($_SESSION['ccms_userLevel']>=$perm['manageModComment']) {
-	
-		$values['commentID'] = MySQL::SQLValue($commentID,MySQL::SQLVALUE_NUMBER);
-		if($db->DeleteRows($cfg['db_prefix']."modcomment", $values)) {
-			header("Location: comment.Manage.php?status=notice&file=".$_GET['pageID']."&msg=".$ccms['lang']['backend']['fullremoved']);
-			exit();
+	if($perm['manageModComment']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModComment']) 
+	{
+		$pageID	= getGETparam4Filename('pageID');
+		if (!empty($pageID))
+		{
+			$values = array(); // [i_a] make sure $values is an empty array to start with here
+			$values['commentID'] = MySQL::SQLValue($commentID,MySQL::SQLVALUE_NUMBER);
+			/* only do this when a good pageID value was specified! */
+			$values["pageID"] = MySQL::SQLValue($pageID,MySQL::SQLVALUE_TEXT);
+			
+			if($db->DeleteRows($cfg['db_prefix']."modcomment", $values)) 
+			{
+				header('Location: ' . makeAbsoluteURI('comment.Manage.php?status=notice&file='.$pageID.'&msg='.rawurlencode($ccms['lang']['backend']['fullremoved'])));
+				exit();
+			} 
+			else 
+				die($ccms['lang']['auth']['featnotallowed']);
 		} 
-	} else die($ccms['lang']['auth']['featnotallowed']);
+		else 
+			die($ccms['lang']['auth']['featnotallowed']);
+	} 
+	else 
+		die($ccms['lang']['auth']['featnotallowed']);
 }
 
  /**
@@ -137,18 +208,20 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth
  * Add comment
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAuth($canarycage,$currenthost) && $_POST['verification']==$_SESSION['captcha']) {
-
-	$values['pageID']		= MySQL::SQLValue($_POST['pageID'], MySQL::SQLVALUE_TEXT);
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAuth() && $_POST['verification']==$_SESSION['ccms_captcha']) 
+{
+	$values = array(); // [i_a] make sure $values is an empty array to start with here
+	$values['pageID']		= MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
 	$values['commentName']	= MySQL::SQLValue($_POST['name'], MySQL::SQLVALUE_TEXT);
 	$values['commentEmail']	= MySQL::SQLValue($_POST['email'], MySQL::SQLVALUE_TEXT);
 	$values['commentUrl']	= MySQL::SQLValue($_POST['website'], MySQL::SQLVALUE_TEXT);
-	$values['commentRate']	= MySQL::SQLValue($_POST['rating'], MySQL::SQLVALUE_NUMBER);
+	$values['commentRate']	= MySQL::SQLValue($_POST['rating'], MySQL::SQLVALUE_NUMBER); // 'note the 'tricky' comment in the MySQL::SQLValue() member: we MUST have quotes around this number as mySQL enums are quoted :-(
 	$values['commentContent'] = MySQL::SQLValue(strip_tags($_POST['comment']), MySQL::SQLVALUE_TEXT);
 	$values['commentHost']	= MySQL::SQLValue($_SERVER['REMOTE_ADDR'], MySQL::SQLVALUE_TEXT);
 	
 	// Insert new page into database
-	$db->InsertRow($cfg['db_prefix']."modcomment", $values);
+	if (!$db->InsertRow($cfg['db_prefix']."modcomment", $values))
+		$db->Kill();
 }
 
  /**
@@ -156,15 +229,16 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAut
  * Save configuration
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="save-cfg" && checkAuth($canarycage,$currenthost)) {
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="save-cfg" && checkAuth()) {
 
+	$values = array(); // [i_a] make sure $values is an empty array to start with here
 	$values['pageID'] = MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
-	$values['showMessage'] = (is_numeric($_POST['messages'])&&!empty($_POST['messages'])?$_POST['messages']:null);
+	$values['showMessage'] = MySQL::SQLValue(getPOSTparam4Number('messages'), MySQL::SQLVALUE_NUMBER);
 	$values['showLocale'] = MySQL::SQLValue($_POST['locale'], MySQL::SQLVALUE_TEXT);
 
 	// Insert or update configuration
-	if($db->AutoInsertUpdate($cfg['db_prefix']."cfgcomment", $values, array("cfgID" => $cfgID))) {
-		header("Location: comment.Manage.php?file=$pageID&status=notice&msg=".$ccms['lang']['backend']['settingssaved']);
+	if($db->AutoInsertUpdate($cfg['db_prefix']."cfgcomment", $values, array("cfgID" => MySQL::BuildSQLValue($cfgID)))) {
+		header('Location: ' . makeAbsoluteURI('comment.Manage.php?file='.$pageID.'&status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
 		exit();
 	} else $db->Kill();
 }

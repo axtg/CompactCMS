@@ -29,23 +29,41 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+/*
+We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
+*/
+define('CCMS_PERFORM_MINIMAL_INIT', true);
+
+
+// Define default location
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(dirname(dirname(__FILE__))))));
+	define('BASE_PATH', $base);
+}
+
 // Include general configuration
-require_once('../../../../lib/sitemap.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
-$canarycage	= md5(session_id());
-$currenthost= md5($_SERVER['HTTP_HOST']);
-$do 		= (isset($_GET['do'])?$_GET['do']:null);
 
-if(!empty($do) && $_GET['do']=="backup" && $_POST['btn_backup']=="dobackup" && md5(session_id())==$canarycage && isset($_SESSION['rc1']) && md5($_SERVER['HTTP_HOST'])==$currenthost) {
+
+$do	= getGETparam4IdOrNumber('do');
+$status = getGETparam4IdOrNumber('status');
+$status_message = getGETparam4DisplayHTML('msg');
+
+if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && isset($_SESSION['rc1']) && checkAuth()) {
 	
 	// Include back-up functions
-	include_once('functions.php');
+	/*MARKER*/require_once('./functions.php');
 }
 
 // Set the default template
-$dir_temp = "../../../../lib/templates/";
-$get_temp = (isset($_GET['template'])?htmlentities($_GET['template']):$template[0].'.tpl.html');
-$chstatus = (substr(sprintf('%o', fileperms($dir_temp.$get_temp)), -4)>='0666'?1:0);
+$dir_temp = BASE_PATH . "/lib/templates/";
+$get_temp = getGETparam4FullFilePath('template', $template[0].'.tpl.html');
+$chstatus = is_writable($dir_temp.$get_temp); // @dev: to test the error feedback on read-only on Win+UNIX: add '|| 1' here.
 	
 // Check for filename	
 if(!empty($get_temp)) {
@@ -62,8 +80,10 @@ if(!empty($get_temp)) {
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+
+if(checkAuth() && $_SESSION['ccms_userLevel']>=$perm['manageTemplate']) 
+{ 
 ?>
-<?php if(checkAuth($canarycage,$currenthost) && $_SESSION['ccms_userLevel']>=$perm['manageTemplate']) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
@@ -72,15 +92,50 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
 		
 		<script type="text/javascript" src="../../edit_area/edit_area_compressor.php"></script>
-		<script type="text/javascript">editAreaLoader.init({id:"content",allow_resize:'both',allow_toggle:false,word_wrap:true,start_highlight:true,<?php echo 'language:"'.$cfg['language'].'",'; ?>syntax:"html"});</script>
-		<script type="text/javascript">function confirmation(){var answer=confirm(<?php echo"'".$ccms['lang']['editor']['confirmclose']."'";?>);if(answer){try{parent.MochaUI.closeWindow(parent.$('sys-tmp_ccms'));}catch(e){}}else{return false;}}</script>
+		<script type="text/javascript">
+editAreaLoader.init(
+	{
+		id:"content",
+		allow_resize:'both',
+		allow_toggle:false,
+		word_wrap:true,
+		start_highlight:true,
+		<?php echo 'language:"'.$cfg['editarea_language'].'",'; ?>
+		syntax:"html"
+	});
+</script>
+		<script type="text/javascript">
+function confirmation()
+{
+	var answer=confirm(<?php echo"'".$ccms['lang']['editor']['confirmclose']."'";?>);
+	if(answer)
+	{
+		try
+		{
+			parent.MochaUI.closeWindow(parent.$('sys-tmp_ccms'));
+		}
+		catch(e)
+		{
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+</script>
 	</head>
 <body>
 	<div class="module">
 
-		<?php if(!strpos($_SERVER['SERVER_SOFTWARE'], "Win") && $chstatus==0) { ?>
+		<?php 
+		if($chstatus==0) 
+		{ 
+		?>
 			<p class="error center"><?php echo $ccms['lang']['template']['nowrite']; ?></p>
-		<?php } ?>	
+		<?php 
+		} 
+		?>	
 		<div class="span-13">
 			<h1 class="editor"><?php echo $ccms['lang']['template']['manage']; ?></h1>
 		</div>
@@ -91,33 +146,72 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 				<select class="text" onChange="document.getElementById('changeTmp').submit();" id="template" name="template">
 					<?php
 					$x = 0; 
-					while($x<count($template)) { ?>
+					while($x<count($template)) 
+					{ 
+					?>
 						<optgroup label="<?php echo ucfirst($template[$x]); ?>">
 							<option <?php echo ($get_temp==$template[$x].".tpl.html") ? "selected=\"selected\"" : ""; ?> value="<?php echo $template[$x]; ?>.tpl.html"><?php echo ucfirst($template[$x]).': '.strtolower($ccms['lang']['backend']['template']); ?></option>
 							<?php 
 							
-							// Get CSS files
-							if ($handle = opendir($dir_temp.$template[$x].'/')) {
-								while (false !== ($file = readdir($handle))) {
-							        if ($file != "." && $file != ".." && strtolower(substr($file, strrpos($file, '.') + 1))=='css') {
-							            $cssfiles[$x][] = $file;
+							// Get CSS and other text-editable files which are part of the engine
+							$cssfiles = array();
+							if ($handle = opendir($dir_temp.$template[$x].'/')) 
+							{
+								while (false !== ($file = readdir($handle))) 
+								{
+							        if ($file != "." && $file != "..")
+									{
+										switch (strtolower(substr($file, strrpos($file, '.') + 1)))
+										{
+										case 'css':
+										case 'js':
+										case 'php':
+										case 'html':
+										case 'txt':
+											$cssfiles[$x][] = $file;
+											break;
+											
+										default:
+											// don't list image files and such
+											break;
+										}
 							        }
 							    }
 							    closedir($handle);
 							}
-							foreach ($cssfiles[$x] as $css) { ?>
+							
+							foreach ($cssfiles[$x] as $css) 
+							{ 
+							?>
 								<option <?php echo ($get_temp==$template[$x].'/'.$css) ? "selected=\"selected\"" : ""; ?> value="<?php echo $template[$x].'/'.$css; ?>"><?php echo ucfirst($template[$x]).': '.$css; ?></option>
-							<?php } ?>
+							<?php 
+							} 
+							?>
 						</optgroup>
-					<?php $x++; } ?>
+					<?php 
+					$x++; 
+				} 
+				?>
 				</select>
 			</form>
 		</div>
 		<hr class="space"/>
 		
-		<?php if(isset($_GET['status'])) { ?>
-			<div class="notice center"><span class="ss_sprite ss_confirm"><?php echo $ccms['lang']['backend']['settingssaved'];?></span></div>
-		<?php } ?>
+		<?php 
+		/*
+		??? ALWAYS saying 'settings saved' instead of the attached message in the old code? Must've been a bug...
+		
+		Changed to mimic the layout in the other files...
+		*/                 
+		?>                              
+		<div class="center <?php echo $status; ?>">
+			<?php 
+			if(!empty($status_message)) 
+			{ 
+				echo '<span class="ss_sprite '.($status == 'notice' ? 'ss_accept' : 'ss_error').'">'.$status_message.'</span>'; 
+			} 
+			?>
+		</div>
 		
 		<form action="../../process.inc.php?template=<?php echo $get_temp; ?>&amp;action=save-template" method="post" accept-charset="utf-8">
 		
@@ -125,9 +219,14 @@ $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissi
 			
 			<p>
 				<input type="hidden" name="template" value="<?php echo $get_temp; ?>" id="template" />
-				<?php if(strpos($_SERVER['SERVER_SOFTWARE'], "Win") || $chstatus>0) { ?>
+				<?php 
+				if($chstatus > 0) 
+				{ 
+				?>
 					<button type="submit" name="do" id="submit"><span class="ss_sprite ss_disk"><?php echo $ccms['lang']['editor']['savebtn']; ?></span></button>
-				<?php }  ?>
+				<?php 
+				}  
+				?>
 				<span class="ss_sprite ss_cross"><a href="javascript:;" onClick="confirmation()" title="<?php echo $ccms['lang']['editor']['cancelbtn']; ?>"><?php echo $ccms['lang']['editor']['cancelbtn']; ?></a></span>
 			</p>
 			

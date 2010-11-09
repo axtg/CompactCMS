@@ -29,17 +29,28 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
-// Check first whether installation directory exists
-if(is_dir('./_install/')&&is_file('./_install/index.php')) {
-	header('Location: ./_install/index.php');
-	exit();
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(__FILE__));
+	define('BASE_PATH', $base);
 }
 
 // This file loads the appropriate configuration
-require_once(dirname(__FILE__) . '/lib/sitemap.php'); 
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
+
+
+// Check first whether installation directory exists
+if(is_dir('./_install/')&&is_file('./_install/index.php') && !defined('CCMS_DEVELOPMENT_ENVIRONMENT')) {
+	header('Location: ' . makeAbsoluteURI('./_install/index.php'));
+	exit();
+}
+
 
 // This file parses the template and coding
-require_once(dirname(__FILE__) . '/lib/class/engine.class.php');
+/*MARKER*/require_once(BASE_PATH . '/lib/class/engine.class.php');
 
 // Initialize ccmsParser class
 $STP = new ccmsParser;
@@ -52,9 +63,14 @@ $ccms['footermenu']	= (isset($ccms['structure4'])?$ccms['structure4']:null);
 $ccms['extramenu']	= (isset($ccms['structure5'])?$ccms['structure5']:null);
 
 // Set the appropriate template
-$STP->setTemplate('./lib/templates/'.$ccms['template'].'.tpl.html');
+$STP->setTemplate('./lib/templates/'.$ccms['template'].'.tpl.html', '<?php global $db, $cfg, $ccms; ?>');
 
 // Execute code
 $STP->setParams($ccms);
 $STP->parseAndEchoPHP();
+
+/*
+echo "<p>\$ccms = <pre>";
+var_dump($ccms);
+*/
 ?>

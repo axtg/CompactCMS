@@ -17,20 +17,28 @@
 	behavior: url('../../../../admin/img/styles/PIE.php');
 }
 #preview-display h2 {font-size:1.3em;font-weight:bold;}
-#s-display {padding:10px;margin:10px auto;border-bottom:1px solid #333;width:100%;min-height:115px;}
+#s-display {padding:10px;margin:10px auto;border-bottom:1px solid #333;width:100%;min-height:115px; clear: right; padding-bottom:20px; }
 #preview-avatar, #s-avatar {float:left;width:100px;}
 #preview-avatar img, #s-avatar img {border: 3px solid #000;}
 #preview-name, #s-name {float:left;font-weight:bold;}
 #preview-comment, #s-comment{line-height:1.5em;text-align:left;}
 #s-comment{margin-top:20px;}
+#s-comment p {line-height:1.3em;}
 #preview-rating {clear:both;background:url('./3-star.gif') no-repeat;margin-top:15px;width:120px;height:24px;}
-#s-rating{font-size:0.9em;float:right;text-align:right;margin-top:-25px;}
+#s-rating{font-size:0.9em;float:right;text-align:right;margin-top: -5px; }
+#s-rating p {float: right;  margin: -3px 20px 0 20px; padding: 0;font-size:0.9em;}
+#s-rating img {float: right; }
 
 /* COMMENTS === */
 .loading {background:transparent url('../../../../admin/img/spinner.gif') 50% 50%;}
 
 /* PAGINATION === */
-div.pagination {padding: 3px;margin: 3px;text-align:center;}
+div.pagination 
+{
+	padding: 3px;
+	margin: 3px 3px 30px 3px;
+	text-align:center;
+}
 div.pagination a {
 	border: 1px solid #dedfde;
 	margin-right:3px;

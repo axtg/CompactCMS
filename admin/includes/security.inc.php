@@ -29,8 +29,23 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
+
+/*
+We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
+*/
+if(!defined("CCMS_PERFORM_MINIMAL_INIT")) { define("CCMS_PERFORM_MINIMAL_INIT", true); }
+
+
 // Include general configuration
-require_once(dirname(dirname(dirname(__FILE__))).'/lib/sitemap.php');
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(__FILE__))));
+	define('BASE_PATH', $base);
+}
+
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
 // Disable common hacking functions
 ini_set('base64_decode', 'Off');
@@ -39,44 +54,56 @@ ini_set('allow_url_fopen', 'Off');
 ini_set('allow_url_include', 'Off');
 
 // Set appropriate auth.inc.php file location
-$loc = "";
-if(is_file('../lib/includes/auth.inc.php')) 			{ $loc = "../lib/includes/auth.inc.php"; } 
-elseif(is_file('../../lib/includes/auth.inc.php'))		{ $loc = "../../lib/includes/auth.inc.php"; }
-elseif(is_file('../../../lib/includes/auth.inc.php'))	{ $loc = "../../../lib/includes/auth.inc.php"; }
+$loc = $cfg['rootdir'] . "lib/includes/auth.inc.php";
 
-	// Check whether current user has running session
-	if(empty($_SESSION['ccms_userID']) && $cfg['protect']==true){
-		header('Location: '.$loc);
+// Check whether current user has running session
+if(empty($_SESSION['ccms_userID']) && $cfg['protect']==true)
+{
+	header('Location: ' . makeAbsoluteURI($loc));
+	exit();
+}
+
+// Do log-out (kill sessions) and redirect
+if(isset($_GET['do'])&&$_GET['do']=="logout") 
+{
+	// Unset all of the session variables.
+	$_SESSION = array();
+	
+	// Destroy session
+	if (ini_get("session.use_cookies")) 
+	{
+		$params = session_get_cookie_params();
+		setcookie(session_name(), '', time() - 42000,
+			$params["ccms_userID"], $params["domain"],
+			$params["secure"], $params["httponly"]
+		);
+	}
+	
+	// Generate a new session_id
+	session_regenerate_id();
+	
+	// Finally, destroy the session.
+	if(session_destroy()) 
+	{
+		header('Location: ' . makeAbsoluteURI($loc));
 		exit();
 	}
 	
-	// Do log-out (kill sessions) and redirect
-	if(isset($_GET['do'])&&$_GET['do']=="logout") {
-		// Unset all of the session variables.
-		$_SESSION = array();
-		
-		// Destroy session
-		if (ini_get("session.use_cookies")) {
-		    $params = session_get_cookie_params();
-		    setcookie(session_name(), '', time() - 42000,
-		        $params["ccms_userID"], $params["domain"],
-		        $params["secure"], $params["httponly"]
-		    );
-		}
-		
-		// Generate a new session_id
-		session_regenerate_id();
-		
-		// Finally, destroy the session.
-		if(session_destroy()) {
-			header('Location: '.$loc);
-			exit();
-		}
-		
-		if(empty($_SESSION['ccms_userID'])) {
-			header('Location: '.$loc);
-			exit();
-		}
+	if(empty($_SESSION['ccms_userID'])) 
+	{
+		header('Location: ' . makeAbsoluteURI($loc));
+		exit();
 	}
+}
+
+
+/*
+-----------------------------------------------------------------
+
+Further setup/init work for the entire admin section of the site:
+
+-----------------------------------------------------------------
+*/
+
 	
 ?>

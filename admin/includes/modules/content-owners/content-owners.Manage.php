@@ -29,12 +29,30 @@ along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
 > W: http://community.CompactCMS.nl/forum
 ************************************************************ */
 
-// Include general configuration
-require_once('../../../../lib/sitemap.php');
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 
-$canarycage	= md5(session_id());
-$currenthost= md5($_SERVER['HTTP_HOST']);
-$do 		= (isset($_GET['do'])?$_GET['do']:null);
+/*
+We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
+*/
+define('CCMS_PERFORM_MINIMAL_INIT', true);
+
+
+// Define default location
+if (!defined('BASE_PATH'))
+{
+	$base = str_replace('\\','/',dirname(dirname(dirname(dirname(dirname(__FILE__))))));
+	define('BASE_PATH', $base);
+}
+
+// Include general configuration
+/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
+
+
+
+$do = getGETparam4IdOrNumber('do');
+$status = getGETparam4IdOrNumber('status');
+$status_message = getGETparam4DisplayHTML('msg');
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
@@ -44,8 +62,11 @@ $pages = $db->QueryArray("SELECT page_id,urlpage,user_ids FROM ".$cfg['db_prefix
 
 // Get all users
 $users = $db->QueryArray("SELECT userID,userName,userFirst,userLast,userEmail,userLevel FROM ".$cfg['db_prefix']."users");
+
+
+if(checkAuth() && !empty($_SESSION['rc1']) && !empty($_SESSION['rc2'])) 
+{ 
 ?>
-<?php if(checkAuth($canarycage,$currenthost) && isset($_SESSION['rc1']) && !empty($_SESSION['rc2'])) { ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
@@ -56,14 +77,36 @@ $users = $db->QueryArray("SELECT userID,userName,userFirst,userLast,userEmail,us
 	
 		<!-- Confirm close -->
 		<script type="text/javascript">
-		function confirmation(){var answer=confirm('<?php echo $ccms['lang']['editor']['confirmclose']; ?>');if(answer){try{parent.MochaUI.closeWindow(parent.$('sys-pow_ccms'));}catch(e){}}else{return false;}}
+function confirmation()
+{
+	var answer=confirm('<?php echo $ccms['lang']['editor']['confirmclose']; ?>');
+	if(answer)
+	{
+		try
+		{
+			parent.MochaUI.closeWindow(parent.$('sys-pow_ccms'));
+		}
+		catch(e)
+		{
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
 		</script>	
 	</head>
 <body>
 	<div class="module">
 
-	<div class="center <?php echo (isset($_GET['status'])?$_GET['status']:null); ?>">
-		<? if(isset($_GET['action'])) { echo '<span class="ss_sprite ss_confirm">'.$_GET['action'].'</span>'; } ?>
+	<div class="center <?php echo $status; ?>">
+		<?php 
+		if(!empty($status_message)) 
+		{ 
+			echo '<span class="ss_sprite '.($status == 'notice' ? 'ss_accept' : 'ss_error').'">'.$status_message.'</span>'; 
+		} 
+		?>
 	</div>
 	
 	<div>
@@ -74,33 +117,57 @@ $users = $db->QueryArray("SELECT userID,userName,userFirst,userLast,userEmail,us
 		<tr>
 			<th><span class="ss_sprite ss_arrow_down"><?php echo $ccms['lang']['owners']['pages']; ?></span> \ <span class="ss_sprite ss_arrow_right"><?php echo $ccms['lang']['owners']['users']; ?></span></th>
 			<?php
-			for ($ar1=0; $ar1<count($users); $ar1++) { ?>
+			for ($ar1=0; $ar1<count($users); $ar1++) 
+			{ 
+			?>
 				<th class="center span-2" style="border-bottom:solid #AD8CCF 2px;">
-					<span class="ss_sprite ss_user_<?php echo ($users[$ar1]['userLevel']>='4'?'suit':'green'); ?>"><?php echo $users[$ar1]['userFirst'].' '.substr($users[$ar1]['userLast'],0,1); ?>.</span>
+					<span class="ss_sprite ss_user_<?php echo ($users[$ar1]['userLevel']>=4?'suit':'green'); ?>"><?php echo $users[$ar1]['userFirst'].' '.substr($users[$ar1]['userLast'],0,1); ?>.</span>
 				</th>
-			<?php } ?>
+			<?php 
+			} 
+			?>
 		</tr>
-		<?php for ($i=0; $i<count($pages); $i++) { ?>
+		<?php 
+		for ($i = 0; $i < count($pages); $i++) 
+		{ 
+			$users_owning_page = explode('||', $pages[$i]['user_ids']);
+			
+		?>
 			<tr>			
-			<td class="span-4" style="padding-left:2px;background-color:<?php echo ($i%2!='1'?'#EAF3E2;':'#fff;'); ?>border-right:solid #AD8CCF 2px;">
+			<td class="span-4" style="padding-left:2px;background-color:<?php echo ($i%2!=1?'#EAF3E2;':'#fff;'); ?>border-right:solid #AD8CCF 2px;">
 				<span class="ss_sprite ss_page_white_world"><?php echo $pages[$i]['urlpage']; ?>.html</span>
 			</td>
 				<?php
-				for ($ar2=0; $ar2<count($users); $ar2++) { ?>
+				for ($ar2=0; $ar2<count($users); $ar2++) 
+				{ 
+				?>
 					<td class="hover center">
-						<label for="<?php echo $i.$ar2;?>"><span>
+						<label for="<?php echo $i.'_'.$ar2;?>"><span>
 						<input type="checkbox" name="owner[]" 
 						<?php 
-						if(strstr($pages[$i]['user_ids'], $users[$ar2]['userID'])!==false) {
+						/*
+						This code is a security issue of another kind: user ownership settings will OVERLAP for certain users when their IDs are substrings, e.g. user #1 will have everything user #11 has as well.
+						
+						if(strstr($pages[$i]['user_ids'], $users[$ar2]['userID'])!==false)
+						
+						Hence the code is replaced with an explode plus array scan. Another way to solve would be padding the rights string with leading and trailing '||' and then
+						regex matching against "/||$userid||/".
+						
+						*/
+						if (in_array($users[$ar2]['userID'], $users_owning_page))
+						{
 							echo 'checked';
 						} 
-						?> value="<?php echo $users[$ar2]['userID'].'||'.$pages[$i]['page_id'];?>" id="<?php echo $i.$ar2;?>" />
+						?> value="<?php echo $users[$ar2]['userID'].'||'.$pages[$i]['page_id'];?>" id="<?php echo $i.'_'.$ar2;?>" />
 						</span></label>
 					</td>
-				<?php } ?>
+				<?php 
+				} 
+				?>
 			</tr>
-		<?php } ?>
-
+		<?php 
+		} 
+		?>
 		</tr>
 		</table>
 		<hr/>
@@ -108,6 +175,5 @@ $users = $db->QueryArray("SELECT userID,userName,userFirst,userLast,userEmail,us
 		</form>
 	</div>
 <?php
-	//} else die($ccms['lang']['auth']['featnotallowed']);
 } else die("No external access to file"); 
 ?>
