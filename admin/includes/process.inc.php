@@ -149,15 +149,17 @@ if ($do_update_or_livefilter)
 }
 
 
+// Set the target for PHP processing
+$target_form = getPOSTparam4IdOrNumber('form');
+
+
+
 // Open recordset for sites' pages
 $db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` " . $page_selectquery_restriction . " ORDER BY `published`, `menu_id`, `toplevel`, `sublevel` ASC");
 
 // Check whether the recordset is not empty
 if($db->HasRecords()) 
 {
-	// Set the target for PHP processing
-	$target_form = getPOSTparam4IdOrNumber('form');
-
 	/**
 	 *
 	 * Render the dynamic list with files

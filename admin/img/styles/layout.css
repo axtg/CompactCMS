@@ -248,10 +248,14 @@ pre {
 
 /* === 1. CORE === */
 /* === HINTS === */
-span.ss_help{cursor:help;}
-div.ss_help {
+span.ss_help
+{
+	cursor:help;
+}
+div.ss_help 
+{
 	color: #000;
-	width: 250px;
+	width: 300px;
 	z-index: 13000;
 	background: #DB7075;
 	border-left: 5px solid #EFAAAB;
