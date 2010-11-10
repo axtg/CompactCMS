@@ -59,9 +59,10 @@ echo collecting data...
 #      files against!
 
 find ../ -type f -a ! -path '*/lib/languages/*' \
-		-a ! -path '*/media/*' -a ! -path '*/includes/cache/*' -a ! -path '*.sh' -print0 \
+		-a ! -path '*/media/*' -a ! -path '*/includes/cache/*' -a ! -path '*.sh' \
+		-a ! -path '*.bak'  -a ! -path '*~' -print0 \
 	| xargs -0 grep -e "\$ccms\['lang'\]" \
-	| sed -e 's/\$/\n\$/g' -e 's/\:/:\n/g' -e 's/;/\n/g' -e 's/\]\./\]\n/g' -e 's/\]:/\]\n/g' -e 's/)/\n/g' \
+	| sed -e 's/\$/\n\$/g' -e 's/\:/:\n/g' -e 's/;/\n/g' -e 's/\]\./\]\n/g' -e 's/\]:/\]\n/g' -e 's/)/\n/g' -e 's/ /\n/g' \
 	| grep -e "^\(\$ccms\['lang'\].*\]\)$\|^\(../[.a-zA-Z0-9_/-]\+\:\)$" \
 	| gawk -- 'BEGIN { qt=39; for (i=1; i<=5; i++) { printf("../--manually-added--/:\t$ccms[%clang%c][%cmenu%c][%c%d%c]\n", qt, qt, qt, qt, qt, i, qt); } } /:/ { path=$0; next; } /./ { printf("%s\t%s\n", path, $0); }' \
 	| sort | uniq | tee ccms_lang_entries_log.txt \
