@@ -247,7 +247,7 @@ class ccmsParser {
 
   ## Prints PHP code to the output page
   protected function CheckPHP($text) {
-    eval('?>'.$text.'<?php'); 
+    eval('?>'.$text.'<?php '); 
     //echo $text;
   }
   
