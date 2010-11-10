@@ -104,34 +104,51 @@ if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_ba
 	// Include back-up functions
 	/*MARKER*/require_once('./functions.php');
 	
-	$configBackup 		= array('../../../../content/','../../../../lib/templates/');
-	$configBackupDir 	= '../../../../media/files/';
-	$backupName 		= date('Ymd_His').'-data.zip';
+	$current_user = '-' . preg_replace('/[^a-zA-Z0-9\-]/', '_', $_SESSION['ccms_userFirst'] . '_' . $_SESSION['ccms_userLast']);
+
+	/*
+	Also backup the config php file: that one contains critical data, such as 
+	the auth code, without which, the backup is not complete: the authcode is
+	required to ensure the MD5 hashes stored in the DB per user are still valid
+	when the backup is restored at an unfortunate moment later in time.
+	*/
+	$configBackup       = array('../../../../content/','../../../../lib/templates/','../../../../lib/config.inc.php');
+	$configBackupDir    = '../../../../media/files/';
+	$backupName         = date('Ymd_His').'-data'.$current_user.'.zip';
 	
 	$createZip = new createZip;
-	if (isset($configBackup) && is_array($configBackup) && count($configBackup)>0) {
-	    foreach ($configBackup as $dir) {
-	        $basename = basename($dir);
-	        if (is_file($dir)) {
-	            $fileContents = file_get_contents($dir);
-	            $createZip->addFile($fileContents,$basename);
-	        } else {
-	            $createZip->addDirectory($basename."/");
-	            $files = directoryToArray($dir,true);
-	            $files = array_reverse($files);
+	if (isset($configBackup) && is_array($configBackup) && count($configBackup)>0) 
+	{
+		foreach ($configBackup as $dir) 
+		{
+			$basename = basename($dir);
+			if (is_file($dir)) 
+			{
+				$fileContents = file_get_contents($dir);
+				$createZip->addFile($fileContents,$basename);
+			} 
+			else 
+			{
+				$createZip->addDirectory($basename."/");
+				$files = directoryToArray($dir,true);
+				$files = array_reverse($files);
 	
-	            foreach ($files as $file) {
-	                $zipPath = explode($dir,$file);
-	                $zipPath = $zipPath[1];
-	                if (is_dir($file)) {
-	                    $createZip->addDirectory($basename."/".$zipPath);
-	                } else {
-	                    $fileContents = file_get_contents($file);
-	                    $createZip->addFile($fileContents,$basename."/".$zipPath);
-	                }
-	            }
-	        }
-	    }
+				foreach ($files as $file) 
+				{
+					$zipPath = explode($dir,$file);
+					$zipPath = $zipPath[1];
+					if (is_dir($file)) 
+					{
+						$createZip->addDirectory($basename."/".$zipPath);
+					} 
+					else 
+					{
+						$fileContents = file_get_contents($file);
+						$createZip->addFile($fileContents,$basename."/".$zipPath);
+					}
+				}
+			}
+		}
 	}
 	
 	$backup = new MySQL_Backup(); 
@@ -150,9 +167,9 @@ if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_ba
 	$sqldump = $backup->Execute(MSB_STRING,"",false);
 	$createZip->addFile($sqldump,$cfg['db_name'].'-sqldump.sql');
 	
-	$fileName	= $configBackupDir.$backupName;
-	$fd			= fopen ($fileName, "wb");
-	$out		= fwrite ($fd, $createZip -> getZippedfile());
+	$fileName = $configBackupDir.$backupName;
+	$fd = fopen($fileName, "wb");
+	$out = fwrite($fd, $createZip -> getZippedfile());
 	fclose ($fd);
 	
 	echo "<p class=\"success center\">".$ccms['lang']['backend']['newfilecreated'].", <a href=\"../../../../media/files/$backupName\">".strtolower($ccms['lang']['backup']['download'])."</a>.</p>"; 
