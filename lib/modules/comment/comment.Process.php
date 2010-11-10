@@ -104,6 +104,13 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && !empty(
 	if ($db->ErrorNumber()) 
 		$db->Kill();
 	$limit = getGETparam4Number('offset') * $max;
+	// feature: if a comment 'bookmark' was specified, jump to the matching 'page'...
+	$commentID = getGETparam4Number('commentID');
+	if ($commentID > 0)
+	{
+		$limit = $commentID - 1;
+		$limit -= $limit % $max;
+	}
 	if ($limit >= $total)
 		$limit = $total - 1;
 	if ($limit < 0)
@@ -131,9 +138,16 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && !empty(
 			$rsComment = $db->Row(); 
 			?>
 			<div id="s-display"><a name="<?php echo "cmt" . $index; ?>"></a>
-				<div id="s-avatar">
-					<img src="http://www.gravatar.com/avatar.php?gravatar_id=<?php echo md5($rsComment->commentEmail);?>&amp;size=80&amp;rating=G" alt="<?php echo $ccms['lang']['guestbook']['avatar'];?>" /><br/>
-				</div>
+				<?php 
+				if ($cfg['enable_gravatar']) 
+				{ 
+				?>
+					<div id="s-avatar">
+						<img src="http://www.gravatar.com/avatar.php?gravatar_id=<?php echo md5($rsComment->commentEmail);?>&amp;size=80&amp;rating=G" alt="<?php echo $ccms['lang']['guestbook']['avatar'];?>" /><br/>
+					</div>
+				<?php
+				} 
+				?>
 				<div id="s-name">
 					<?php echo (!empty($rsComment->commentUrl)?'<a href="'.$rsComment->commentUrl.'" rel="nofollow" target="_blank">'.$rsComment->commentName.'</a>':$rsComment->commentName).' '.$ccms['lang']['guestbook']['wrote']; ?>:
 				</div>
@@ -279,18 +293,18 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="save-cfg" && checkAuth()
 		// Insert or update configuration
 		if($db->AutoInsertUpdate($cfg['db_prefix']."cfgcomment", $values, array("cfgID" => MySQL::BuildSQLValue($cfgID)))) 
 		{
-			header("Location: comment.Manage.php?file=$pageID&status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
+			header('Location: ' . makeAbsoluteURI('comment.Manage.php?file='.$pageID.'&status=notice&msg='.rawurlencode($ccms['lang']['backend']['settingssaved'])));
 			exit();
 		} 
 		else 
 		{
-			header("Location: comment.Manage.php?file=$pageID&status=error&msg=".rawurlencode($db->Error()));
+			header('Location: ' . makeAbsoluteURI('comment.Manage.php?file='.$pageID.'&status=error&msg='.rawurlencode($db->Error())));
 			exit();
 		}
 	}
 	else
 	{
-		header("Location: comment.Manage.php?file=$pageID&status=error&msg=".rawurlencode($ccms['lang']['system']['error_forged']));
+		header('Location: ' . makeAbsoluteURI('comment.Manage.php?file='.$pageID.'&status=error&msg='.rawurlencode($ccms['lang']['system']['error_forged'])));
 		exit();
 	}
 }

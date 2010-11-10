@@ -106,6 +106,8 @@ if($do=="backup" && $btn_backup=="dobackup" && checkAuth())
 	// Include back-up functions
 	/*MARKER*/require_once('./functions.php');
 	
+	$current_user = '-' . preg_replace('/[^a-zA-Z0-9\-]/', '_', $_SESSION['ccms_userFirst'] . '_' . $_SESSION['ccms_userLast']);
+
 	/*
 	Also backup the config php file: that one contains critical data, such as 
 	the auth code, without which, the backup is not complete: the authcode is
@@ -114,7 +116,7 @@ if($do=="backup" && $btn_backup=="dobackup" && checkAuth())
 	*/
 	$configBackup       = array('../../../../content/','../../../../lib/templates/','../../../../lib/config.inc.php');
 	$configBackupDir    = '../../../../media/files/';
-	$backupName         = date('Ymd_His').'-data.zip';
+	$backupName         = date('Ymd_His').'-data'.$current_user.'.zip';
 	
 	$createZip = new createZip;
 	if (isset($configBackup) && is_array($configBackup) && count($configBackup)>0) 
@@ -168,9 +170,9 @@ if($do=="backup" && $btn_backup=="dobackup" && checkAuth())
 	$sqldump = $backup->Execute(MSB_STRING,"",false);
 	$createZip->addFile($sqldump,$cfg['db_name'].'-sqldump.sql');
 	
-	$fileName   = $configBackupDir.$backupName;
-	$fd         = fopen ($fileName, "wb");
-	$out        = fwrite ($fd, $createZip -> getZippedfile());
+	$fileName = $configBackupDir.$backupName;
+	$fd = fopen($fileName, "wb");
+	$out = fwrite($fd, $createZip -> getZippedfile());
 	fclose ($fd);
 	
 	echo "<p class=\"success center\">".$ccms['lang']['backend']['newfilecreated'].", <a href=\"../../../../media/files/$backupName\">".strtolower($ccms['lang']['backup']['download'])."</a>.</p>"; 
@@ -240,7 +242,7 @@ if($do=="delete" && $btn_delete=="dodelete" && checkAuth())
 						<?php 
 						} 
 						?>
-						<th class="span-10"><?php echo $ccms['lang']['backup']['timestamp'];?></th>
+						<th class="span-14"><?php echo $ccms['lang']['backup']['timestamp'];?></th>
 						<th>&#160;</th>
 					</tr>
 					<?php 
@@ -260,13 +262,16 @@ if($do=="delete" && $btn_delete=="dodelete" && checkAuth())
 								{ 
 									echo '<tr>';
 								} 
+								echo "\n";
 								if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) 
 								{
 									echo '<td><input type="checkbox" name="file[]" value="'.$file.'" id="'.$i.'"></td>';
 								}
+								echo "\n";
 								echo '<td>'.$file.'</td>';
-								echo '<td><span class="ss_sprite ss_package_green"><a href="../../../../media/files/'.$file.'" title="'.ucfirst($file).'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
-								echo "</tr>\n";
+								echo "\n";
+								echo '<td><span class="ss_sprite ss_package_green"><a href="../../../../media/files/'.$file.'" title="'.$file.'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
+								echo "\n</tr>\n";
 								$i++;
 							} 
 						}

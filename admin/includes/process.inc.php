@@ -87,10 +87,67 @@ if (!$perm) $db->Kill("INTERNAL ERROR: 1 permission record MUST exist!");
 
 
 
-$do_update_or_livefilter = ($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST");
+$do_update_or_livefilter = (($do_action == "update" && $_SERVER['REQUEST_METHOD'] != "POST") || ($do_action == "livefilter" && $_SERVER['REQUEST_METHOD'] == "POST"));
 
+$filter_pages_name = '';
+$filter_pages_title = '';
+$filter_pages_subheader = '';
 
 $page_selectquery_restriction = '';
+
+if ($do_update_or_livefilter)
+{
+	$filter_pages_name = (!empty($_SESSION['filter_pages_name']) ? $_SESSION['filter_pages_name'] : '');
+	$filter_pages_title = (!empty($_SESSION['filter_pages_title']) ? $_SESSION['filter_pages_title'] : '');
+	$filter_pages_subheader = (!empty($_SESSION['filter_pages_subheader']) ? $_SESSION['filter_pages_subheader'] : '');
+
+	if ($do_action == "livefilter" && $_SERVER['REQUEST_METHOD'] == "POST" && checkAuth()) 
+	{
+		switch (getPOSTparam4IdOrNumber('part'))
+		{
+		default:
+			die("Invalid input");
+			
+		case 'filter_pages_name':
+			$filter_pages_name = getPOSTparam4DisplayHTML('content');
+			break;
+			
+		case 'filter_pages_title':
+			$filter_pages_title = getPOSTparam4DisplayHTML('content');
+			break;
+			
+		case 'filter_pages_subheader':
+			$filter_pages_subheader = getPOSTparam4DisplayHTML('content');
+			break;
+		}
+		$_SESSION['filter_pages_name'] = $filter_pages_name;
+		$_SESSION['filter_pages_title'] = $filter_pages_title;
+		$_SESSION['filter_pages_subheader'] = $filter_pages_subheader;
+	}
+
+
+	// construct the WHERE clause for the page list now:
+	if (!empty($filter_pages_name) || !empty($filter_pages_title) || !empty($filter_pages_subheader))
+	{
+		if (!empty($filter_pages_name))
+		{
+			$page_selectquery_restriction = "urlpage LIKE '%" . MySQL::SQLFix($filter_pages_name) . "%'";
+		}
+		if (!empty($filter_pages_title))
+		{
+			$page_selectquery_restriction .= (strlen($page_selectquery_restriction) > 0 ? ' AND ' : '');
+			$page_selectquery_restriction .= "pagetitle LIKE '%" . MySQL::SQLFix($filter_pages_title) . "%'";
+		}
+		if (!empty($filter_pages_subheader))
+		{
+			$page_selectquery_restriction .= (strlen($page_selectquery_restriction) > 0 ? ' AND ' : '');
+			$page_selectquery_restriction .= "subheader LIKE '%" . MySQL::SQLFix($filter_pages_subheader) . "%'";
+		}
+		
+		$page_selectquery_restriction = 'WHERE ' . $page_selectquery_restriction;
+	}
+}
+
 
 // Open recordset for sites' pages
 $db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` " . $page_selectquery_restriction . " ORDER BY `published`, `menu_id`, `toplevel`, `sublevel` ASC");
@@ -297,7 +354,27 @@ if($db->HasRecords())
 					} 
 					elseif($row->module!="editor") 
 					{ 
-						echo "<span class=\"ss_sprite ss_information\"><strong>".ucfirst($row->module)."</strong></span> ".strtolower($ccms['lang']['forms']['module']);
+						// TODO: add a module/plugin hook to provide the proper icon/formatting for the module name:
+						$modID = "<span class=\"ss_sprite ss_information\"><strong>".ucfirst($row->module)."</strong></span>";
+						
+						switch ($row->module)
+						{
+						default:
+							break;
+						
+						case 'lightbox':
+							$modID = "<span class=\"ss_sprite ss_images\"><strong>".ucfirst($row->module)."</strong></span>";
+							break;
+							
+						case 'news':
+							$modID = "<span class=\"ss_sprite ss_newspaper\"><strong>".ucfirst($row->module)."</strong></span>";
+							break;
+							
+						case 'comment':
+							$modID = "<span class=\"ss_sprite ss_comments\"><strong>".ucfirst($row->module)."</strong></span>";
+							break;
+						}
+						echo $modID . ' '.strtolower($ccms['lang']['forms']['module']);
 					} 
 					else 
 					{
@@ -1012,12 +1089,12 @@ if($do_action == "edit-user-password" && $_SERVER['REQUEST_METHOD'] == "POST" &&
 		} 
 		elseif($passphrase_len <= 6) 
 		{
-			header("Location: ./modules/user-management/user.Edit.php?userID=".$userID."&status=error&msg=".rawurlencode($ccms['lang']['system']['error_passshort']));
+			header('Location: ' . makeAbsoluteURI('./modules/user-management/user.Edit.php?userID='.$userID.'&status=error&msg='.rawurlencode($ccms['lang']['system']['error_passshort'])));
 			exit();
 		} 
 		else 
 		{
-			header("Location: ./modules/user-management/user.Edit.php?userID=".$userID."&status=error&msg=".rawurlencode($ccms['lang']['system']['error_passnequal']));
+			header('Location: ' . makeAbsoluteURI('./modules/user-management/user.Edit.php?userID='.$userID.'&status=error&msg='.rawurlencode($ccms['lang']['system']['error_passnequal'])));
 			exit();
 		}
 	} 
