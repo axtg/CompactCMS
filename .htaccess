@@ -35,10 +35,10 @@ RewriteBase /
 # Various rewrite rules
 ##
 
-RewriteRule ^([^/]*)/([^/]*)\.html$             index.php?page=$1&id=$2 [QSA]
-RewriteRule ^([^/]*)/([^/]*)\.print$            index.php?page=$1&id=$2&printing=Y [QSA]
-RewriteRule ^([^/]+)\.html$                     index.php?page=$1 [QSA]
-RewriteRule ^([^/]+)\.print$                    index.php?page=$1&printing=Y [L]
+RewriteRule ^([^/]*)/([^/]*)\.html$             index.php?page=$1&id=$2 [QSA,L]
+RewriteRule ^([^/]*)/([^/]*)\.print$            index.php?page=$1&id=$2&printing=Y [QSA,L]
+RewriteRule ^([^/]+)\.html$                     index.php?page=$1 [QSA,L]
+RewriteRule ^([^/]+)\.print$                    index.php?page=$1&printing=Y [QSA,L]
 RewriteRule ^lib/includes/js/([^/]+\.js)$       lib/includes/combine.inc.php?type=javascript&files=$1 [L]
 RewriteRule ^admin/img/styles/([^/]+\.css)$     lib/includes/combine.inc.php?type=css&files=$1 [L]    
 # pull EVERY OTHER JS/CSS file through combine as well: that's our generic cacher/compressor/optimizer
@@ -91,3 +91,4 @@ RewriteRule ^(.+)$ - [F]
 </IfModule>
 
 FileETag None
+

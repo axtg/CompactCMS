@@ -40,7 +40,7 @@ if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 /*
 We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
 */
-define('CCMS_PERFORM_MINIMAL_INIT', true);
+if (!defined('CCMS_PERFORM_MINIMAL_INIT')) { define('CCMS_PERFORM_MINIMAL_INIT', true); }
 
 
 // Compress all output and coding
@@ -63,7 +63,8 @@ if (!checkAuth())
 }
 
 // Get permissions
-$perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+$perm = $db->SelectSingleRowArray($cfg['db_prefix'].'cfgpermissions');
+if (!$perm) $db->Kill("INTERNAL ERROR: 1 permission record MUST exist!");
 
 // Set default variables
 $album_name	= getPOSTparam4Filename('album');
@@ -153,6 +154,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "del-album")
 			$i		= 0;
 			foreach ($_POST['albumID'] as $key => $value) 
 			{
+				$key = filterParam4Number($key);
+				$value = filterParam4Filename($value);
+				
 				if(!empty($key)&&!empty($value)) 
 				{
 					$dest = BASE_PATH.'/media/albums/'.$value;
@@ -236,8 +240,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action == "apply-album")
 		{
 			// Posted variables
 			$topage = getPOSTparam4Filename('albumtopage');
-			$description = (!empty($_POST['description'])?trim(htmlspecialchars($_POST['description'])):'');
-			$infofile = BASE_PATH."/media/albums/$album_name/info.txt";
+			$description = getPOSTparam4DisplayHTML('description');
+			$infofile = BASE_PATH.'/media/albums/'.$album_name.'/info.txt';
 			
 			if ($handle = fopen($infofile, 'w+')) 
 			{
@@ -461,7 +465,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action == "confirm_regen")
 	// Only if current user has the rights
 	if($perm['manageModLightbox']>0 && $_SESSION['ccms_userLevel']>=$perm['manageModLightbox']) 
 	{
-		$album = (isset($_GET['album'])&&!empty($_GET['album'])?htmlspecialchars($_GET['album']):null);
+		$album = getGETparam4Filename('album');
 		
 		if(!empty($album)) 
 		{

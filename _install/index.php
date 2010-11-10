@@ -43,6 +43,16 @@ if(empty($_GET['do']))
 	// destroy the session if it existed before: start a new session
 	session_start();
 	session_unset();
+	if (ini_get("session.use_cookies")) 
+	{
+		$params = session_get_cookie_params();
+		setcookie(session_name(), '', time() - 42000,
+			(!empty($params["ccms_userID"]) ? $params["ccms_userID"] : ''), 
+			(!empty($params["domain"]) ? $params["domain"] : ''),
+			(!empty($params["secure"]) ? $params["secure"] : ''),
+			(!empty($params["httponly"]) ? $params["httponly"] : '')
+		);
+	}
 	session_destroy();
 	session_regenerate_id();
 }
@@ -56,27 +66,32 @@ session_start();
 /*MARKER*/require_once(BASE_PATH . '/lib/includes/common.inc.php');
 
 
+$do	= getGETparam4IdOrNumber('do');
+
 // If no step, set session hash
-if(!isset($nextstep) && !isset($_SESSION['id']) && !isset($_SESSION['host'])) 
+if(empty($do) && empty($_SESSION['id']) && empty($_SESSION['host'])) 
 {
 	// Setting safety variables
 	SetAuthSafety();
 } 
 
-// Set root directory
-$rootdir = dirname(dirname($_SERVER['PHP_SELF']));
-if($rootdir=='\\'||$rootdir=='/') {
-	$rootdir = '/';
-} else $rootdir = $rootdir.'/';
+$do_ftp_chmod = ($do == md5('ftp') && CheckAuth());
 
-// FTP directories
-function findFiles() {
-	
+
+
+// Set root directory
+$rootdir = str_replace('\\','/',dirname(dirname($_SERVER['PHP_SELF'])));
+if($rootdir != '/')
+{
+	$rootdir = $rootdir.'/';
 }
 
+
 // Set friendly local names languages
-function setLanguage($lang) {
-	switch ($lang) {
+function setLanguage($lang) 
+{
+	switch ($lang) 
+	{
 		case 'en':
 			return "English";
 			break;
@@ -172,48 +187,47 @@ function setLanguage($lang) {
 		<p>If you have any questions, suggestions or perhaps even praise; be sure to <a href="http://www.compactcms.nl/contact.html?subject=My installation feedback" target="_blank" title="Send me an e-mail">let me know</a>!</p>
 		<p>Cheers!<br/><em>Xander</em>.</p>
 	</div>
-		<div class="span-9">
+	<div class="span-9">
 		<form action="./installer.inc.php" method="post" id="installFrm">
 			<fieldset id="install" style="border:none;" class="none">
-			<legend class="installMsg"><?php echo (empty($_GET['do'])?'Step 1 - Knowing the environment':'FTP - Setting permissions right');?></legend>
-			
+				<legend class="installMsg"><?php echo (!$do_ftp_chmod ? 'Step 1 - Knowing the environment' : 'FTP - Setting permissions right');?></legend>
 				<?php 
-				if(empty($_GET['do'])) 
+				if(!$do_ftp_chmod) 
 				{ 
 				?>
-				<p>The details below have been filled-out based on information readily available. Please confirm these settings, select your language and click proceed.</p>
-				
-				<label for="sitename"><span class="ss_sprite ss_pencil">Site name</span></label><input type="text" class="alt title" name="sitename" style="width:300px;" value="<?php echo (!isset($_SESSION['variables']['sitename'])?ucfirst(preg_replace("/^www\./", "", $_SERVER['HTTP_HOST'])):$_SESSION['variables']['sitename']);?>" id="sitename" />
-				
-				<label for="rootdir"><span class="ss_sprite ss_application_osx_terminal">Web root directory</span></label>
-				<input type="text" class="alt title" name="rootdir" style="width:300px;" autofocus value="<?php echo $rootdir;?>" id="rootdir" />
-				<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">When www.domain.ext/ccms/, <strong>/ccms/</strong> is your web root</span>
-				<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">Must include trailing slash!</span>
-				
-				<label for="language"><span class="ss_sprite ss_comments">CCMS backend language</span></label>
-				<select name="language" class="title" style="padding:5px 10px;width:300px;" id="language" size="1">
-					<?php // Get current languages
-					if ($handle = opendir('../lib/languages')) 
-					{
-						while (false !== ($file = readdir($handle))) 
+					<p>The details below have been filled-out based on information readily available. Please confirm these settings, select your language and click proceed.</p>
+					
+					<label for="sitename"><span class="ss_sprite ss_pencil">Site name</span></label><input type="text" class="alt title" name="sitename" style="width:300px;" value="<?php echo (!isset($_SESSION['variables']['sitename'])?ucfirst(preg_replace("/^www\./", "", $_SERVER['HTTP_HOST'])):$_SESSION['variables']['sitename']);?>" id="sitename" />
+					
+					<label for="rootdir"><span class="ss_sprite ss_application_osx_terminal">Web root directory</span></label>
+					<input type="text" class="alt title" name="rootdir" style="width:300px;" autofocus value="<?php echo $rootdir;?>" id="rootdir" />
+					<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">When www.domain.ext/ccms/, <strong>/ccms/</strong> is your web root</span>
+					<br/>&#160;<span class="ss_sprite ss_bullet_star small quiet">Must include trailing slash!</span>
+					
+					<label for="language"><span class="ss_sprite ss_comments">CCMS backend language</span></label>
+					<select name="language" class="title" style="padding:5px 10px;width:300px;" id="language" size="1">
+						<?php // Get current languages
+						if ($handle = opendir('../lib/languages')) 
 						{
-							// Filter out irrelevant files && dirs
-						    if ($file != "." && $file != ".." && $file != "index.html") 
+							while (false !== ($file = readdir($handle))) 
 							{
-						    	$f = substr($file,0,2);
-						    	$s = (isset($_SESSION['variables']['language'])?$_SESSION['variables']['language']:'en');
-						    	$c = ($f==$s?'selected="SELECTED"':null);
-						    	echo '<option value="'.$f.'" '.$c.'>'.setLanguage($f).'</option>';
-						    }
+								// Filter out irrelevant files && dirs
+								if ($file != "." && $file != ".." && $file != "index.html") 
+								{
+									$f = substr($file,0,2);
+									$s = (isset($_SESSION['variables']['language'])?$_SESSION['variables']['language']:'en');
+									$c = ($f==$s?'selected="selected"':null);
+									echo '<option value="'.$f.'" '.$c.'>'.setLanguage($f).'</option>';
+								}
+							}
 						}
-					}
-					?>   	
-				</select>
-				<input type="hidden" name="do" value="<?php echo md5('2'); ?>" id="do" />
+						?>   	
+					</select>
+					<input type="hidden" name="do" value="<?php echo md5('2'); ?>" id="do" />
 				<?php 
 				} 
 				// Populate optional FTP form
-				elseif(isset($_GET['do']) && htmlspecialchars($_GET['do']) == md5('ftp') && CheckAuth()) 
+				else
 				{ 
 				?>
 					<p>Whenever a chmod() command failes through standard procedures, the installer can try to execute the chmod() command over FTP. This requires you to submit your FTP details and full path of your CCMS installation. Any of the data entered below will <strong>never</strong> be saved by the installer.</p>
@@ -239,11 +253,11 @@ function setLanguage($lang) {
 				
 				<p class="span-8 right">
 					<button name="submit" type="submit"><span class="ss_sprite ss_lock_go">Proceed</span></button>
-					<a href="<?php echo (empty($_GET['do'])?'http://www.compactcms.nl/contact.html?subject=My installation feedback':'index.php');?>">Cancel</a>
+					<a href="<?php echo (empty($do) ? 'http://www.compactcms.nl/contact.html?subject=My installation feedback' : 'index.php');?>">Cancel</a>
 				</p>
 			</fieldset>
 		</form>
-		</div>
+	</div>
 </div>
 <p class="quiet small" style="text-align:center;">&copy; 2008 - <?php echo date('Y'); ?> <a href="http://www.compactcms.nl" title="Maintained with CompactCMS.nl">CompactCMS.nl</a>. All rights reserved.</p>
 

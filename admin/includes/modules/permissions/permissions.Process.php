@@ -40,7 +40,7 @@ if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 /*
 We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
 */
-define('CCMS_PERFORM_MINIMAL_INIT', true);
+if (!defined('CCMS_PERFORM_MINIMAL_INIT')) { define('CCMS_PERFORM_MINIMAL_INIT', true); }
 
 
 // Compress all output and coding
@@ -56,14 +56,15 @@ if (!defined('BASE_PATH'))
 // Include general configuration
 /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
-class FbX extends CcmsAjaxFbException {}; // nnasty way to do 'shorthand in PHP -- I do miss my #define macros! :'-|
+class FbX extends CcmsAjaxFbException {}; // nasty way to do 'shorthand in PHP -- I do miss my #define macros! :'-|
 
 // Security functions
 
 
 
 // Get permissions
-$perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+$perm = $db->SelectSingleRowArray($cfg['db_prefix'].'cfgpermissions');
+if (!$perm) $db->Kill("INTERNAL ERROR: 1 permission record MUST exist!");
 
 /**
  *
@@ -78,7 +79,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST) && checkAuth())
 		// (!) Only administrators can change these values
 		if($_SESSION['ccms_userLevel']>=4) 
 		{
-			// Execute either INSERT or UPDATE
+			// Execute UPDATE
 			$values = array(); // [i_a] make sure $values is an empty array to start with here
 			foreach ($_POST as $key => $value)
 			{

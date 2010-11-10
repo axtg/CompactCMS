@@ -71,10 +71,13 @@ window.addEvent(
 						{
 							e=new Event(e).stop();
 							var alink=ele.getProperty('href');
-							var url=<?php echo "'./lib/modules/comment/comment.Process.php'+alink+'&action=show-comments&page=" . $pageID . "'"; ?>;
+							var qrypos = alink.indexOf('?');
+							var url='./lib/modules/comment/comment.Process.php'+alink.substr(qrypos);
 							var ajaxLink=new Request.HTML(
 								{
 									useSpinner:true,
+									method:'get',
+									url:url,
 									onRequest:function(){},
 									onSuccess:function()
 									{
@@ -83,7 +86,7 @@ window.addEvent(
 									},
 									onFailure:function(){},
 									update:$('comments')
-								}).get(url);
+								}).send(); /* .get(url) didn't work all of a sudden in last edit; send() with method get() /does/ work */
 						});
 				});
 		}

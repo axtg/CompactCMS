@@ -35,7 +35,7 @@ if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 /*
 We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
 */
-define('CCMS_PERFORM_MINIMAL_INIT', true);
+if (!defined('CCMS_PERFORM_MINIMAL_INIT')) { define('CCMS_PERFORM_MINIMAL_INIT', true); }
 
 
 // Define default location
@@ -46,7 +46,8 @@ if (!defined('BASE_PATH'))
 }
 
 // Include general configuration
-/*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
+/*MARKER*/require_once(BASE_PATH . '/admin/includes/security.inc.php'); // when session expires or is overridden, the login page won't show if we don't include this one, but a cryptic error will be printed.
+
 
 // security check done ASAP
 if(!checkAuth() || empty($_SESSION['rc1']) || empty($_SESSION['rc2'])) 
@@ -59,7 +60,8 @@ $status = getGETparam4IdOrNumber('status');
 $status_message = getGETparam4DisplayHTML('msg');
 
 // Get permissions
-$perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+$perm = $db->SelectSingleRowArray($cfg['db_prefix'].'cfgpermissions');
+if (!$perm) $db->Kill("INTERNAL ERROR: 1 permission record MUST exist!");
 
 
 
@@ -262,7 +264,7 @@ function confirm_regen()
 		<div class="span-14 colborder">
 		<?php 
 		// more secure: only allow showing specific albums if they are in the known list; if we change that set any time later, this code will not let undesirable items slip through
-		$album = (isset($_GET['album'])&&!empty($_GET['album'])?htmlspecialchars($_GET['album']):null);
+		$album = getGETparam4Filename('album');
 		$album_path = (in_array($album, $albums) ? BASE_PATH.'/media/albums/'.$album : null);
 		if($album==null) 
 		{ 
@@ -421,7 +423,7 @@ function confirm_regen()
 					<select class="text" name="albumtopage" id="albumtopage" size="1">
 						<option value=""><?php echo $ccms['lang']['backend']['none']; ?></option>
 						<?php 
-						$lightboxes = $db->QueryArray("SELECT * FROM ".$cfg['db_prefix']."pages WHERE module='lightbox'"); 
+						$lightboxes = $db->QueryArray("SELECT * FROM ".$cfg['db_prefix']."pages WHERE module='lightbox'", MYSQL_ASSOC); 
 						for ($i=0; $i < count($lightboxes); $i++) 
 						{ 
 						?>
