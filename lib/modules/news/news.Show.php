@@ -42,10 +42,11 @@ $id = getGETparam4IdOrNumber('id');
 $numCfg = 0;
 if(!empty($pageID)) 
 {
-	$rsCfg	= $db->SelectSingleRow($cfg['db_prefix']."cfgnews", array('pageID' => MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT)));
+	$rsCfg = $db->SelectSingleRow($cfg['db_prefix']."cfgnews", array('pageID' => MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT)));
 	$numCfg	= $db->RowCount();
 }
 $locale 	= ($numCfg>0?$rsCfg->showLocale:$cfg['locale']);
+
 // we only need to check if the given page is a valid news page...
 $news_in_page = $db->SelectSingleValue($cfg['db_prefix']."pages", array('module' => "'news'", 'urlpage' => MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT)), array('urlpage'));
 if ($db->Error()) $db->Kill();
@@ -59,7 +60,7 @@ $special_chars = array("#","$","%","@","^","&","*","!","~","‘","\"","’","'",
 // Do actions for overview
 if(empty($id)) 
 {
-	if($news_in_page) 
+	if(!empty($news_in_page)) 
 	{
 		// Load recordset for all news on specific news page
 		$db->Query("SELECT * FROM `".$cfg['db_prefix']."modnews` n LEFT JOIN `".$cfg['db_prefix']."users` u ON n.userID=u.userID WHERE newsPublished<>'0' AND pageID=" . MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT) . " ORDER BY newsModified DESC");

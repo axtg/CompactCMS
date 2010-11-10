@@ -35,7 +35,7 @@ if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 /*
 We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
 */
-define('CCMS_PERFORM_MINIMAL_INIT', true);
+if (!defined('CCMS_PERFORM_MINIMAL_INIT')) { define('CCMS_PERFORM_MINIMAL_INIT', true); }
 
 
 // Include general configuration
@@ -59,6 +59,8 @@ if(is_dir('../../_install/') && !defined('CCMS_DEVELOPMENT_ENVIRONMENT'))
 	die('<strong>Security risk: the installation directory is still present.</strong><br/>Either first <a href="../../_install/">run the installer</a>, or remove the <em>./_install</em> directory, before accessing <a href="../../admin/">the back-end</a>.');
 }
 
+$userName = strtolower(getPOSTparam4IdOrNumber('userName'));
+
 // Do authentication
 if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST") 
 {                               
@@ -81,46 +83,67 @@ if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST")
 	which will be used to validate basic website interaction security for the remainder 
 	of this session.
 	*/
-	$userName = mysql_real_escape_string($_POST['userName']);
-	$userPass = mysql_real_escape_string($_POST['userPass']) . $cfg['authcode'];
+	$userPass = md5($_POST['userPass'].$cfg['authcode']);
 
-	if(empty($userName) && empty($userPass)){
-		$_SESSION['logmsg'] = $ccms['lang']['login']['nodetails'];
-	} elseif(empty($userName)){
-		$_SESSION['logmsg'] = $ccms['lang']['login']['nouser'];
-	} elseif(empty($userPass)){
-		$_SESSION['logmsg'] = $ccms['lang']['login']['nopass'];
-	} else{
-		$matchSql 		= "SELECT * FROM `".$cfg['db_prefix']."users` WHERE userName = '".$userName."' AND userPass = '".md5($userPass)."' AND userActive = '0'";
-		$matchResult 	= mysql_query($matchSql);
-		$matchNumRows 	= mysql_num_rows($matchResult);
+	if(empty($userName) && empty($userPass))
+	{
+		$_SESSION['logmsg'] = rawurlencode($ccms['lang']['login']['nodetails']);
+	} 
+	elseif(empty($userName))
+	{
+		$_SESSION['logmsg'] = rawurlencode($ccms['lang']['login']['nouser']);
+	} 
+	elseif(empty($userPass))
+	{
+		$_SESSION['logmsg'] = rawurlencode($ccms['lang']['login']['nopass']);
+	} 
+	else
+	{
+		$values = array();
+		$values['userName'] = MySQL::SQLValue($userName, MySQL::SQLVALUE_TEXT);
+		$values['userPass'] = MySQL::SQLValue($userPass, MySQL::SQLVALUE_TEXT);
+		$values['userActive'] = MySQL::SQLValue(false, MySQL::SQLVALUE_BOOLEAN);
+		$matchNumRows = $db->SelectSingleValue($cfg['db_prefix'].'users', $values, 'COUNT(userID)');
+		if($matchNumRows>0)
+		{
+			$_SESSION['logmsg'] = rawurlencode($ccms['lang']['login']['notactive']);
+		} 
+		else
+		{
+			// Select statement: alter the previous condition set:
+			$values['userActive'] = MySQL::SQLValue(true, MySQL::SQLVALUE_BOOLEAN);
+			$row = $db->SelectSingleRowArray($cfg['db_prefix'].'users', $values, null, null, true, null, MYSQL_ASSOC);
+			if ($db->ErrorNumber()) $db->Kill();
 			
-		if($matchNumRows>0){
-			$_SESSION['logmsg'] = $ccms['lang']['login']['notactive'];
-		} else{
-			// Select statement
-			$sql 	= "SELECT * FROM `".$cfg['db_prefix']."users` WHERE userName = '".$userName."' AND userPass = '".md5($userPass)."' AND userActive = '1'";
-			$result	= mysql_query($sql);
-			$row 	= mysql_fetch_assoc($result);
-			
-			if (mysql_num_rows($result) != 1)
+			if ($db->RowCount() > 1)
 			{
 				// probably corrupt db table (corrupt import?) or hack attempt
 				die('<strong>Database corruption or hack attempt. Access denied.</strong>');
 				
 				// TODO: alert website owner about this failure/abuse. email to owner?
 			}
-			elseif($userName != $row['userName'] && md5($userPass) != $row['userPass'])
+			elseif(!$row)
+			{
+				// no match found in DB: user/pass combo doesn't exist!
+				//
+				// If no match: count attempt and show error
+				$_SESSION['logmsg'] = rawurlencode($ccms['lang']['login']['nomatch']);
+			}
+			elseif($userName != $row['userName'] || $userPass != $row['userPass'] || $row['userActive'] <= 0)
 			{
 				// If no match: count attempt and show error
-				$_SESSION['logmsg'] = $ccms['lang']['login']['nomatch'];
+				//
+				// NOTE: code should never enter here!
+				//
+				die('INTERNAL ERROR!');
 			} 
-			elseif($userName == $row['userName'] && md5($userPass) == $row['userPass'] && $row['userActive'] > 0) 
+			else
 			{
 				// If all checks are okay
 				//
 				// Update latest login date
-				if(mysql_query("UPDATE `".$cfg['db_prefix']."users` SET userLastlog='".date('Y-m-d G:i:s')."' WHERE userID=".$row['userID'])) {
+				if($db->UpdateRows($cfg['db_prefix'].'users', array('userLastlog' => MySQL::SQLValue(date('Y-m-d G:i:s'), MySQL::SQLVALUE_DATETIME)), array('userID' => MySQL::BuildSQLValue($row['userID'])))) 
+				{
 					// Set system wide session variables
 					$_SESSION['ccms_userID']	= $row['userID'];
 					$_SESSION['ccms_userName']	= $row['userName'];
@@ -132,10 +155,14 @@ if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST")
 					// Setting safety variables as well: used for checkAuth() during the session.
 					SetAuthSafety();
 
-					// Return functions result
 					unset($_SESSION['logmsg']);
+					// Return functions result
 					header("Location: ../../admin/index.php");
 					exit();
+				}
+				else
+				{
+					$db->Kill();
 				}
 			}
 		}
@@ -161,12 +188,17 @@ if(isset($_POST['submit']) && $_SERVER['REQUEST_METHOD']=="POST")
 	</div>
 	
 	<div id="login" class="span-9">
-		<?php if(isset($_SESSION['logmsg'])||!empty($_SESSION['logmsg'])) { ?>
-			<div class="loginMsg"><?php echo (isset($_SESSION['logmsg'])&&!empty($_SESSION['logmsg'])?$_SESSION['logmsg']:null);?></div>
-		<?php } ?>
+		<?php 
+		if(!empty($_SESSION['logmsg'])) 
+		{ 
+		?>
+			<div class="loginMsg"><?php echo rawurldecode($_SESSION['logmsg']);?></div>
+		<?php 
+		} 
+		?>
 		<p>&#160;</p>
 		<form id="loginFrm" name="loginFrm" class="clear" action="./auth.inc.php" method="post">
-			<label for="userName"><?php echo $ccms['lang']['login']['username']; ?></label><input type="text" class="alt title" autofocus placeholder="username" name="userName" style="width:300px;" value="<?php echo (!empty($_POST['userName'])?$_POST['userName']:null);?>" id="userName" />
+			<label for="userName"><?php echo $ccms['lang']['login']['username']; ?></label><input type="text" class="alt title" autofocus placeholder="username" name="userName" style="width:300px;" value="<?php echo $userName;?>" id="userName" />
 			<br class="clear"/>
 			<label for="userPass"><?php echo $ccms['lang']['login']['password']; ?></label><input type="password" class="title" name="userPass" style="width:300px;" value="" id="userPass" />
 			

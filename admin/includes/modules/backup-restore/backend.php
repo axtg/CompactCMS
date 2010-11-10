@@ -1,7 +1,7 @@
 <?php
 /* ************************************************************
 Copyright (C) 2008 - 2010 by Xander Groesbeek (CompactCMS.nl)
-Revision:	CompactCMS - v 1.4.1
+Revision:   CompactCMS - v 1.4.1
 	
 This file is part of CompactCMS.
 
@@ -35,7 +35,7 @@ if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 /*
 We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
 */
-define('CCMS_PERFORM_MINIMAL_INIT', true);
+if (!defined('CCMS_PERFORM_MINIMAL_INIT')) { define('CCMS_PERFORM_MINIMAL_INIT', true); }
 
 
 // Compress all output and coding
@@ -54,7 +54,8 @@ if (!defined('BASE_PATH'))
 $do = getGETparam4IdOrNumber('do');
 
 // Get permissions
-$perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+$perm = $db->SelectSingleRowArray($cfg['db_prefix'].'cfgpermissions');
+if (!$perm) $db->Kill("INTERNAL ERROR: 1 permission record MUST exist!");
 
 if ($perm['manageModBackup'] <= 0 || !checkAuth()) 
 {
@@ -99,39 +100,57 @@ function confirmation()
  * Create requested backup archive
  *
  */
-if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_backup']=="dobackup" && checkAuth()) 
+$btn_backup = getPOSTparam4IdOrNumber('btn_backup');
+if($do=="backup" && $btn_backup=="dobackup" && checkAuth()) 
 {
 	// Include back-up functions
 	/*MARKER*/require_once('./functions.php');
 	
-	$configBackup 		= array('../../../../content/','../../../../lib/templates/');
-	$configBackupDir 	= '../../../../media/files/';
-	$backupName 		= date('Ymd_His').'-data.zip';
+	$current_user = '-' . preg_replace('/[^a-zA-Z0-9\-]/', '_', $_SESSION['ccms_userFirst'] . '_' . $_SESSION['ccms_userLast']);
+
+	/*
+	Also backup the config php file: that one contains critical data, such as 
+	the auth code, without which, the backup is not complete: the authcode is
+	required to ensure the MD5 hashes stored in the DB per user are still valid
+	when the backup is restored at an unfortunate moment later in time.
+	*/
+	$configBackup       = array('../../../../content/','../../../../lib/templates/','../../../../lib/config.inc.php');
+	$configBackupDir    = '../../../../media/files/';
+	$backupName         = date('Ymd_His').'-data'.$current_user.'.zip';
 	
 	$createZip = new createZip;
-	if (isset($configBackup) && is_array($configBackup) && count($configBackup)>0) {
-	    foreach ($configBackup as $dir) {
-	        $basename = basename($dir);
-	        if (is_file($dir)) {
-	            $fileContents = file_get_contents($dir);
-	            $createZip->addFile($fileContents,$basename);
-	        } else {
-	            $createZip->addDirectory($basename."/");
-	            $files = directoryToArray($dir,true);
-	            $files = array_reverse($files);
+	if (isset($configBackup) && is_array($configBackup) && count($configBackup)>0) 
+	{
+		foreach ($configBackup as $dir) 
+		{
+			$basename = basename($dir);
+			if (is_file($dir)) 
+			{
+				$fileContents = file_get_contents($dir);
+				$createZip->addFile($fileContents,$basename);
+			} 
+			else 
+			{
+				$createZip->addDirectory($basename."/");
+				$files = directoryToArray($dir,true);
+				$files = array_reverse($files);
 	
-	            foreach ($files as $file) {
-	                $zipPath = explode($dir,$file);
-	                $zipPath = $zipPath[1];
-	                if (is_dir($file)) {
-	                    $createZip->addDirectory($basename."/".$zipPath);
-	                } else {
-	                    $fileContents = file_get_contents($file);
-	                    $createZip->addFile($fileContents,$basename."/".$zipPath);
-	                }
-	            }
-	        }
-	    }
+				foreach ($files as $file) 
+				{
+					$zipPath = explode($dir,$file);
+					$zipPath = $zipPath[1];
+					if (is_dir($file)) 
+					{
+						$createZip->addDirectory($basename."/".$zipPath);
+					} 
+					else 
+					{
+						$fileContents = file_get_contents($file);
+						$createZip->addFile($fileContents,$basename."/".$zipPath);
+					}
+				}
+			}
+		}
 	}
 	
 	$backup = new MySQL_Backup(); 
@@ -142,17 +161,18 @@ if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_ba
 	
 	// Get all current tables in database
 	$tables = $db->GetTables();
-	foreach ($tables as $table) {
-    	$backup->tables[] = $table;
+	foreach ($tables as $table) 
+	{
+		$backup->tables[] = $table;
 	}
 	
 	$backup->backup_dir = $configBackupDir;
 	$sqldump = $backup->Execute(MSB_STRING,"",false);
 	$createZip->addFile($sqldump,$cfg['db_name'].'-sqldump.sql');
 	
-	$fileName	= $configBackupDir.$backupName;
-	$fd			= fopen ($fileName, "wb");
-	$out		= fwrite ($fd, $createZip -> getZippedfile());
+	$fileName   = $configBackupDir.$backupName;
+	$fd         = fopen ($fileName, "wb");
+	$out        = fwrite ($fd, $createZip -> getZippedfile());
 	fclose ($fd);
 	
 	echo "<p class=\"success center\">".$ccms['lang']['backend']['newfilecreated'].", <a href=\"../../../../media/files/$backupName\">".strtolower($ccms['lang']['backup']['download'])."</a>.</p>"; 
@@ -163,7 +183,8 @@ if(!empty($do) && $do=="backup" && isset($_POST['btn_backup']) && $_POST['btn_ba
  * Delete current backup archives
  *
  */
-if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth()) 
+$btn_delete = getPOSTparam4IdOrNumber('btn_delete');
+if($do=="delete" && $btn_delete=="dodelete" && checkAuth()) 
 {
 	if (!empty($_POST['file']))
 	{
@@ -171,9 +192,9 @@ if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth())
 		if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) 
 		{
 			echo "<div class=\"module notice center\">";
-			foreach ($_POST['file'] as $key => $value) 
+			foreach ($_POST['file'] as $value) 
 			{
-				$value = filterParam4Filename($value);
+				$value = filterParam4Filename($value); // strips any slashes as well, so attacks like '../../../../../../../../../etc/passwords' won't pass
 				if (!empty($value))
 				{
 					unlink('../../../../media/files/'.$value);
@@ -230,10 +251,10 @@ if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth())
 						$i=0;
 						while (false !== ($file = readdir($handle))) 
 						{
-					        if ($file != "." && $file != ".." && strpos($file, ".zip")) 
+							if ($file != "." && $file != ".." && strmatch_tail($file, ".zip")) 
 							{
-						        // Alternate rows
-			    				if($i%2 != 1) 
+								// Alternate rows
+								if($i%2 != 1) 
 								{
 									echo '<tr style="background-color: #E6F2D9;">';
 								} 
@@ -241,17 +262,17 @@ if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth())
 								{ 
 									echo '<tr>';
 								} 
-						        if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) 
+								if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) 
 								{
-						        	echo '<td><input type="checkbox" name="file[]" value="'.$file.'" id="'.$i.'"></td>';
-						        }
-						        echo '<td>'.$file.'</td>';
-						        echo '<td><span class="ss_sprite ss_package_green"><a href="../../../../media/files/'.$file.'" title="'.ucfirst($file).'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
-						        echo "</tr>\n";
+									echo '<td><input type="checkbox" name="file[]" value="'.$file.'" id="'.$i.'"></td>';
+								}
+								echo '<td>'.$file.'</td>';
+								echo '<td><span class="ss_sprite ss_package_green"><a href="../../../../media/files/'.$file.'" title="'.ucfirst($file).'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
+								echo "</tr>\n";
 								$i++;
 							} 
-					    }
-					    closedir($handle);
+						}
+						closedir($handle);
 					}
 					?>
 				</table>
@@ -262,7 +283,7 @@ if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth())
 				{ 
 				?>
 					<p><button type="submit" onclick="return confirmation();" name="btn_delete" value="dodelete"><span class="ss_sprite ss_package_delete"><?php echo $ccms['lang']['backend']['delete'];?></span></button></p>
-				<?php 	
+				<?php   
 				} 
 				else 
 					echo $ccms['lang']['system']['noresults'];

@@ -29,6 +29,29 @@ if (!defined('BASE_PATH'))
 
 /*MARKER*/require_once(BASE_PATH . '/lib/class/exception_ajax.php');
 
+/*MARKER*/require_once(BASE_PATH . '/lib/includes/email-validator/EmailAddressValidator.php');
+
+
+
+
+
+/**
+Return TRUE when one string matches the 'tail' of the other string
+*/
+function strmatch_tail($a, $b)
+{
+	if (strlen($a) < strlen($b))
+	{
+		$tmp = $a;
+		$a = $b;
+		$b = $tmp;
+	}
+	
+	$idx = strpos($a, $b);
+	if ($idx === false)
+		return false;
+	return ($idx + strlen($b) == strlen($a));
+}
 
 
 
@@ -124,7 +147,7 @@ function getGETparam4IdOrNumber($name, $def = null)
 	if (!isset($_GET[$name]))
 		return $def;
 
-	return filterParam4IdOrNumber($_GET[$name], $def);
+	return filterParam4IdOrNumber(rawurldecode($_GET[$name]), $def);
 }
 	
 function getPOSTparam4IdOrNumber($name, $def = null) 
@@ -161,7 +184,7 @@ function getGETparam4Filename($name, $def = null)
 	if (!isset($_GET[$name]))
 		return $def;
 
-	return filterParam4Filename($_GET[$name], $def);
+	return filterParam4Filename(rawurldecode($_GET[$name]), $def);
 }
 
 function getPOSTparam4Filename($name, $def = null) 
@@ -195,7 +218,15 @@ function getGETparam4CommaSeppedFilenames($name, $def = null)
 	if (!isset($_GET[$name]))
 		return $def;
 
-	return filterParam4CommaSeppedFilenames($_GET[$name], $def);
+	return filterParam4CommaSeppedFilenames(rawurldecode($_GET[$name]), $def);
+}
+
+function getPOSTparam4CommaSeppedFilenames($name, $def = null) 
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4CommaSeppedFilenames($_POST[$name], $def);
 }
 
 /**
@@ -227,7 +258,15 @@ function getGETparam4FullFilePath($name, $def = null, $accept_parent_dotdot = fa
 	if (!isset($_GET[$name]))
 		return $def;
 
-	return filterParam4FullFilePath($_GET[$name], $def, $accept_parent_dotdot);
+	return filterParam4FullFilePath(rawurldecode($_GET[$name]), $def, $accept_parent_dotdot);
+}
+
+function getPOSTparam4FullFilePath($name, $def = null, $accept_parent_dotdot = false) 
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4FullFilePath($_POST[$name], $def, $accept_parent_dotdot);
 }
 
 /**
@@ -241,6 +280,11 @@ WARNING: setting $accept_parent_dotdot = TRUE can be VERY DANGEROUS
 		 go places we don't them to go! 
 		 
 		 Be vewey vewey caweful!
+		 
+		 Just to give you an idea:
+		     ../../../../../../../../../../../../etc/passwords
+		 would be LEGAL *AND* VERY DANGEROUS if the accepted path is not
+		 validated further upon return from this function!
 */
 function filterParam4FullFilePath($value, $def = null, $accept_parent_dotdot = false)
 {
@@ -276,7 +320,7 @@ function getGETparam4boolYN($name, $def = null)
 	if (!isset($_GET[$name]))
 		return $def;
 
-	return filterParam4boolYN($_GET[$name], $def);
+	return filterParam4boolYN(rawurldecode($_GET[$name]), $def);
 }
 
 function getPOSTparam4boolYN($name, $def = null)
@@ -312,7 +356,7 @@ function getGETparam4boolean($name, $def = null)
 	if (!isset($_GET[$name]))
 		return $def;
 
-	return filterParam4boolean($_GET[$name], $def);
+	return filterParam4boolean(rawurldecode($_GET[$name]), $def);
 }
 
 function getPOSTparam4boolean($name, $def = null)
@@ -369,7 +413,7 @@ function getGETparam4Number($name, $def = null)
 	if (!isset($_GET[$name]))
 		return $def;
 
-	return filterParam4Number($_GET[$name], $def);
+	return filterParam4Number(rawurldecode($_GET[$name]), $def);
 }
 
 function getPOSTparam4Number($name, $def = null)
@@ -414,7 +458,7 @@ function getGETparam4DisplayHTML($name, $def = null)
 	if (!isset($_GET[$name]))
 		return $def;
 
-	return filterParam4DisplayHTML($_GET[$name], $def);
+	return filterParam4DisplayHTML(rawurldecode($_GET[$name]), $def);
 }
 
 function getPOSTparam4DisplayHTML($name, $def = null)
@@ -426,7 +470,7 @@ function getPOSTparam4DisplayHTML($name, $def = null)
 }
 
 /*
-Accepts any number
+Accepts any non-aggressive HTML
 */
 function filterParam4DisplayHTML($value, $def = null)
 {
@@ -452,6 +496,262 @@ function filterParam4DisplayHTML($value, $def = null)
 
 
 
+
+function getGETparam4Email($name, $def = null)
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4Email(rawurldecode($_GET[$name]), $def);
+}
+
+function getPOSTparam4Email($name, $def = null)
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4Email($_POST[$name], $def);
+}
+
+/*
+Accepts any valid email address.
+
+Uses the email validator from:
+
+    http://code.google.com/p/php-email-address-validation/
+	
+
+*/
+function filterParam4Email($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$value = trim(strval($value)); // force cast to string before we do anything
+	if (empty($value))
+		return $def;
+	
+	$validator = new EmailAddressValidator;
+	if ($validator->check_email_address($value))
+	{
+		// Email address is technically valid
+		return $value;
+	}
+	return $numval;
+}
+
+
+
+
+
+
+
+
+
+function getGETparam4HumanName($name, $def = null)
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4HumanName(rawurldecode($_GET[$name]), $def);
+}
+
+function getPOSTparam4HumanName($name, $def = null)
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4HumanName($_POST[$name], $def);
+}
+
+/*
+Accepts any text
+*/
+function filterParam4HumanName($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$value = trim(strval($value)); // force cast to string before we do anything
+	if (empty($value))
+		return $def;
+	
+	return htmlentities($value, ENT_NOQUOTES, "UTF-8");
+}
+
+
+
+
+
+
+
+
+
+function getGETparam4EmailSubjectLine($name, $def = null)
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4EmailSubjectLine(rawurldecode($_GET[$name]), $def);
+}
+
+function getPOSTparam4EmailSubjectLine($name, $def = null)
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4EmailSubjectLine($_POST[$name], $def);
+}
+
+/*
+Accepts any text except HTML specials cf. RFC2047
+
+Is NOT suitable for direct display within a HTML context (i.e. on a page showing some
+sort of feedback after you've entered a mail through a form, etc.); apply
+	htmlspecialchars()
+before you do so!
+*/
+function filterParam4EmailSubjectLine($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$value = trim(strval($value)); // force cast to string before we do anything
+	if (empty($value))
+		return $def;
+	
+	// TODO: real RFC2047 filter.
+	$value = str2USASCII($value);
+	$value = str_replace('=', '~', $value);
+	
+	return $value;
+}
+
+
+
+
+function getGETparam4EmailBody($name, $def = null)
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4EmailBody(rawurldecode($_GET[$name]), $def);
+}
+
+function getPOSTparam4EmailBody($name, $def = null)
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4EmailBody($_POST[$name], $def);
+}
+
+/*
+Accepts any text; ready it for HTML display ~ HTML email
+*/
+function filterParam4EmailBody($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$value = trim(strval($value)); // force cast to string before we do anything
+	if (empty($value))
+		return $def;
+
+	// TODO: real email message body filter?
+	return htmlspecialchars($value);
+}
+
+
+
+
+
+
+
+
+
+
+
+function getGETparam4URL($name, $def = null)
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4URL(rawurldecode($_GET[$name]), $def);
+}
+
+function getPOSTparam4URL($name, $def = null)
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4URL($_POST[$name], $def);
+}
+
+/*
+Accepts any 'fully qualified' URL, i.e. proper domain name, etc.
+*/
+function filterParam4URL($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$value = trim(strval($value)); // force cast to string before we do anything
+	if (empty($value))
+		return $def;
+	
+	if (!regexUrl($value, true)) // the ENTIRE string must be a URL, nothing else allowed 'at the tail end'!
+		return $def;
+
+	return $value;
+}
+
+
+
+
+
+function getGETparam4DateTime($name, $def = null)
+{
+	if (!isset($_GET[$name]))
+		return $def;
+
+	return filterParam4DateTime(rawurldecode($_GET[$name]), $def);
+}
+
+function getPOSTparam4DateTime($name, $def = null)
+{
+	if (!isset($_POST[$name]))
+		return $def;
+
+	return filterParam4DateTime($_POST[$name], $def);
+}
+
+/*
+Accepts a date/time stamp
+*/
+function filterParam4DateTime($value, $def = null)
+{
+	if (!isset($value))
+		return $def;
+
+	$value = trim(strval($value)); // force cast to string before we do anything
+	if (empty($value))
+		return $def;
+
+	$dt = strtotime($value);
+	/* 
+	time == 0 ~ 1970-01-01T00:00:00 is considered an INVALID date here, 
+	because it can easily result from parsing arbitrary input representing 
+	the date eqv. of zero(0)... 
+	
+	time == -1 was the old error signaling return code (pre-PHP 5.1.0)
+	*/
+	if (!is_int($dt) || $dt <= 0)
+	{
+		return $def;
+	} 
+	return $dt;
+}
 
 
 
@@ -488,7 +788,8 @@ function filterParam4DisplayHTML($value, $def = null)
 
  This is used to see if there's a URL specified in the page description.
 */
-function regexUrl($data) {
+function regexUrl($data, $match_entire_string = false) 
+{
 	$regex = "((https?|ftp)\:\/\/)?"; // SCHEME 
 	$regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"; // User and Pass 
 	$regex .= "([a-z0-9-.]*)\.([a-z]{2,3})"; // Host or IP 
@@ -497,7 +798,8 @@ function regexUrl($data) {
 	$regex .= "(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?"; // GET Query 
 	$regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor 
 	
-	if(preg_match("/^$regex/i", $data)) {
+	if(preg_match('/^' . $regex . ($match_entire_string ? '$' : '') . '/i', $data)) 
+	{
 		return true;
 	}
 	return false;
@@ -511,7 +813,7 @@ function DetermineTemplateName($name = null, $printing = 'N')
 	
 	if (!empty($name))
 	{
-		$name = $name . ($printing == 'N' ? '' : '/print');
+		$name = $name . ($printing != 'Y' ? '' : '/print');
 		
 		// Set the template variable for current page
 		$templatefile = BASE_PATH . '/lib/templates/' . $name . '.tpl.html';
@@ -526,7 +828,7 @@ function DetermineTemplateName($name = null, $printing = 'N')
 	if(is_array($ccms['template_collection']) && count($ccms['template_collection']) > 0) 
 	{
 		// pick default template
-		$name = $ccms['template_collection'][0] . ($printing == 'N' ? '' : '/print');
+		$name = $ccms['template_collection'][0] . ($printing != 'Y' ? '' : '/print');
 		
 		// Set the template variable for current page
 		$templatefile = BASE_PATH . '/lib/templates/' . $name . '.tpl.html';
@@ -539,7 +841,7 @@ function DetermineTemplateName($name = null, $printing = 'N')
 	}
 	
 	// for printing ONLY, see if the 'ccms' template exists anyway.
-	if ($printing != 'N')
+	if ($printing == 'Y')
 	{
 		$name = 'ccms/print';
 		
@@ -631,7 +933,7 @@ function send_response_status_header($response_code)
 		break;
 		
 	case 'server':
-		header('HTTP/1.0 ' . $response_code . ' ' . get_response_code_string($reponse_code), true, $response_code);
+		header('HTTP/1.0 ' . $response_code . ' ' . get_response_code_string($response_code), true, $response_code);
 		break;
 	}
 }
@@ -640,7 +942,7 @@ function send_response_status_header($response_code)
 /**
 Return the HTTP response code string for the given response code
 */
-function get_response_code_string($reponse_code)
+function get_response_code_string($response_code)
 {
 	switch (intval($response_code))
 	{
@@ -702,7 +1004,8 @@ function checkAuth()
 	$currenthost = md5($_SERVER['HTTP_HOST']);
 	
 	//if(md5(session_id())==$cage && md5($_SERVER['HTTP_HOST']) == $host) {   // [i_a] bugfix
-	if ($canarycage == $_SESSION['id'] && $currenthost == $_SESSION['host']) 
+	if (!empty($_SESSION['id']) && $canarycage == $_SESSION['id'] 
+		&& !empty($_SESSION['host']) && $currenthost == $_SESSION['host']) 
 	{
 		return true;
 	} 

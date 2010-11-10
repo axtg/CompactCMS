@@ -39,8 +39,8 @@ if(!defined("COMPACTCMS_CODE")) { die('Illegal entry point!'); } /*MARKER*/
   Released under GNU Public license
 */
 
-class createZip  {  
-
+class createZip  
+{  
     public $compressedData = array();
     public $centralDirectory = array(); // central directory   
     public $endOfCentralDirectory = "\x50\x4b\x05\x06\x00\x00\x00\x00"; //end of Central directory record

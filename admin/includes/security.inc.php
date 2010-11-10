@@ -35,7 +35,7 @@ if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 /*
 We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
 */
-define('CCMS_PERFORM_MINIMAL_INIT', true);
+if (!defined('CCMS_PERFORM_MINIMAL_INIT')) { define('CCMS_PERFORM_MINIMAL_INIT', true); }
 
 
 // Include general configuration
@@ -46,6 +46,10 @@ if (!defined('BASE_PATH'))
 }
 
 /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
+
+
+$do = getGETparam4IdOrNumber('do');
+
 
 // Disable common hacking functions
 ini_set('base64_decode', 'Off');
@@ -64,7 +68,7 @@ if(empty($_SESSION['ccms_userID']) && $cfg['protect']==true)
 }
 
 // Do log-out (kill sessions) and redirect
-if(isset($_GET['do'])&&$_GET['do']=="logout") 
+if($do == "logout") 
 {
 	// Unset all of the session variables.
 	$_SESSION = array();

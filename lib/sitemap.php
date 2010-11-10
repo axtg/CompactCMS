@@ -127,7 +127,7 @@ function SetUpLanguageAndLocale($language)
 	if(is_file($langfile))
 	{
 		// only load language files when the current language has not been loaded just before.
-		if ($language !== $cfg['language'])
+		if (!isset($cfg['language']) || $language !== $cfg['language'])
 		{
 			/*MARKER*/require($langfile);
 		}
@@ -214,11 +214,7 @@ $current = basename(filterParam4FullFilePath($_SERVER['REQUEST_URI']));
 $pagereq = getGETparam4Filename('page');
 $ccms['pagereq'] = $pagereq;
 
-$ccms['printing'] = filterParam4IdOrNumber($_GET['printing']);
-if ($ccms['printing'] != 'Y')
-{
-	$ccms['printing'] = 'N';
-}
+$ccms['printing'] = getGETparam4boolYN('printing', 'N');
 
 // This files' current version
 $v = "1.4.1";
@@ -231,7 +227,7 @@ if ($handle = @opendir(BASE_PATH . '/lib/templates/'))
 
 	while (false !== ($file = readdir($handle))) 
 	{
-		if ($file != "." && $file != ".." && strpos($file, ".tpl.html")) 
+		if ($file != "." && $file != ".." && strmatch_tail($file, ".tpl.html")) 
 		{
 			// Add the templates to an array for use through-out CCMS, while removing the extension .tpl.html (=9)
 			$template_name = substr($file,0,-9);
@@ -262,7 +258,9 @@ else
 
 
 // Fill active module array and load the plugin code
-$modules = $db->QueryArray("SELECT * FROM `".$cfg['db_prefix']."modules` WHERE modActive='1'");
+$modules = $db->QueryArray("SELECT * FROM `".$cfg['db_prefix']."modules` WHERE modActive='1'", MYSQL_ASSOC);
+if (!$modules)
+	$db->Kill();
 
 
 
@@ -274,8 +272,6 @@ if (!defined('CCMS_PERFORM_MINIMAL_INIT'))
 // OPERATION MODE ==
 // 1) Start normal operation mode (if sitemap.php is not requested directly).
 // This will fill all variables based on the requested page, or throw a 403/404 error when applicable.
-//
-// [i_a] $pagereq = (isset($_GET['page'])&&!empty($_GET['page']))?htmlspecialchars($_GET['page']):null;
 if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitemap") 
 {
 	// Parse contents function
@@ -293,7 +289,7 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 			// Check for preview variable
 			$preview = getGETparam4IdOrNumber('preview');
 			// Warning message when page is disabled and authcode is correct
-			if ($preview==$cfg['authcode'] && $published=='N') 
+			if ($preview==$cfg['authcode'] && $published != 'Y')
 			{ 
 				echo "<p style=\"clear:both;padding:.8em;margin-bottom:1em;background:#FBE3E4;color:#8a1f11;border:2px solid #FBC2C4;\">".$msg[0].": <strong>".strtolower($ccms['lang']['backend']['disabled'])."</strong></p>";
 			}
@@ -308,7 +304,6 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 			{ 
 				// [i_a] prevent errors in non-published-marked previews (which would trigger the 403): preview a non-published item, then click on the breadcrumb link to same page and boom!
 				/*MARKER*/require_once(BASE_PATH. "/content/403.php");
-				//echo file_get_contents(BASE_PATH. "/content/403.php");
 			}
 			// All parsed function contents to $content variable
 			$content = ob_get_contents();
@@ -317,11 +312,8 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 	}
 
 	// Select the appropriate statement (home page versus specified page)
-	if(!empty($pagereq)) {
-		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = " . MySQL::SQLValue($pagereq, MySQL::SQLVALUE_TEXT))) $db->Kill();
-	} else {
-		if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = 'home'")) $db->Kill();
-	}
+	if (!$db->Query("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `urlpage` = " . MySQL::SQLValue((!empty($pagereq) ? $pagereq : 'home'), MySQL::SQLVALUE_TEXT))) 
+		$db->Kill();
 
 	// Start switch for pages, select all the right details
 	if($db->HasRecords()) 
@@ -340,10 +332,10 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 		$ccms['sitename']   = $cfg['sitename'];
 		$ccms['rootdir']    = (substr($cfg['rootdir'],-1)!=='/'?$cfg['rootdir'].'/':$cfg['rootdir']);
 		$ccms['urlpage']    = $row->urlpage;
-		$ccms['pagetitle']  = $db->SQLUnfix($row->pagetitle);
-		$ccms['subheader']  = $db->SQLUnfix($row->subheader);
-		$ccms['desc']       = $db->SQLUnfix($row->description);
-		$ccms['keywords']   = $db->SQLUnfix($row->keywords);
+		$ccms['pagetitle']  = $row->pagetitle;
+		$ccms['subheader']  = $row->subheader;
+		$ccms['desc']       = $row->description;
+		$ccms['keywords']   = $row->keywords;
 		$ccms['title']      = ucfirst($ccms['pagetitle'])." - ".$ccms['sitename']." | ".$ccms['subheader'];
 		$ccms['printable']  = $row->printable;
 		$ccms['content']    = ccmsContent($ccms['urlpage'],$ccms['published']);
@@ -353,6 +345,9 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 		$ccms['template'] = DetermineTemplateName($row->variant, $ccms['printing']);
 
 		$ccms['module']      = $row->module;
+		
+if (0)
+{
 		// create a plugin/module instance tailored to this particular page
 		if($row->module != "editor" && is_object($modules[$row->module]) && method_exists($modules[$row->module], 'getInstance')) 
 		{
@@ -362,6 +357,7 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 				die('FATAL: module ' . $row->module . ' failed to initialize for page ' . $row->urlpage);
 			}
 		}
+}
 		
 		// BREADCRUMB ==
 		// Create breadcrumb for the current page
@@ -369,18 +365,30 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 		{
 			$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir']."\" title=\"".ucfirst($cfg['sitename'])." Home\">Home</a></span>";
 		}
-		else {
+		else 
+		{
 			// [i_a] these branches didn't include the span which was included by the 'home' if(...) above.
 			if($row->sublevel=='0') 
 			{
-				$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$db->SQLUnfix($row->subheader)."\">".$db->SQLUnfix($row->pagetitle)."</a></span>";
+				$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a></span>";
 			}
 			else 
 			{ 
 				// sublevel page
 				$subpath = $db->QuerySingleRow("SELECT * FROM `".$cfg['db_prefix']."pages` WHERE `toplevel` = '".$row->toplevel."' AND `sublevel`='0'");
-				if (!subpath) $db->Kill();
-				$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir'].$subpath->urlpage.".html\" title=\"".$db->SQLUnfix($subpath->subheader)."\">".$db->SQLUnfix($subpath->pagetitle)."</a> &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$db->SQLUnfix($row->subheader)."\">".$db->SQLUnfix($row->pagetitle)."</a></span>";
+				if (!$subpath && $db->ErrorNumber()) 
+				{
+					$db->Kill();
+				}
+				else if ($subpath)
+				{
+					$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir'].$subpath->urlpage.".html\" title=\"".$subpath->subheader."\">".$subpath->pagetitle."</a> &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a></span>";
+				}
+				else
+				{
+					// no main node record found!
+					$ccms['breadcrumb'] = "<span class=\"breadcrumb\">&raquo; <a href=\"".$cfg['rootdir']."\" title=\"".ucfirst($cfg['sitename'])." Home\">Home</a> &raquo; <a href=\"".$cfg['rootdir'].$row->urlpage.".html\" title=\"".$row->subheader."\">".$row->pagetitle."</a></span>";
+				}
 			}
 		}
 	} 
@@ -413,7 +421,7 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 		$ccms['rootdir']    = (substr($cfg['rootdir'],-1)!=='/'?$cfg['rootdir'].'/':$cfg['rootdir']);
 		$ccms['urlpage']    = "404";
 		$ccms['desc']       = $ccms['lang']['system']['error_404title'];
-		$ccms['keywords']   = "";
+		$ccms['keywords']   = "404";
 
 		$ccms['template'] = DetermineTemplateName(null, $ccms['printing']);
 	}
@@ -552,11 +560,11 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 				$current_link = '#';
 				$menu_item_class = 'menu_item_nolink';
 			}
-			else if (regexUrl($db->SQLUnfix($row->description)))
+			else if (regexUrl($row->description))
 			{
-				$msg = explode(' ::', $db->SQLUnfix($row->description));
+				$msg = explode(' ::', $row->description);
 				$current_link = $msg[0];
-				$current_extra = $msg[1];
+				$current_extra = (!empty($msg[1]) ? $msg[1] : '');
 				$current_class = 'to_external_url';
 				$menu_item_class = 'menu_item_extref';
 			}
@@ -577,8 +585,8 @@ if($current != "sitemap.php" && $current != "sitemap.xml" && $pagereq != "sitema
 			
 
 			// What text to show for the links
-			$link_text = ucfirst($db->SQLUnfix($row->pagetitle));
-			$link_title = ucfirst($db->SQLUnfix($row->subheader));
+			$link_text = ucfirst($row->pagetitle);
+			$link_title = ucfirst($row->subheader);
 
 			$current_link_classes = trim($current_class . ' ' . $menu_item_class);
 			if (!empty($current_link_classes))
@@ -640,20 +648,27 @@ else /* if($current == "sitemap.php" || $current == "sitemap.xml") */   // [i_a]
 	if (!$db->Query("SELECT `urlpage`,`description`,`islink` FROM `".$cfg['db_prefix']."pages` WHERE `published` = 'Y'")) $db->Kill();
 
 	$db->MoveFirst();
-	while (!$db->EndOfSeek()) {
+	while (!$db->EndOfSeek()) 
+	{
 		$row = $db->Row();
 
 		// Do not include external links in sitemap
-		if(!regexUrl($db->SQLUnfix($row->description))) {
+		if(!regexUrl($row->description)) 
+		{
 			echo "<url>\n";
-				if($row->urlpage == "home") {
+				if($row->urlpage == "home") 
+				{
 					echo "<loc>http://".$_SERVER['SERVER_NAME']."".$dir."</loc>\n";
 					echo "<priority>0.80</priority>\n";
-				} else if($row->islink == 'N') {
+				} 
+				else if($row->islink == 'N') 
+				{
 					// [i_a] put pages which are not accessible through the menus (and thus the home/index page, at a higher scan priority.
 					echo "<loc>http://".$_SERVER['SERVER_NAME']."".$dir."".$row->urlpage.".html</loc>\n";
 					echo "<priority>0.70</priority>\n";
-				} else {
+				} 
+				else 
+				{
 					echo "<loc>http://".$_SERVER['SERVER_NAME']."".$dir."".$row->urlpage.".html</loc>\n";
 					echo "<priority>0.50</priority>\n";
 				}

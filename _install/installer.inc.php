@@ -50,8 +50,12 @@ session_start();
 
 
 // Set current && additional step
-$nextstep = (!empty($_POST['do'])?$_POST['do']:'ea2b2676c28c0db26d39331a336c6b92');
+$nextstep = getPOSTparam4IdOrNumber('do', 'ea2b2676c28c0db26d39331a336c6b92');
 
+if (empty($_SESSION['variables']))
+{
+	$_SESSION['variables'] = array();
+}
 
 /**
 *
@@ -66,12 +70,13 @@ if($nextstep == md5('2') && CheckAuth())
 	// Installation actions
 	//  - Environmental variables
 	//
-	$rootdir    = array("rootdir" => (substr($_POST['rootdir'],-1)!=='/'?$_POST['rootdir'].'/':$_POST['rootdir']));
-	$sitename   = array("sitename" => $_POST['sitename']);
-	$language   = array("language" => $_POST['language']);
+	$dir = getPOSTparam4FullFilePath('rootdir');
+	$rootdir    = array('rootdir' => (substr($dir,-1)!=='/'?$dir.'/':$dir));
+	$sitename   = array('sitename' => getPOSTparam4HumanName('sitename'));
+	$language   = array('language' => getPOSTparam4IdOrNumber('language'));
 
 	// Add new data to variable session
-	$_SESSION['variables'] = array_merge($rootdir,$sitename,$language);
+	$_SESSION['variables'] = array_merge($_SESSION['variables'],$rootdir,$sitename,$language);
 ?>
 	<legend class="installMsg">Step 2 - Setting your preferences</legend>
 
@@ -111,12 +116,12 @@ if($nextstep == md5('3') && CheckAuth())
 	//  - Saving preferences
 	//
 
-	$version    = array("version" => (isset($_POST['version'])&&$_POST['version']=='true'?'true':'false'));
-	$iframe     = array("iframe" => (isset($_POST['iframe'])&&$_POST['iframe']=='true'?'true':'false'));
-	$wysiwyg    = array("wysiwyg" => (isset($_POST['wysiwyg'])&&$_POST['wysiwyg']=='true'?'true':'false'));
-	$protect    = array("protect" => (isset($_POST['protect'])&&$_POST['protect']=='true'?'true':'false'));
-	$userPass   = array("userPass" => $_POST['userPass']);
-	$authcode   = array("authcode" => $_POST['authcode']);
+	$version    = array('version' => getPOSTparam4boolean('version'));
+	$iframe     = array('iframe' => getPOSTparam4boolean('iframe'));
+	$wysiwyg    = array('wysiwyg' => getPOSTparam4boolean('wysiwyg'));
+	$protect    = array('protect' => getPOSTparam4boolean('protect'));
+	$userPass   = array('userPass' => $_POST['userPass']); // must store this in RAW form - will not be displayed anywhere, only fed to MD5()
+	$authcode   = array('authcode' => getPOSTparam4IdOrNumber('authcode'));
 
 	// Add new data to variable session
 	$_SESSION['variables'] = array_merge($_SESSION['variables'],$version,$iframe,$wysiwyg,$protect,$userPass,$authcode);
@@ -148,11 +153,11 @@ if($nextstep == md5('4') && CheckAuth())
 	// Installation actions
 	//  - Process database
 	//
-	$db_host    = array("db_host" => $_POST['db_host']);
-	$db_user    = array("db_user" => $_POST['db_user']);
-	$db_pass    = array("db_pass" => $_POST['db_pass']);
-	$db_name    = array("db_name" => $_POST['db_name']);
-	$db_prefix  = array("db_prefix" => $_POST['db_prefix']);
+	$db_host    = array("db_host" => getPOSTparam4IdOrNumber('db_host'));
+	$db_user    = array("db_user" => getPOSTparam4IdOrNumber('db_user'));
+	$db_pass    = array("db_pass" => $_POST['db_pass']); // must be RAW
+	$db_name    = array("db_name" => getPOSTparam4IdOrNumber('db_name'));
+	$db_prefix  = array("db_prefix" => getPOSTparam4IdOrNumber('db_prefix'));
 
 	// Add new data to variable session
 	$_SESSION['variables'] = array_merge($_SESSION['variables'],$db_host,$db_user,$db_pass,$db_name,$db_prefix);
@@ -163,6 +168,7 @@ if($nextstep == md5('4') && CheckAuth())
 	//
 	// Check for current chmod() if server != Windows
 	//
+	$chfile = array();
 	if(!strpos($_SERVER['SERVER_SOFTWARE'], "Win"))
 	{
 		// TODO: change these expressions to the 'is_writable()' check
@@ -180,17 +186,31 @@ if($nextstep == md5('4') && CheckAuth())
 	}
 ?>
 	<legend class="installMsg">Step 4 - Review your input</legend>
-		<?php if(!isset($chfile)) { ?><p class="center"><span class="ss_sprite ss_tick"><em>All files are already correctly chmod()'ed</em></span></p><?php } ?>
-		<?php if(ini_get('safe_mode') || isset($chfile)) { ?>
+		<?php 
+		if(count($chfile) == 0) 
+		{ 
+		?>
+			<p class="center"><span class="ss_sprite ss_tick"><em>All files are already correctly chmod()'ed</em></span></p>
+		<?php 
+		} 
+		
+		if(ini_get('safe_mode') || count($chfile) > 0)
+		{ 
+		?>
 			<span class="ss_sprite ss_exclamation">&#160;</span><h2 style="display:inline;">Warning</h2>
-			<p>It appears that it <abbr title="Based on current chmod() rights and/or safe mode restrictions">may not be possible</abbr> for the installer to chmod() various files. Please consider doing so manually <em>or</em> by using the <a href="index.php?do=ff104b2dfab9fe8c0676587292a636d3">built-in FTP chmod function</a>.</p>
+			<p>It appears that it <abbr title="Based on current chmod() rights and/or safe mode restrictions">may not be possible</abbr> for the installer to chmod() various files. Please consider doing so manually <em>or</em> by using the <a href="index.php?do=<?php echo md5('ftp'); ?>">built-in FTP chmod function</a>.</p>
 			<span>&rarr; <em>Files that still require chmod():</em></span>
-				<ul>
-					<?php foreach ($chfile as $value) {
-						if(!empty($value)&&!is_numeric($value)) { echo "<li>$value</li>"; }
-					}?>
-				</ul>
-		<?php } ?>
+			<ul>
+				<?php 
+				foreach ($chfile as $value) 
+				{
+					echo "<li>$value</li>";
+				}
+				?>
+			</ul>
+		<?php 
+		} 
+		?>
 		<span class="ss_sprite ss_computer">&#160;</span><h2 style="display:inline;">Environment</h2>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr style="background-color: <?php echo $alt_row; ?>;">
@@ -210,20 +230,20 @@ if($nextstep == md5('4') && CheckAuth())
 		<span class="ss_sprite ss_cog">&#160;</span><h2 style="display:inline;">Preferences</h2>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr style="background-color: <?php echo $alt_row; ?>;">
-				<th width="55%" scope="row">Version</th>
-				<td><?php echo $_SESSION['variables']['version'];?></td>
+				<th width="55%" scope="row">Version Check</th>
+				<td><?php echo ($_SESSION['variables']['version'] ? 'yes' : '---');?></td>
 			</tr>
 			<tr>
-				<th scope="row">Iframe</th>
-				<td><?php echo $_SESSION['variables']['iframe'];?></td>
+				<th scope="row">Iframes Allowed</th>
+				<td><?php echo ($_SESSION['variables']['iframe'] ? 'yes' : '---');?></td>
 			</tr>
 			<tr style="background-color: <?php echo $alt_row; ?>;">
 				<th scope="row">Visual editor</th>
-				<td><?php echo $_SESSION['variables']['wysiwyg'];?></td>
+				<td><?php echo ($_SESSION['variables']['wysiwyg'] ? 'yes' : '---');?></td>
 			</tr>
 			<tr>
 				<th scope="row">User authentication</th>
-				<td><?php echo $_SESSION['variables']['protect'];?></td>
+				<td><?php echo ($_SESSION['variables']['protect'] ? 'yes' : '---');?></td>
 			</tr>
 			<tr style="background-color: <?php echo $alt_row; ?>;">
 				<th scope="row">Administrator password</th>
@@ -262,7 +282,7 @@ if($nextstep == md5('4') && CheckAuth())
 		<hr noshade="noshade" />
 		<p class="quiet">
 			<strong><span class="ss_sprite ss_exclamation">Please note</span></strong><br/>
-			Any data that is currently in <strong><?php echo $_SESSION['variables']['db_prefix']; ?>pages</strong> and <strong><?php echo $_SESSION['variables']['db_prefix']; ?>users</strong> might be overwritten, depending your servers' configuration.
+			Any data that is currently in <strong><?php echo $_SESSION['variables']['db_prefix']; ?>pages</strong> and <strong><?php echo $_SESSION['variables']['db_prefix']; ?>users</strong> might be overwritten, depending your server configuration.
 		</p>
 
 		<p class="span-8 right">
@@ -332,7 +352,8 @@ if($nextstep == md5('final') && CheckAuth())
 	if($err==0 && !isset($_POST['ftp_host']) && empty($_POST['ftp_host']) && !strpos($_SERVER['SERVER_SOFTWARE'], "Win"))
 	{
 		// Set warning when safe mode is enabled
-		if(ini_get('safe_mode')) {
+		if(ini_get('safe_mode')) 
+		{
 			$errors[] = 'Warning: safe mode is enabled, skipping chmod()';
 		}
 
@@ -341,14 +362,19 @@ if($nextstep == md5('final') && CheckAuth())
 		$errfile=0;
 
 		// Chmod check and set function
-		function setChmod($path, $value) {
+		function setChmod($path, $value) 
+		{
 			// Check current chmod() status
-			if(substr(sprintf('%o', fileperms(BASE_PATH.$path)), -4)!=$value) {
+			if(substr(sprintf('%o', fileperms(BASE_PATH.$path)), -4)!=$value) 
+			{
 				// If not set, set
-				if(@chmod(BASE_PATH.$path, $value)) {
+				if(@chmod(BASE_PATH.$path, $value)) 
+				{
 					return true;
 				}
-			} else {
+			} 
+			else 
+			{
 				return true;
 			}
 		}
@@ -367,15 +393,18 @@ if($nextstep == md5('final') && CheckAuth())
 		if(setChmod('/media/files/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /media/files/';
 		if(setChmod('/lib/includes/cache/','0777')) { $chmod++; } else $errfile[] = 'Could not chmod() /lib/includes/cache/';
 
-		if($chmod>0) {
+		if($chmod>0) 
+		{
 			$log[] = '<abbr title=".htaccess, config.inc.php, ./content/, ./lib/includes/cache/, back-up folder &amp; 2 media folders">Confirmed correct chmod() on '.$chmod.' files</abbr>';
 		}
-		if(!isset($chmod)||$chmod==0||$errfile>0) {
+		if(!isset($chmod)||$chmod==0||$errfile>0) 
+		{
 			$errors[] = 'Warning: could not chmod() all files.';
-			foreach ($errfile as $key => $value) {
+			foreach ($errfile as $key => $value) 
+			{
 				$errors[] = $value;
 			}
-			$errors[] = 'Either use the <a href="index.php?do=ff104b2dfab9fe8c0676587292a636d3">built-in FTP chmod function</a>, or manually perform chmod().';
+			$errors[] = 'Either use the <a href="index.php?do=' . md5('ftp') . '">built-in FTP chmod function</a>, or manually perform chmod().';
 		}
 	}
 
@@ -498,14 +527,15 @@ if($nextstep == md5('final') && CheckAuth())
 			fwrite($fp, "\$cfg['restrict'] = array();\r\n?>");
 			
 			// Check for errors
-			if(empty($write_err)) {
+			if(empty($write_err)) 
+			{
 				$log[] = "Configuration successfully saved to config.inc.php";
 			}
 		} 
 		else 
 		{
 			$errors[] = 'Fatal: the configuration file is not writable.';
-			$errors[] = 'Make sure the file is writable, or <a href="index.php?do=ff104b2dfab9fe8c0676587292a636d3">do so now</a>.';
+			$errors[] = 'Make sure the file is writable, or <a href="index.php?do=' . md5('ftp') . '">do so now</a>.';
 			$err++;
 		}
 	}
@@ -534,7 +564,7 @@ if($nextstep == md5('final') && CheckAuth())
 			elseif($_SESSION['variables']['rootdir']!="/") 
 			{
 				$errors[] = 'Fatal: the .htaccess file is not writable.';
-				$errors[] = 'Make sure the file is writable, or <a href="index.php?do=ff104b2dfab9fe8c0676587292a636d3">do so now</a>.';
+				$errors[] = 'Make sure the file is writable, or <a href="index.php?do=' . md5('ftp') . '">do so now</a>.';
 				$err++;
 			}
 		}
@@ -542,24 +572,40 @@ if($nextstep == md5('final') && CheckAuth())
 
 ?>
 	<legend class="installMsg">Final - Finishing the installation</legend>
-		<?php if(isset($log)) {
-			unset($_SESSION['variables']); ?>
+	<?php 
+	if(isset($log)) 
+	{
+		unset($_SESSION['variables']); 
+		?>
 		<h2>Process results</h2>
 		<p>
 			<?php
-			while (list($key,$value) = each($log)) {
+			while (list($key,$value) = each($log)) 
+			{
 				echo '<span class="ss_sprite ss_accept">'.$value.'</span><br />';
-			} ?>
+			} 
+			?>
 		</p>
-		<?php } if(isset($errors)) { ?>
+	<?php 
+	} 
+	if(isset($errors)) 
+	{ 
+	?>
 		<h2>Errors &amp; warnings</h2>
 		<p>
 			<?php
-			while (list($key,$value) = each($errors)) {
+			while (list($key,$value) = each($errors)) 
+			{
 				echo '<span class="ss_sprite ss_exclamation">'.$value.'</span><br />';
-			} ?>
+			} 
+			?>
 		</p>
-		<?php } if($err==0) { ?>
+	<?php 
+	} 
+	
+	if($err==0) 
+	{ 
+	?>
 		<h2>What's next?</h2>
 		<p>The installation has been successful! You should now follow the steps below, to get you started.</p>
 		<ol>
@@ -568,8 +614,12 @@ if($nextstep == md5('final') && CheckAuth())
 			<li>Change your password through the back-end</li>
 			<li><a href="http://www.compactcms.nl/contact.html" target="_blank">Let me know</a> how you like CompactCMS!</li>
 		</ol>
-		<?php } else echo '<a href="index.php">Retry setting the variables</a>'; ?>
-
-<?php
+	<?php 
+	} 
+	else 
+	{
+		echo '<a href="index.php">Retry setting the variables</a>'; 
+	}
 } // Close final processing
+
 ?>

@@ -35,7 +35,7 @@ if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 /*
 We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
 */
-define('CCMS_PERFORM_MINIMAL_INIT', true);
+if (!defined('CCMS_PERFORM_MINIMAL_INIT')) { define('CCMS_PERFORM_MINIMAL_INIT', true); }
 
 
 // Define default location
@@ -48,27 +48,35 @@ if (!defined('BASE_PATH'))
 // Include general configuration
 /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
+// security check done ASAP
+if(!checkAuth() || empty($_SESSION['rc1']) || empty($_SESSION['rc2'])) 
+{ 
+	die("No external access to file");
+}
+
+
 
 $do	= getGETparam4IdOrNumber('do');
+$btn_backup = getPOSTparam4IdOrNumber('btn_backup');
 
-if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && isset($_SESSION['rc1']) && checkAuth()) {
-	
+if($do=="backup" && $btn_backup=="dobackup") 
+{
 	// Include back-up functions
 	/*MARKER*/require_once('./functions.php');
-	
-
 }
+
+
+
+
 ?>
-<?php if(isset($_SESSION['rc1']) && !empty($_SESSION['rc2']) && checkAuth()) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
-	<head>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<title>Back-up &amp; Restore module</title>
-		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
-	</head>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title>Back-up &amp; Restore module</title>
+	<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
+</head>
 <body class="module">
 		
 </body>
 </html>
-<?php } else die("No external access to file");?>

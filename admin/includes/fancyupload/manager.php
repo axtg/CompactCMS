@@ -40,7 +40,7 @@ if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 /*
 We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
 */
-define('CCMS_PERFORM_MINIMAL_INIT', true);
+if (!defined('CCMS_PERFORM_MINIMAL_INIT')) { define('CCMS_PERFORM_MINIMAL_INIT', true); }
 
 
 // Define default location
@@ -51,7 +51,6 @@ if (!defined('BASE_PATH'))
 }
 
 // Load basic configuration
-define('CCMS_PERFORM_MINIMAL_INIT', true);
 /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
 

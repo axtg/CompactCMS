@@ -40,7 +40,7 @@ if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 /*
 We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
 */
-define('CCMS_PERFORM_MINIMAL_INIT', true);
+if (!defined('CCMS_PERFORM_MINIMAL_INIT')) { define('CCMS_PERFORM_MINIMAL_INIT', true); }
 
 
 // Compress all output and coding
@@ -59,9 +59,10 @@ if (!defined('BASE_PATH'))
 // Security functions
 
 
-
 // Get permissions
-$perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+$perm = $db->SelectSingleRowArray($cfg['db_prefix'].'cfgpermissions');
+if (!$perm) $db->Kill("INTERNAL ERROR: 1 permission record MUST exist!");
+
 
 // Set default variables
 $commentID 	= getGETparam4Number('commentID');
@@ -69,12 +70,13 @@ $pageID		= getPOSTparam4Filename('pageID');
 $cfgID		= getPOSTparam4Number('cfgID');
 $do_action 	= getGETparam4IdOrNumber('action');
 
- /**
+
+/**
  *
  * Show comments
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAuth()) 
+if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && !empty($_SESSION['ccms_captcha']) /* && checkAuth() */ ) // there's not necessarily an *authenticated* SESSION going on here... 
 {
 	// Pagination variables
 	$pageID	= getGETparam4Filename('page');
@@ -115,7 +117,9 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 	// Load recordset
 	if (!$db->SelectRows($cfg['db_prefix']."modcomment", array('pageID' => MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT)), null, 'commentID', false, $limit4sql))
 		$db->Kill();
-	//echo "<pre>" . $db->GetLastSQL() . "</pre>";
+	//echo "<pre>" . $db->GetLastSQL() . " -- $limit, $pageID, ".getGETparam4Number('offset')."\n";
+	//var_dump($_GET);
+	//echo "</pre>";
 	
 	// Start switch for comments, select all the right details
 	if($db->HasRecords()) 
@@ -158,7 +162,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 				} 
 				else 
 				{
-					echo '<a href="?offset='.$i.'">'.$linktext.'</a>';
+					echo '<a href="?offset='.$i.'&action='.$do_action.'&page='.$pageID.'&">'.$linktext.'</a>';
 				}
 			} 
 			?>
@@ -166,11 +170,13 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="show-comments" && checkAu
 		<!--<p>&#160;</p>-->
 	<?php 
 	} 
-	else 
+	else
+	{	
 		echo $ccms['lang']['guestbook']['noposts'];
+	}
 }
 
- /**
+/**
  *
  * Delete comment
  *
@@ -203,43 +209,89 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && $do_action=="del-comment" && checkAuth
 		die($ccms['lang']['auth']['featnotallowed']);
 }
 
- /**
+/**
  *
  * Add comment
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && checkAuth() && $_POST['verification']==$_SESSION['ccms_captcha']) 
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="add-comment" && $_POST['verification']==$_SESSION['ccms_captcha'] && !empty($_SESSION['ccms_captcha']) /* && checkAuth() */ ) // there's not necessarily an *authenticated* SESSION going on here...  
 {
-	$values = array(); // [i_a] make sure $values is an empty array to start with here
-	$values['pageID']		= MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
-	$values['commentName']	= MySQL::SQLValue($_POST['name'], MySQL::SQLVALUE_TEXT);
-	$values['commentEmail']	= MySQL::SQLValue($_POST['email'], MySQL::SQLVALUE_TEXT);
-	$values['commentUrl']	= MySQL::SQLValue($_POST['website'], MySQL::SQLVALUE_TEXT);
-	$values['commentRate']	= MySQL::SQLValue($_POST['rating'], MySQL::SQLVALUE_NUMBER); // 'note the 'tricky' comment in the MySQL::SQLValue() member: we MUST have quotes around this number as mySQL enums are quoted :-(
-	$values['commentContent'] = MySQL::SQLValue(strip_tags($_POST['comment']), MySQL::SQLVALUE_TEXT);
-	$values['commentHost']	= MySQL::SQLValue($_SERVER['REMOTE_ADDR'], MySQL::SQLVALUE_TEXT);
+	$error = '';
 	
-	// Insert new page into database
-	if (!$db->InsertRow($cfg['db_prefix']."modcomment", $values))
-		$db->Kill();
+	$commentName = getPOSTparam4DisplayHTML('name');
+	$commentEmail = getPOSTparam4Email('email');
+	$commentUrl = getPOSTparam4URL('website');
+	$commentRating = getPOSTparam4Number('rating', 3);
+	$commentContent = getPOSTparam4DisplayHTML('comment'); // no need for strip_tags here: 4DisplayHTML already encodes anything that might be dangerous in HTML entities so they show but don't hurt
+	$commentHost = $_SERVER['REMOTE_ADDR'];
+
+	if (!empty($commentName) && !empty($commentEmail) && !empty($commentRating) && !empty($commentContent) && !empty($commentHost))
+	{
+		$values = array(); // [i_a] make sure $values is an empty array to start with here
+		$values['pageID']		= MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
+		$values['commentName']	= MySQL::SQLValue($commentName, MySQL::SQLVALUE_TEXT);
+		$values['commentEmail']	= MySQL::SQLValue($commentEmail, MySQL::SQLVALUE_TEXT);
+		$values['commentUrl']	= MySQL::SQLValue($commentUrl, MySQL::SQLVALUE_TEXT);
+		$values['commentRate']	= MySQL::SQLValue($commentRating, MySQL::SQLVALUE_NUMBER); // 'note the 'tricky' comment in the MySQL::SQLValue() member: we MUST have quotes around this number as mySQL enums are quoted :-(
+		$values['commentContent'] = MySQL::SQLValue($commentContent, MySQL::SQLVALUE_TEXT);
+		$values['commentHost']	= MySQL::SQLValue($commentHost, MySQL::SQLVALUE_TEXT);
+		
+		// Insert new page into database
+		if (!$db->InsertRow($cfg['db_prefix']."modcomment", $values))
+		{
+			$error = $db->Error();
+		}
+		else
+		{
+			echo '<h2>' . $ccms['lang']['guestbook']['success'] . '</h2>';
+			echo '<div id="sent-comment-ok">' . $ccms['lang']['guestbook']['posted'] . '</div>';
+			exit();
+		}
+	}
+	else
+	{
+		$error = $ccms['lang']['guestbook']['rejected'];
+	}
+	
+	// assert(!empty($error));
+	echo '<h2>' . $ccms['lang']['guestbook']['error'] . '</h2>';
+	echo '<div id="sent-comment-fail">' . $error . '</div>';
+	exit();
 }
 
- /**
+/**
  *
  * Save configuration
  *
  */
-if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="save-cfg" && checkAuth()) {
+if($_SERVER['REQUEST_METHOD'] == "POST" && $do_action=="save-cfg" && checkAuth()) 
+{
+	$showMessage = getPOSTparam4Number('messages');
+	$showLocale = getPOSTparam4IdOrNumber('locale');
 
-	$values = array(); // [i_a] make sure $values is an empty array to start with here
-	$values['pageID'] = MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
-	$values['showMessage'] = MySQL::SQLValue(getPOSTparam4Number('messages'), MySQL::SQLVALUE_NUMBER);
-	$values['showLocale'] = MySQL::SQLValue($_POST['locale'], MySQL::SQLVALUE_TEXT);
+	if (!empty($showMessage) && !empty($showLocale))
+	{
+		$values = array(); // [i_a] make sure $values is an empty array to start with here
+		$values['pageID'] = MySQL::SQLValue($pageID, MySQL::SQLVALUE_TEXT);
+		$values['showMessage'] = MySQL::SQLValue($showMessage, MySQL::SQLVALUE_NUMBER);
+		$values['showLocale'] = MySQL::SQLValue($showLocale, MySQL::SQLVALUE_TEXT);
 
-	// Insert or update configuration
-	if($db->AutoInsertUpdate($cfg['db_prefix']."cfgcomment", $values, array("cfgID" => MySQL::BuildSQLValue($cfgID)))) {
-		header("Location: comment.Manage.php?file=$pageID&status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
+		// Insert or update configuration
+		if($db->AutoInsertUpdate($cfg['db_prefix']."cfgcomment", $values, array("cfgID" => MySQL::BuildSQLValue($cfgID)))) 
+		{
+			header("Location: comment.Manage.php?file=$pageID&status=notice&msg=".rawurlencode($ccms['lang']['backend']['settingssaved']));
+			exit();
+		} 
+		else 
+		{
+			header("Location: comment.Manage.php?file=$pageID&status=error&msg=".rawurlencode($db->Error()));
+			exit();
+		}
+	}
+	else
+	{
+		header("Location: comment.Manage.php?file=$pageID&status=error&msg=".rawurlencode($ccms['lang']['system']['error_forged']));
 		exit();
-	} else $db->Kill();
+	}
 }
 ?>

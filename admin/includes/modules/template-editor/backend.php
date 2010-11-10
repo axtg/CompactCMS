@@ -35,7 +35,7 @@ if(!defined("COMPACTCMS_CODE")) { define("COMPACTCMS_CODE", 1); } /*MARKER*/
 /*
 We're only processing form requests / actions here, no need to load the page content in sitemap.php, etc. 
 */
-define('CCMS_PERFORM_MINIMAL_INIT', true);
+if (!defined('CCMS_PERFORM_MINIMAL_INIT')) { define('CCMS_PERFORM_MINIMAL_INIT', true); }
 
 
 // Define default location
@@ -49,13 +49,21 @@ if (!defined('BASE_PATH'))
 /*MARKER*/require_once(BASE_PATH . '/lib/sitemap.php');
 
 
+// security check done ASAP
+if(!checkAuth() || empty($_SESSION['rc1']) || empty($_SESSION['rc2'])) 
+{ 
+	die("No external access to file");
+}
+
+
 
 $do	= getGETparam4IdOrNumber('do');
 $status = getGETparam4IdOrNumber('status');
 $status_message = getGETparam4DisplayHTML('msg');
+$btn_backup = getPOSTparam4IdOrNumber('btn_backup');
 
-if(!empty($do) && $do=="backup" && $_POST['btn_backup']=="dobackup" && isset($_SESSION['rc1']) && checkAuth()) {
-	
+if($do=="backup" && $btn_backup=="dobackup" && !empty($_SESSION['rc1']) && checkAuth()) 
+{
 	// Include back-up functions
 	/*MARKER*/require_once('./functions.php');
 }
@@ -66,8 +74,10 @@ $get_temp = getGETparam4FullFilePath('template', $template[0].'.tpl.html');
 $chstatus = is_writable($dir_temp.$get_temp); // @dev: to test the error feedback on read-only on Win+UNIX: add '|| 1' here.
 	
 // Check for filename	
-if(!empty($get_temp)) {
-	if(@fopen($dir_temp.$get_temp, "r")) {
+if(!empty($get_temp)) 
+{
+	if(@fopen($dir_temp.$get_temp, "r")) 
+	{
 		$handle = fopen($dir_temp.$get_temp, "r");
 		// PHP5+ Feature
 		// $contents = stream_get_contents($handle);
@@ -80,6 +90,9 @@ if(!empty($get_temp)) {
 
 // Get permissions
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
+if (!$perm) $db->Kill("INTERNAL ERROR: 1 permission record MUST exist!");
+
+
 
 if(checkAuth() && $_SESSION['ccms_userLevel']>=$perm['manageTemplate']) 
 { 
@@ -90,7 +103,11 @@ if(checkAuth() && $_SESSION['ccms_userLevel']>=$perm['manageTemplate'])
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 		<title>Back-up &amp; Restore module</title>
 		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
-		
+<?php
+
+// TODO: call edit_area_compressor.php only from the combiner: combine.inc.php when constructing the edit_area.js file for the first time.
+
+?>
 		<script type="text/javascript" src="../../edit_area/edit_area_compressor.php"></script>
 		<script type="text/javascript">
 editAreaLoader.init(
