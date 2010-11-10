@@ -1,7 +1,9 @@
 /* PREVIEW === */
-#preview-display {
+#preview-display 
+{
 	float:right;
-	background-color: rgba(225,225,225,0.6);
+	background-color: rgba(225,225,225,0.9);
+	color: #000;
 	border: 1px solid #C10;
 	-webkit-box-shadow: 0px 0px 20px #C10;
 	-moz-box-shadow: 0px 0px 20px #C10;

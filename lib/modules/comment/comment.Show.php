@@ -96,7 +96,14 @@ window.addEvent(
 
 <div id="preview-display" style="display:none;">
 	<h2><?php echo $ccms['lang']['guestbook']['preview']; ?></h2>
+	<?php 
+	if ($cfg['enable_gravatar'])
+	{
+	?>
 	<div id="preview-avatar"></div>
+	<?php
+	}
+	?>
 	<div id="preview-name"></div>
 	<div id="preview-comment"></div>
 	<div id="preview-rating"></div>
