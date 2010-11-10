@@ -52,11 +52,8 @@ $ccms['lang']['system']['error_exists'] 	= "Der Dateiname besteht bereits.";
 $ccms['lang']['system']['error_delete']		= "Fehler beim Löschen der ausgewählten Datei";
 $ccms['lang']['system']['error_selection'] 	= "Es wurde keine Datei ausgewählt.";
 $ccms['lang']['system']['error_versioninfo'] = "Keine Versionsinformationen verfügbar.";
-$ccms['lang']['system']['error_misconfig']	= "<strong>Es scheint ein Fehler bei der Konfiguration vorzuliegen.</strong><br/>Die .htaccess Datei muss korrekt konfiguriert sein um die Dateistruktur wiederzugeben. Wenn<br/>CompactCMS in ein Unterverzeichnis installiert wurde, muss 
-die .htaccess Datei dementsprechend angepasst werden.";
-$ccms['lang']['system']['error_deleted']	= "<h1>Die ausgew&auml;hlte Datei schein gel&oouml;scht worden zu sein</h1><p>Um diesen Fehler zu vermeiden, 
-
-Dateiliste erneut aufrufen um die Liste der letzten verf&uuml;gbaren Dateien anzuzeigen. Falls dieses Vorgehen das Problem nicht löst, den Ordner per Hand öffnen und nachsehen, ob die Datei überhaubt existiert.</p>";
+$ccms['lang']['system']['error_misconfig']	= "<strong>Es scheint ein Fehler bei der Konfiguration vorzuliegen.</strong><br/>Die .htaccess Datei muss korrekt konfiguriert sein um die Dateistruktur wiederzugeben. Wenn<br/>CompactCMS in ein Unterverzeichnis installiert wurde, muss die .htaccess Datei dementsprechend angepasst werden.";
+$ccms['lang']['system']['error_deleted']	= "<h1>Die ausgew&auml;hlte Datei schein gel&oouml;scht worden zu sein</h1><p>Um diesen Fehler zu vermeiden, Dateiliste erneut aufrufen um die Liste der letzten verf&uuml;gbaren Dateien anzuzeigen. Falls dieses Vorgehen das Problem nicht löst, den Ordner per Hand öffnen und nachsehen, ob die Datei überhaubt existiert.</p>";
 $ccms['lang']['system']['error_404title'] 	= "Datei nicht gefunden";
 $ccms['lang']['system']['error_404header']	= "Ein 404 Fehler ist aufgetreten, die angeforderte Datei konnte nicht gefunden werden.";
 $ccms['lang']['system']['error_sitemap'] 	= "Seitenübersicht";
@@ -237,11 +234,11 @@ $ccms['lang']['guestbook']['posted']	= "Comment has been posted!";
 	$ccms['lang']['album']['removed']		
 	$ccms['lang']['album']['renamed']		
 	$ccms['lang']['album']['tooverview']	
+	$ccms['lang']['backend']['fileexists'] 		
 	$ccms['lang']['backend']['startedittitle'] 	
 	$ccms['lang']['backend']['updatelist']		
 	$ccms['lang']['editor']['closeeditor']	
 	$ccms['lang']['guestbook']['guestbook']	
-	$ccms['lang']['guestbook']['posted']	
 	$ccms['lang']['guestbook']['reaction']	
 	$ccms['lang']['guestbook']['removed'] 	
 	$ccms['lang']['login']['falsetries']		
@@ -292,8 +289,15 @@ $ccms['lang']['backend']['settingssaved']	= "Your changes have been successfully
 $ccms['lang']['backend']['templateeditor']	= "Template editor";
 $ccms['lang']['backend']['tooverview']		= "Back to overview";
 $ccms['lang']['backend']['usermanagement']	= "User management";
+$ccms['lang']['forms']['add']           = "Add filter for";
+$ccms['lang']['forms']['edit_remove']   = "Edit or remove filter for";
+$ccms['lang']['forms']['filter_showing']	= "right now we're only showing pages which have at least this text in here";
 $ccms['lang']['forms']['modifybutton'] 	= "Modify";
 $ccms['lang']['forms']['setlocale']		= "Front-end language";
+$ccms['lang']['guestbook']['error']		= "Failures &amp; Rejections";
+$ccms['lang']['guestbook']['rejected']	= "Your comment has been rejected.";
+$ccms['lang']['guestbook']['success']	= "Thank you";
+$ccms['lang']['hints']['filter']        = "<br>You can click on the <span class='sprite livefilter livefilter_active'>&#160;filter icon</span> at left of the title to add, edit or remove a text to filter the page list on, e.g. when you type 'home' in the edit field which appears when you click the icon, then press the Enter/Return key, only pages which have the text 'home' in this column will be shown. <br>Clicking the icon again and deleting the text in the edit field, then pressing the Enter/Return key, will remove the filter.<br>Hover over the filter icon to see whether the column is currently being filtered, and if so, using which filter text.";
 $ccms['lang']['login']['welcome']			= "<p>Use a valid username and password to gain access to the CompactCMS back-end. If you arrived here by mistake, return to the <a href='../../'>home page</a>.</p><p>Contact your webmaster for your details.</p>";
 $ccms['lang']['news']['addnews']		= "Add news";
 $ccms['lang']['news']['addnewslink']	= "Write new article";
