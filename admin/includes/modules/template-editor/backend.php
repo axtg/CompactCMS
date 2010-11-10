@@ -60,13 +60,7 @@ if(!checkAuth() || empty($_SESSION['rc1']) || empty($_SESSION['rc2']))
 $do	= getGETparam4IdOrNumber('do');
 $status = getGETparam4IdOrNumber('status');
 $status_message = getGETparam4DisplayHTML('msg');
-$btn_backup = getPOSTparam4IdOrNumber('btn_backup');
 
-if($do=="backup" && $btn_backup=="dobackup" && !empty($_SESSION['rc1']) && checkAuth()) 
-{
-	// Include back-up functions
-	/*MARKER*/require_once('./functions.php');
-}
 
 // Set the default template
 $dir_temp = BASE_PATH . "/lib/templates/";
@@ -92,16 +86,19 @@ if(!empty($get_temp))
 $perm = $db->QuerySingleRowArray("SELECT * FROM ".$cfg['db_prefix']."cfgpermissions");
 if (!$perm) $db->Kill("INTERNAL ERROR: 1 permission record MUST exist!");
 
+if($_SESSION['ccms_userLevel']<$perm['manageTemplate']) 
+{
+	$chstatus = false; // templates are viewable but NOT WRITABLE when user doesn't have permission to manage these.
+}
 
 
-if(checkAuth() && $_SESSION['ccms_userLevel']>=$perm['manageTemplate']) 
-{ 
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<title>Back-up &amp; Restore module</title>
+		<title>Template Editing module</title>
 		<link rel="stylesheet" type="text/css" href="../../../img/styles/base.css,liquid.css,layout.css,sprite.css" />
 <?php
 
@@ -252,4 +249,3 @@ function confirmation()
 	</div>
 </body>
 </html>
-<?php } else die("No external access to file");?>
