@@ -1,0 +1,102 @@
+<?php 
+/* ************************************************************
+Copyright (C) 2008 - 2010 by Xander Groesbeek (CompactCMS.nl)
+Revision:	CompactCMS - v 1.4.1
+	
+This file is part of CompactCMS.
+
+CompactCMS is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+CompactCMS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+A reference to the original author of CompactCMS and its copyright
+should be clearly visible AT ALL TIMES for the user of the back-
+end. You are NOT allowed to remove any references to the original
+author, communicating the product to be your own, without written
+permission of the original copyright owner.
+
+You should have received a copy of the GNU General Public License
+along with CompactCMS. If not, see <http://www.gnu.org/licenses/>.
+	
+> Contact me for any inquiries.
+> E: Xander@CompactCMS.nl
+> W: http://community.CompactCMS.nl/forum
+************************************************************ */
+
+/*
+>> General tags (replace '(' with '{' when using them - using the 'active' version within this comment will cause severe trouble, depending on the substituted content of the variables!)
+- (%urlpage%)       | The current filename that is being shown
+- (%title%)         | Use this tag within your <title></title> tag for optimal SEO
+- (%pagetitle%)     | Displays the current pagetitle (good for a <h1> tag)
+- (%subheader%)     | A short slogan, descriptive text for the current page (<h2>)
+- (%sitename%)      | Use this anywhere you want to show your sitename
+- (%desc%)          | An "extensive" description of the current page
+- (%keywords%)      | Keywords (tags) for the current page as specified per file
+- (%breadcrumb%)    | Show the breadcrumb/pathway to the current file
+- (%printable%)     | Use as: (%IF printable (eq Y)%)<a href="print/(%urlpage%).html">Print</a>(%/IF printable%)
+    
+>> Menu items
+- (%mainmenu%)      | Prints an ordered list (<ul>) with all files in specified menu
+- (%leftmenu%)      | ''
+- (%rightmenu%)     | ''
+- (%footermenu%)    | ''
+- (%extramenu%)     | ''
+    
+>> Content tag
+- (%content%)       | The content from the current file that is being requested
+
+See below for a simple example that uses all of the tags listed above.
+*/
+
+/* make sure no-one can run anything here if they didn't arrive through 'proper channels' */
+if(!defined("COMPACTCMS_CODE")) die('Illegal entry point!');
+
+
+global $db,$cfg,$ccms;
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{%lang%}">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Print: {%title%}</title>
+	<meta name="description" content="[PRINT FRIENDLY] {%sitename%} | {%desc%}" />
+	<meta name="keywords" content="{%keywords%}" />
+	<link href="{%rootdir%}lib/templates/ccms/printing.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="{%rootdir%}lib/includes/js/mootools.js" charset="utf-8"></script>
+	<link rel="shortcut icon" href="{%rootdir%}media/favicon.ico" />
+</head>
+
+<body>
+
+<div class="container">
+	<div id="header" class="span-24">
+		<div><h1><span>{%sitename%} {%pagetitle%}</span></h1></div>
+	</div>
+
+	<h2>{%subheader%}</h2>
+
+	<div id="content" >
+		<div id="printable" style="text-align: right;">
+			<span id="pageref"><a href="{%rootdir%}{%urlpage%}.html">{%lang:system:tooriginal%}</a></span>
+		</div>
+		
+		{%content%}
+	</div>
+</div>
+
+<div id="footer" class="quiet small">
+	<p>&copy; <?php echo date('Y'); ?> {%sitename%} | Maintained with <a href="http://www.compactcms.nl">CompactCMS</a></p>
+</div>
+
+	<!-- Support me by keeping this link (it's not visible to your visitors!). It will help my search engine ranking. -->
+	<div style="display: none;"><a href="http://www.compactcms.nl">Maintained with CompactCMS.nl</a></div>
+	<!-- That's it! Of course you're free to show off CompactCMS anywhere on your website -->
+
+</body>
+</html>
