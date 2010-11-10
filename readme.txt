@@ -1,4 +1,4 @@
-=== COMPACTCMS 1.4.1 ===
+=== COMPACTCMS 1.4.2 ===
 Thank you for downloading this latest release of CompactCMS. This project is open
 source and released under the GNU GENERAL PUBLIC LICENSE v3 (see license.txt).
 
@@ -23,6 +23,20 @@ for manually configuring CompactCMS as well as a template variables descriptions
 
 After installation call your administration by adding '/admin' to the url of your
 installation.
+
+=== 1.4.2 CHANGES ===
+The changes for 1.4.2 are completely driven by the hard work of GerHobbelt, who optimized
+most of the code both security and functionality wise. This latest release includes many
+(if not all) of the proposed improvements as made by GerHobbelt.
+
+* Sanitizing of all input variables through added functions (common.inc.php)
+* Optimized installer support
+* Improved overall structuring within virtually all files
+* Updates to external included libraries
+* Removal of my 'single minded developer rookie and biased' mistakes
+* Much more...
+
+Thank you GerHobbelt, your inputs and efforts are much appreciated!
 
 === 1.4.1 CHANGES ===
 The list below includes a list of changes for version 1.4.1.
