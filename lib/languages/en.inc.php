@@ -157,7 +157,9 @@ $ccms['lang']['forms']['createbutton'] 	= "Create!";
 $ccms['lang']['forms']['modifybutton'] 	= "Modify";
 $ccms['lang']['forms']['savebutton'] 	= "Save";
 $ccms['lang']['forms']['setlocale']		= "Front-end language";
-$ccms['lang']['forms']['filter_showing']	= "Right now we're only showing pages which have at least this text in here";
+$ccms['lang']['forms']['filter_showing']	= "right now we're only showing pages which have at least this text in here";
+$ccms['lang']['forms']['edit_remove']   = "Edit or remove filter for";
+$ccms['lang']['forms']['add']           = "Add filter for";
 
 // Administration hints for form fields
 $ccms['lang']['hints']['filename']		= "The page url (home.html) :: The file name which this page is called upon (without .html)";
@@ -173,6 +175,7 @@ $ccms['lang']['hints']['template']		= "Template :: If you use multiple templates
 $ccms['lang']['hints']['activelink']	= "Active link in menu? :: Not all items always need an actual link. To deactivate the link behind this item in the front-end menu, uncheck its checkbox below.";
 $ccms['lang']['hints']['menuid']		= "Menu :: Choose in which menu this item should be listed in. The default is the main menu (1), where also the home page link should be shown.";
 $ccms['lang']['hints']['iscoding']		= "Contains coding :: Does this file contain manual added code such as PHP or Javascript? Selecting 'Yes' will restrict access to the file from the back-end's WYSIWYG editor and enables the code editor.";
+$ccms['lang']['hints']['filter']        = "<br>You can click on the <span class='sprite livefilter livefilter_active'>&#160;filter icon</span> at left of the title to add, edit or remove a text to filter the page list on, e.g. when you type 'home' in the edit field which appears when you click the icon, then press the Enter/Return key, only pages which have the text 'home' in this column will be shown. <br>Clicking the icon again and deleting the text in the edit field, then pressing the Enter/Return key, will remove the filter.<br>Hover over the filter icon to see whether the column is currently being filtered, and if so, using which filter text.";
 
 // Editor messages
 $ccms['lang']['editor']['closeeditor']	= "Close the editor";
@@ -297,7 +300,10 @@ $ccms['lang']['guestbook']['comments']	= "Comments";
 $ccms['lang']['guestbook']['verify']	= "Verification";
 $ccms['lang']['guestbook']['preview']	= "Preview comment";
 $ccms['lang']['guestbook']['add']		= "Add your comments";
-$ccms['lang']['guestbook']['posted']	= "Comment has been posted!";
+$ccms['lang']['guestbook']['posted']	= "Your comment has been posted!";
+$ccms['lang']['guestbook']['success']	= "Thank you";
+$ccms['lang']['guestbook']['error']		= "Failures &amp; Rejections";
+$ccms['lang']['guestbook']['rejected']	= "Your comment has been rejected.";
 
 
       /* ### OBSOLETED ENTRIES ### */
@@ -314,11 +320,10 @@ $ccms['lang']['guestbook']['posted']	= "Comment has been posted!";
          ----------------------------------------------------------
 	
 	$ccms['lang']['album']['nodir']			
+	$ccms['lang']['backend']['fileexists'] 		
 	$ccms['lang']['backend']['startedittitle'] 	
 	$ccms['lang']['backend']['updatelist']		
 	$ccms['lang']['editor']['closeeditor']	
-	$ccms['lang']['forms']['filter_showing']	
-	$ccms['lang']['guestbook']['posted']	
 	$ccms['lang']['guestbook']['reaction']	
 	$ccms['lang']['guestbook']['removed'] 	
 	$ccms['lang']['login']['falsetries']		

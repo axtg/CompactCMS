@@ -238,11 +238,11 @@ $ccms['lang']['guestbook']['posted']	= "Комментарий опублико�
 	$ccms['lang']['album']['rename']		
 	$ccms['lang']['album']['renamed']		
 	$ccms['lang']['album']['tooverview']	
+	$ccms['lang']['backend']['fileexists'] 		
 	$ccms['lang']['backend']['startedittitle'] 	
 	$ccms['lang']['backend']['updatelist']		
 	$ccms['lang']['editor']['closeeditor']	
 	$ccms['lang']['guestbook']['guestbook']	
-	$ccms['lang']['guestbook']['posted']	
 	$ccms['lang']['guestbook']['reaction']	
 	$ccms['lang']['guestbook']['removed'] 	
 	$ccms['lang']['login']['falsetries']		
@@ -293,8 +293,15 @@ $ccms['lang']['backend']['settingssaved']	= "Your changes have been successfully
 $ccms['lang']['backend']['templateeditor']	= "Template editor";
 $ccms['lang']['backend']['tooverview']		= "Back to overview";
 $ccms['lang']['backend']['usermanagement']	= "User management";
+$ccms['lang']['forms']['add']           = "Add filter for";
+$ccms['lang']['forms']['edit_remove']   = "Edit or remove filter for";
+$ccms['lang']['forms']['filter_showing']	= "right now we're only showing pages which have at least this text in here";
 $ccms['lang']['forms']['modifybutton'] 	= "Modify";
 $ccms['lang']['forms']['setlocale']		= "Front-end language";
+$ccms['lang']['guestbook']['error']		= "Failures &amp; Rejections";
+$ccms['lang']['guestbook']['rejected']	= "Your comment has been rejected.";
+$ccms['lang']['guestbook']['success']	= "Thank you";
+$ccms['lang']['hints']['filter']        = "<br>You can click on the <span class='sprite livefilter livefilter_active'>&#160;filter icon</span> at left of the title to add, edit or remove a text to filter the page list on, e.g. when you type 'home' in the edit field which appears when you click the icon, then press the Enter/Return key, only pages which have the text 'home' in this column will be shown. <br>Clicking the icon again and deleting the text in the edit field, then pressing the Enter/Return key, will remove the filter.<br>Hover over the filter icon to see whether the column is currently being filtered, and if so, using which filter text.";
 $ccms['lang']['news']['addnews']		= "Add news";
 $ccms['lang']['news']['addnewslink']	= "Write new article";
 $ccms['lang']['news']['author']			= "News author";
