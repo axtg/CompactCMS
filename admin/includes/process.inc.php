@@ -294,7 +294,27 @@ if($db->HasRecords())
 					} 
 					elseif($row->module!="editor") 
 					{ 
-						echo "<span class=\"ss_sprite ss_information\"><strong>".ucfirst($row->module)."</strong></span> ".strtolower($ccms['lang']['forms']['module']);
+						// TODO: add a module/plugin hook to provide the proper icon/formatting for the module name:
+						$modID = "<span class=\"ss_sprite ss_information\"><strong>".ucfirst($row->module)."</strong></span>";
+						
+						switch ($row->module)
+						{
+						default:
+							break;
+						
+						case 'lightbox':
+							$modID = "<span class=\"ss_sprite ss_images\"><strong>".ucfirst($row->module)."</strong></span>";
+							break;
+							
+						case 'news':
+							$modID = "<span class=\"ss_sprite ss_newspaper\"><strong>".ucfirst($row->module)."</strong></span>";
+							break;
+							
+						case 'comment':
+							$modID = "<span class=\"ss_sprite ss_comments\"><strong>".ucfirst($row->module)."</strong></span>";
+							break;
+						}
+						echo $modID . ' '.strtolower($ccms['lang']['forms']['module']);
 					} 
 					else 
 					{
