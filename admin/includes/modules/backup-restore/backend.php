@@ -221,7 +221,7 @@ if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth())
 						<?php 
 						} 
 						?>
-						<th class="span-10"><?php echo $ccms['lang']['backup']['timestamp'];?></th>
+						<th class="span-14"><?php echo $ccms['lang']['backup']['timestamp'];?></th>
 						<th>&#160;</th>
 					</tr>
 					<?php 
@@ -230,10 +230,10 @@ if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth())
 						$i=0;
 						while (false !== ($file = readdir($handle))) 
 						{
-					        if ($file != "." && $file != ".." && strpos($file, ".zip")) 
+							if ($file != "." && $file != ".." && strmatch_tail($file, ".zip")) 
 							{
-						        // Alternate rows
-			    				if($i%2 != 1) 
+								// Alternate rows
+								if($i%2 != 1) 
 								{
 									echo '<tr style="background-color: #E6F2D9;">';
 								} 
@@ -241,17 +241,20 @@ if($do=="delete" && $_POST['btn_delete']=="dodelete" && checkAuth())
 								{ 
 									echo '<tr>';
 								} 
-						        if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) 
+								echo "\n";
+								if($_SESSION['ccms_userLevel']>=$perm['manageModBackup']) 
 								{
-						        	echo '<td><input type="checkbox" name="file[]" value="'.$file.'" id="'.$i.'"></td>';
-						        }
-						        echo '<td>'.$file.'</td>';
-						        echo '<td><span class="ss_sprite ss_package_green"><a href="../../../../media/files/'.$file.'" title="'.ucfirst($file).'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
-						        echo "</tr>\n";
+									echo '<td><input type="checkbox" name="file[]" value="'.$file.'" id="'.$i.'"></td>';
+								}
+								echo "\n";
+								echo '<td>'.$file.'</td>';
+								echo "\n";
+								echo '<td><span class="ss_sprite ss_package_green"><a href="../../../../media/files/'.$file.'" title="'.$file.'">'.$ccms['lang']['backup']['download'].'</a></span></td>';
+								echo "\n</tr>\n";
 								$i++;
 							} 
-					    }
-					    closedir($handle);
+						}
+						closedir($handle);
 					}
 					?>
 				</table>
